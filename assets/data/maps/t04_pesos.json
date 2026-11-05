@@ -1,0 +1,105 @@
+{
+  "id": "t04_pesos",
+  "name": "Contrapesos",
+  "width": 32,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "################################",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....####.....................#",
+    "#.....####.....................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....................####.....#",
+    "#.....................####.....#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "################################"
+  ],
+  "doors": [
+    {
+      "id": "door.t03_treino.t04_pesos",
+      "side": "west",
+      "tile": [
+        2,
+        12
+      ],
+      "target_room": "t03_treino",
+      "target_tile": [
+        29,
+        12
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.t03_treino.t04_pesos",
+      "key_consumption": null
+    },
+    {
+      "id": "door.t04_pesos.t05_sinos",
+      "side": "north",
+      "tile": [
+        16,
+        2
+      ],
+      "target_room": "t05_sinos",
+      "target_tile": [
+        16,
+        21
+      ],
+      "gate": "world.weight_locked",
+      "unlock_persistent_flag": "open.door.t04_pesos.t05_sinos",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "t04_pesos.weight",
+      "kind": "push_block",
+      "tile": [
+        12,
+        10
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t04_pesos.lock",
+      "kind": "interact",
+      "tile": [
+        20,
+        10
+      ],
+      "trigger_id": "interagir_peso_duplo",
+      "persistent_receipt": null
+    },
+    {
+      "id": "t04_pesos.fragment_07",
+      "kind": "unique_fragment",
+      "tile": [
+        26,
+        18
+      ],
+      "collectible_id": "fragment_07",
+      "requires_item": null,
+      "persistent_receipt": "collectible.fragment_07"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}

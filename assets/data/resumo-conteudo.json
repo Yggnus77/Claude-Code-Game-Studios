@@ -1,0 +1,14 @@
+{
+  "scenes": 147,
+  "spoken_and_direction_nodes": 491,
+  "choices": 2,
+  "missions": 30,
+  "prototype_rooms": 13,
+  "enemies": 16,
+  "items": 40,
+  "mysteries": 8,
+  "rare_relics": 8,
+  "boss_encounters": 7,
+  "prototype_fragments_placed": 8,
+  "campaign_fragments_unplaced": 24
+}

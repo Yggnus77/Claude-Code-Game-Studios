@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "rewards": [
+    {
+      "id": "chest_ak_key",
+      "entity": "t00_base.ak_key",
+      "item": "key_ak_base",
+      "quantity": 1,
+      "receipt": "reward.key.ak"
+    },
+    {
+      "id": "chest_pump_a",
+      "entity": "r00_estrada.pump_a",
+      "item": "peca_bomba_a",
+      "quantity": 1,
+      "receipt": "reward.pump.a"
+    },
+    {
+      "id": "enemy_pump_b",
+      "entity": "r01_cruzamento.pump_b",
+      "item": "peca_bomba_b",
+      "quantity": 1,
+      "receipt": "reward.pump.b",
+      "rule": "Guaranteed on first designated enemy defeat, independent from ordinary drop."
+    },
+    {
+      "id": "loot_reserva_viagem",
+      "entity": "v01_praca.reserva_viagem",
+      "bronze": 10,
+      "receipt": "loot.v01_praca.reserva_viagem",
+      "quantity": 1
+    },
+    {
+      "id": "loot_apoio_estrada",
+      "entity": "r00_estrada.apoio_estrada",
+      "bronze": 10,
+      "receipt": "loot.r00_estrada.apoio_estrada",
+      "quantity": 1
+    }
+  ],
+  "fragments": [
+    {
+      "id": "fragment_01",
+      "scope": "prototype",
+      "room": "v01_praca",
+      "tile": [
+        31,
+        8
+      ],
+      "requires_item": "gancho_retorno"
+    },
+    {
+      "id": "fragment_02",
+      "scope": "prototype",
+      "room": "r00_estrada",
+      "tile": [
+        8,
+        18
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_03",
+      "scope": "prototype",
+      "room": "r01_cruzamento",
+      "tile": [
+        11,
+        5
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_04",
+      "scope": "prototype",
+      "room": "r02_bomba",
+      "tile": [
+        26,
+        18
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_05",
+      "scope": "prototype",
+      "room": "t00_base",
+      "tile": [
+        26,
+        4
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_06",
+      "scope": "prototype",
+      "room": "t02_oficina",
+      "tile": [
+        18,
+        14
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_07",
+      "scope": "prototype",
+      "room": "t04_pesos",
+      "tile": [
+        26,
+        18
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_08",
+      "scope": "prototype",
+      "room": "t05_sinos",
+      "tile": [
+        27,
+        18
+      ],
+      "requires_item": null
+    },
+    {
+      "id": "fragment_09",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_10",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_11",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_12",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_13",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_14",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_15",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_16",
+      "scope": "campaign_unplaced",
+      "area": "comportas_caverna",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_17",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_18",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_19",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_20",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_21",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_22",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_23",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_24",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_25",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_26",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_27",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_28",
+      "scope": "campaign_unplaced",
+      "area": "agulhas_vigias",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_29",
+      "scope": "campaign_unplaced",
+      "area": "nucleo",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_30",
+      "scope": "campaign_unplaced",
+      "area": "nucleo",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_31",
+      "scope": "campaign_unplaced",
+      "area": "nucleo",
+      "status": "Requires later detailed map placement; not implemented."
+    },
+    {
+      "id": "fragment_32",
+      "scope": "campaign_unplaced",
+      "area": "nucleo",
+      "status": "Requires later detailed map placement; not implemented."
+    }
+  ],
+  "note": "Only the first eight fragments have exact prototype coordinates. Later map placement remains explicit production work."
+}

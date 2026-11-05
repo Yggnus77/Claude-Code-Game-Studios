@@ -1,0 +1,17 @@
+﻿Inimigo;Classe;Resistência inicial;Ataque;Resposta;Recompensa comum
+Rastejo de Tinta;Fácil;2 golpes;Avanço reto após inflar;Esquiva lateral;1 Bronze
+Mariposa de Papel;Fácil;1 golpe;Mergulho após pousar;Defesa ou golpe no pouso;1 Bronze
+Caranguejo de Sucata;Fácil;2 golpes;Investida frontal;Contornar a carapaça;1–5 Bronze
+Lamparina Errante;Fácil;2 golpes;Projétil luminoso;Bloquear e aproximar;Gota de Ressonância
+Soldado de Corda;Fácil;3 golpes;Corte lento;Defesa e contra-ataque;1–5 Bronze
+Pingo de Eco;Fácil;1 golpe;Salto sinalizado;Afastar da marca;Gota de Ressonância
+Guarda de Contrapeso;Médio;4 golpes exposto;Escudo e pancada;Abrir com gancho;5 Bronze
+Tecelão de Fios;Médio;3 golpes;Amarra uma faixa do chão;Cortar ponto de fixação;5 Bronze
+Cão de Ressonância;Médio;4 golpes;Fareja e investe;Pulso ou recuperação;Vida ou energia
+Sentinela de Vidro;Médio;3 golpes exposto;Feixe anunciado;Cobertura e placa traseira;5 Bronze
+Copista Vazio;Médio;4 golpes;Repete o último ataque;Alternar ação;Energia
+Cavaleiro de Lodo;Médio;5 golpes;Arco pesado;Esperar a arma prender;5–20 Bronze
+Capitão das Correntes;Elite;8 golpes exposto;Fecha espaço com argolas;Gancho durante preparo;Primeiro encontro: fragmento
+Arquivista Partido;Elite;6 golpes no núcleo;Três corpos, um registro;Matrix revela vínculo;Primeiro encontro: memória
+Carrasco de Bronze;Elite;10 golpes exposto;Martelo e pulso de chão;Esquiva lateral;20 Bronze
+Dupla de Vigias;Elite;5 golpes por unidade;Ataque e proteção alternados;Separar com cobertura;20 Bronze

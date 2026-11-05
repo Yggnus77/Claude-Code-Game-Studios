@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "slot_id": 1,
+  "playtime_seconds": 0,
+  "current_room": "v00_oficina",
+  "safe_entry_id": "default",
+  "checkpoint": {
+    "room": "v01_praca",
+    "entity_id": "v01_praca.marco_v"
+  },
+  "player": {
+    "life": 6,
+    "life_max": 6,
+    "resonance": 60,
+    "resonance_max": 60,
+    "bronze": 0,
+    "bronze_reserve": 0,
+    "wallet_capacity": 200,
+    "flask_capacity": 2,
+    "equipped_weapon": null,
+    "equipped_tool": null,
+    "unlocked_skins": [
+      "restaurador"
+    ],
+    "active_skin": "restaurador"
+  },
+  "inventory": {
+    "frasco_01": 1
+  },
+  "flasks": [
+    {
+      "id": "frasco_01",
+      "content": "empty"
+    }
+  ],
+  "flags": {},
+  "missions": {},
+  "receipts": [],
+  "world": {
+    "opened_chests": [],
+    "opened_doors": [],
+    "unique_pickups": []
+  },
+  "boss_attempt_snapshot": null,
+  "completed_epilogue": false
+}

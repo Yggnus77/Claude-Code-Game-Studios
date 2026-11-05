@@ -1,0 +1,155 @@
+{
+  "id": "t05_sinos",
+  "name": "Galeria dos sinos",
+  "width": 32,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "################################",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....####.....................#",
+    "#.....####.....................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....................####.....#",
+    "#.....................####.....#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "################################"
+  ],
+  "doors": [
+    {
+      "id": "door.t04_pesos.t05_sinos",
+      "side": "south",
+      "tile": [
+        16,
+        21
+      ],
+      "target_room": "t04_pesos",
+      "target_tile": [
+        16,
+        2
+      ],
+      "gate": "world.weight_locked",
+      "unlock_persistent_flag": "open.door.t04_pesos.t05_sinos",
+      "key_consumption": null
+    },
+    {
+      "id": "door.t05_sinos.t06_marco",
+      "side": "east",
+      "tile": [
+        29,
+        12
+      ],
+      "target_room": "t06_marco",
+      "target_tile": [
+        2,
+        9
+      ],
+      "gate": "world.bells_solved",
+      "unlock_persistent_flag": "open.door.t05_sinos.t06_marco",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "t05_sinos.bell_circle",
+      "kind": "bell",
+      "tile": [
+        8,
+        9
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t05_sinos.bell_gap",
+      "kind": "bell",
+      "tile": [
+        16,
+        9
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t05_sinos.bell_waves",
+      "kind": "bell",
+      "tile": [
+        24,
+        9
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t05_sinos.inscription",
+      "kind": "interact",
+      "tile": [
+        16,
+        5
+      ],
+      "trigger_id": "examinar_inscricao_sinos",
+      "persistent_receipt": null
+    },
+    {
+      "id": "t05_sinos.m02_call_plate",
+      "kind": "mystery_clue",
+      "tile": [
+        5,
+        4
+      ],
+      "sets_flag": "clue.m02.placa_chamado",
+      "persistent_receipt": "clue.t05_sinos.m02_call_plate"
+    },
+    {
+      "id": "t05_sinos.m02_bronze_tube",
+      "kind": "mystery_clue",
+      "tile": [
+        27,
+        4
+      ],
+      "sets_flag": "clue.m02.tubo_bronze",
+      "persistent_receipt": "clue.t05_sinos.m02_bronze_tube"
+    },
+    {
+      "id": "t05_sinos.m02_pause_record",
+      "kind": "mystery_clue",
+      "tile": [
+        16,
+        17
+      ],
+      "sets_flag": "clue.m02.registro_pausa",
+      "persistent_receipt": "clue.t05_sinos.m02_pause_record"
+    },
+    {
+      "id": "t05_sinos.fragment_08",
+      "kind": "unique_fragment",
+      "tile": [
+        27,
+        18
+      ],
+      "collectible_id": "fragment_08",
+      "requires_item": null,
+      "persistent_receipt": "collectible.fragment_08"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}

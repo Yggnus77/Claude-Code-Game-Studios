@@ -1,0 +1,121 @@
+{
+  "id": "t00_base",
+  "name": "Base da torre",
+  "width": 32,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "################################",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....####.....................#",
+    "#.....####.....................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#.....................####.....#",
+    "#.....................####.....#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "#..............................#",
+    "################################"
+  ],
+  "doors": [
+    {
+      "id": "door.r01_cruzamento.t00_base",
+      "side": "west",
+      "tile": [
+        2,
+        12
+      ],
+      "target_room": "r01_cruzamento",
+      "target_tile": [
+        37,
+        12
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.r01_cruzamento.t00_base",
+      "key_consumption": null
+    },
+    {
+      "id": "door.t00_base.t01_guardas",
+      "side": "east",
+      "tile": [
+        29,
+        12
+      ],
+      "target_room": "t01_guardas",
+      "target_tile": [
+        2,
+        12
+      ],
+      "gate": "key:key_ak_base",
+      "unlock_persistent_flag": "open.door.t00_base.t01_guardas",
+      "key_consumption": "once_when_first_open"
+    },
+    {
+      "id": "door.t07_igris.t00_base",
+      "side": "north",
+      "tile": [
+        16,
+        2
+      ],
+      "target_room": "t07_igris",
+      "target_tile": [
+        20,
+        2
+      ],
+      "gate": "seen.t11",
+      "unlock_persistent_flag": "open.door.t07_igris.t00_base",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "t00_base.ak_key",
+      "kind": "chest",
+      "tile": [
+        5,
+        4
+      ],
+      "trigger_id": "chest_ak_key",
+      "persistent_receipt": "unique.t00_base.ak_key"
+    },
+    {
+      "id": "t00_base.marco_t0",
+      "kind": "checkpoint",
+      "tile": [
+        10,
+        10
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t00_base.fragment_05",
+      "kind": "unique_fragment",
+      "tile": [
+        26,
+        4
+      ],
+      "collectible_id": "fragment_05",
+      "requires_item": null,
+      "persistent_receipt": "collectible.fragment_05"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}

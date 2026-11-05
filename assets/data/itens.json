@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "espada_oficina",
+      "name": "Espada de Oficina",
+      "type": "arma",
+      "stack_limit": 1,
+      "source": "p05",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "escudo_bronze",
+      "name": "Escudo de Bronze",
+      "type": "escudo",
+      "stack_limit": 1,
+      "source": "p05",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "matrix",
+      "name": "Matrix",
+      "type": "artefato",
+      "stack_limit": 1,
+      "source": "p04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "pulso_eco",
+      "name": "Pulso de Eco",
+      "type": "magia",
+      "stack_limit": 1,
+      "source": "p08",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "gancho_retorno",
+      "name": "Gancho de Retorno",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "t03",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "espada_diapasao",
+      "name": "Espada Diapasão",
+      "type": "arma",
+      "stack_limit": 1,
+      "source": "t12",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "luvas_lastro",
+      "name": "Luvas de Lastro",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "c03",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "escudo_ressonante",
+      "name": "Escudo Ressonante",
+      "type": "escudo",
+      "stack_limit": 1,
+      "source": "c04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "fio_ancora",
+      "name": "Fio de Âncora",
+      "type": "magia",
+      "stack_limit": 1,
+      "source": "c07",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "lanterna_lembrancas",
+      "name": "Lanterna de Lembranças",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "v03",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "acorde_vivo",
+      "name": "Acorde Vivo",
+      "type": "magia",
+      "stack_limit": 1,
+      "source": "v06",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "lamina_ancora",
+      "name": "Lâmina da Âncora",
+      "type": "arma",
+      "stack_limit": 1,
+      "source": "e04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "veu_protecao",
+      "name": "Véu de Proteção",
+      "type": "magia",
+      "stack_limit": 1,
+      "source": "e04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "botas_travessia",
+      "name": "Botas de Travessia",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "a02",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "arco_fio",
+      "name": "Arco de Fio",
+      "type": "arma",
+      "stack_limit": 1,
+      "source": "b02",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "ampliador_01",
+      "name": "Ampliador de Ressonância I",
+      "type": "melhoria",
+      "stack_limit": 1,
+      "source": "e04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "ampliador_02",
+      "name": "Ampliador de Ressonância II",
+      "type": "melhoria",
+      "stack_limit": 1,
+      "source": "b06",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "frasco_01",
+      "name": "Frasco inicial",
+      "type": "frasco",
+      "stack_limit": 1,
+      "source": "new_game",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "frasco_02",
+      "name": "Frasco da bomba",
+      "type": "frasco",
+      "stack_limit": 1,
+      "source": "r04",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "frasco_03",
+      "name": "Frasco de Morina",
+      "type": "frasco",
+      "stack_limit": 1,
+      "source": "o07",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "frasco_04",
+      "name": "Frasco do posto",
+      "type": "frasco",
+      "stack_limit": 1,
+      "source": "o11",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "bolsa_reforcada",
+      "name": "Bolsa Reforçada",
+      "type": "bolsa",
+      "stack_limit": 1,
+      "source": "o02",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "bolsa_navegante",
+      "name": "Bolsa de Navegante",
+      "type": "bolsa",
+      "stack_limit": 1,
+      "source": "o10",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "key_ak_base",
+      "name": "Chave da base de Akurame",
+      "type": "chave",
+      "stack_limit": 1,
+      "source": "chest_ak_key",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "pao_porto",
+      "name": "Pão de Porto",
+      "type": "consumivel",
+      "stack_limit": 10,
+      "source": "shop",
+      "unique": false,
+      "sellable": false
+    },
+    {
+      "id": "essencia_ressonancia",
+      "name": "Essência de Ressonância",
+      "type": "consumivel",
+      "stack_limit": 5,
+      "source": "shop",
+      "unique": false,
+      "sellable": false
+    },
+    {
+      "id": "carga_bronze",
+      "name": "Carga de Bronze",
+      "type": "consumivel",
+      "stack_limit": 9,
+      "source": "shop",
+      "unique": false,
+      "sellable": false
+    },
+    {
+      "id": "po_revelacao",
+      "name": "Pó de Revelação",
+      "type": "consumivel",
+      "stack_limit": 5,
+      "source": "shop",
+      "unique": false,
+      "sellable": false
+    },
+    {
+      "id": "ancora_fragmento",
+      "name": "Fragmento de Âncora",
+      "type": "recurso_unico",
+      "stack_limit": 32,
+      "source": "world_unique",
+      "unique": false,
+      "sellable": false,
+      "individual_pickups_unique": true
+    },
+    {
+      "id": "agulha_fio",
+      "name": "Agulha de Fio",
+      "type": "municao",
+      "stack_limit": 20,
+      "source": "refill",
+      "unique": false,
+      "sellable": false
+    },
+    {
+      "id": "peca_bomba_a",
+      "name": "Engrenagem da bomba",
+      "type": "missao",
+      "stack_limit": 1,
+      "source": "chest_pump_a",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "peca_bomba_b",
+      "name": "Eixo da bomba",
+      "type": "missao",
+      "stack_limit": 1,
+      "source": "enemy_pump_b",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "selo_restaurador",
+      "name": "Selo do Restaurador",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x01c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "mola_retorno",
+      "name": "Mola de Retorno",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x02c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "fivela_lastro",
+      "name": "Fivela de Lastro",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x03c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "bussola_aurelis",
+      "name": "Bússola de Aurélis",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x04c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "lente_mare",
+      "name": "Lente de Maré",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x05c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "afinador_eco",
+      "name": "Afinador de Eco",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x06c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "broche_vigilia",
+      "name": "Broche da Vigília",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x07c",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "anel_calibracao",
+      "name": "Anel de Calibração",
+      "type": "reliquia",
+      "stack_limit": 1,
+      "source": "x08c",
+      "unique": true,
+      "sellable": false
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/main.gd be88b5e61bad61c33e3746de27a46e4cdafaef3c
+Reviewed-Content-Hash: src/player/player.gd c05a71ccb04defe8473b691bce1c7925cb13dd22
+Reviewed-Content-Hash: src/player/player_motor.gd 31ea5f368e669595153838fa0651b117d44f7a4d
+Reviewed-Content-Hash: src/world/room.gd 41cd0a324af469c90dd4163669f6d5408b84fcf9
+Reviewed-Content-Hash: src/world/room_data.gd 99d044af5b2cca5b77620f615a213f9ebaec7ef6
+Reviewed-Content-Hash: src/core/game_config.gd 493a233f065a19ab9fe54f0cd126334b2effaf28
+Reviewed-Content-Hash: src/core/input_setup.gd 961c8ba793fe24e5dc43a4d31d2dabf35914e392
+Reviewed-Content-Hash: src/ui/pause_overlay.gd 899ec216249ee2bf5a24b2682179ace53a269bb2

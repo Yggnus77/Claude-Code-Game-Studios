@@ -1,0 +1,141 @@
+{
+  "id": "r01_cruzamento",
+  "name": "Cruzamento",
+  "width": 40,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "########################################",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.....####.............................#",
+    "#.....####.............................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.............................####.....#",
+    "#.............................####.....#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "########################################"
+  ],
+  "doors": [
+    {
+      "id": "door.r00_estrada.r01_cruzamento",
+      "side": "west",
+      "tile": [
+        2,
+        12
+      ],
+      "target_room": "r00_estrada",
+      "target_tile": [
+        37,
+        12
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.r00_estrada.r01_cruzamento",
+      "key_consumption": null
+    },
+    {
+      "id": "door.r01_cruzamento.r02_bomba",
+      "side": "south",
+      "tile": [
+        20,
+        21
+      ],
+      "target_room": "r02_bomba",
+      "target_tile": [
+        16,
+        2
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.r01_cruzamento.r02_bomba",
+      "key_consumption": null
+    },
+    {
+      "id": "door.r01_cruzamento.t00_base",
+      "side": "east",
+      "tile": [
+        37,
+        12
+      ],
+      "target_room": "t00_base",
+      "target_tile": [
+        2,
+        12
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.r01_cruzamento.t00_base",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "r01_cruzamento.soldado_1",
+      "kind": "soldado_corda",
+      "tile": [
+        18,
+        12
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "r01_cruzamento.mariposa_2",
+      "kind": "mariposa_papel",
+      "tile": [
+        25,
+        12
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "r01_cruzamento.pump_b",
+      "kind": "rastejo_tinta",
+      "tile": [
+        5,
+        7
+      ],
+      "trigger_id": "enemy_pump_b",
+      "persistent_receipt": null
+    },
+    {
+      "id": "r01_cruzamento.m01_receipt_pier",
+      "kind": "mystery_clue",
+      "tile": [
+        7,
+        17
+      ],
+      "sets_flag": "clue.m01.via_cais",
+      "persistent_receipt": "clue.r01_cruzamento.m01_receipt_pier"
+    },
+    {
+      "id": "r01_cruzamento.fragment_03",
+      "kind": "unique_fragment",
+      "tile": [
+        11,
+        5
+      ],
+      "collectible_id": "fragment_03",
+      "requires_item": null,
+      "persistent_receipt": "collectible.fragment_03"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}

@@ -1,0 +1,931 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": "nova_partida",
+      "scene": "p00",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "examinar_relogio",
+      "scene": "p01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "decima_terceira_badalada",
+      "scene": "p02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "adally_apresentada",
+      "scene": "p03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "exodia_abre_relogio",
+      "scene": "p04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_entra",
+      "scene": "p05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeira_defesa",
+      "scene": "p06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "tres_amarras_cortadas",
+      "scene": "p07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "ativar_primeiro_marco",
+      "scene": "p08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeiro_rastejo",
+      "scene": "r01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "examinar_argola_sem_gancho",
+      "scene": "r02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_missao_bomba",
+      "scene": "r03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "concluir_missao_bomba",
+      "scene": "r04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeira_loja",
+      "scene": "r05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeiro_encontro_misto",
+      "scene": "r06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "entrar_akurame",
+      "scene": "t01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "examinar_porta_oficina",
+      "scene": "t02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_gancho",
+      "scene": "t03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeiro_gancho_valido",
+      "scene": "t04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "interagir_peso_duplo",
+      "scene": "t05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "examinar_inscricao_sinos",
+      "scene": "t06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "pedir_dica_sinos",
+      "scene": "t07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_igris",
+      "scene": "t08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "igris_primeiro_abafador",
+      "scene": "t09",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "igris_controle_rompido",
+      "scene": "t10",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "igris_escolhe_sair",
+      "scene": "t11",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "melhoria_diapasao",
+      "scene": "t12",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "encontrar_morina",
+      "scene": "m01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "perguntar_sobre_caderno",
+      "scene": "m02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "cancao_compartilhada",
+      "scene": "m03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "revelar_caverna",
+      "scene": "m04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "entrar_comportas",
+      "scene": "c01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeira_mudanca_agua",
+      "scene": "c02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_luvas",
+      "scene": "c03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_escudo_ressonante",
+      "scene": "c04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_custodia",
+      "scene": "c05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "custodia_regulador_exposto",
+      "scene": "c06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "custodia_restaurada",
+      "scene": "c07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_reaparece",
+      "scene": "c08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "ouvir_falsa_morina",
+      "scene": "v01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "revelar_falso_caminho",
+      "scene": "v02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_lanterna",
+      "scene": "v03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "estabilizar_primeira_ponte",
+      "scene": "v04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_devorador",
+      "scene": "v05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "acorde_vivo_descoberto",
+      "scene": "v06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "devorador_imobilizado",
+      "scene": "v07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "ouvir_gravacao_editada",
+      "scene": "v08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "restaurar_gravacao_livia",
+      "scene": "v09",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "adally_protege_gravacao",
+      "scene": "v10",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "exigir_respostas_exodia",
+      "scene": "e01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "alternativa_perigosa",
+      "scene": "e02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "plano_devolucao",
+      "scene": "e03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_lamina_veu",
+      "scene": "e04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "igris_explica_terminais",
+      "scene": "e05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "entrar_agulhas",
+      "scene": "a01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_botas",
+      "scene": "a02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_aracne",
+      "scene": "a03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "terminal_agulhas_ativo",
+      "scene": "a04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "entrar_patio",
+      "scene": "b01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_arco",
+      "scene": "b02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeiro_copista",
+      "scene": "b03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_curador",
+      "scene": "b04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "terminal_vigias_ativo",
+      "scene": "b05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dois_terminais_ativos",
+      "scene": "b06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "morina_entrega_acesso",
+      "scene": "n01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_bloqueia_entrada",
+      "scene": "n02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_dois_vinculos",
+      "scene": "n03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_enigma_nomes",
+      "scene": "n04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_libertado",
+      "scene": "n05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "yame_fica_igris",
+      "scene": "n06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "entrar_arquivo_origem",
+      "scene": "n07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "examinar_canais",
+      "scene": "n08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "oferta_melissa",
+      "scene": "n09",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "adally_recusa_acordo",
+      "scene": "n10",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_camara_controle",
+      "scene": "n11",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "primeiro_regulador_estavel",
+      "scene": "n12",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "plataformas_instaveis",
+      "scene": "n13",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "tres_reguladores_estaveis",
+      "scene": "n14",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "melissa_hesita",
+      "scene": "n15",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "adally_fala_morina",
+      "scene": "n16",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "melissa_pergunta_retorno",
+      "scene": "n17",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "melissa_libera_memorias",
+      "scene": "n18",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "iniciar_fuga",
+      "scene": "n19",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "ultima_fala_melissa",
+      "scene": "n20",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "aurelis_reaparece",
+      "scene": "f01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "mapa_reconstrucao",
+      "scene": "f02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "exodia_assume_responsabilidade",
+      "scene": "f03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "igris_yame_reconstrucao",
+      "scene": "f04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "ler_carta_adally",
+      "scene": "f05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "relogio_final",
+      "scene": "f06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "encomenda_porto_inicio",
+      "scene": "o01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "encomenda_porto_fim",
+      "scene": "o02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "nome_barco_inicio",
+      "scene": "o03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "nome_barco_fim",
+      "scene": "o04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "album_inicio",
+      "scene": "o05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "album_fim",
+      "scene": "o06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "desenhos_morina_fim",
+      "scene": "o07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "instrumento_igris_fim",
+      "scene": "o08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "farol_inicio",
+      "scene": "o09",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "farol_fim",
+      "scene": "o10",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "posto_fim",
+      "scene": "o11",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_gancho",
+      "scene": "h01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_agua",
+      "scene": "h02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_voz",
+      "scene": "h03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_acorde",
+      "scene": "h04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_vento",
+      "scene": "h05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_curador",
+      "scene": "h06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_retratos",
+      "scene": "h07",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "dica_distribuidor",
+      "scene": "h08",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "tentativa_item_sem_energia",
+      "scene": "sys01",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "morrer_primeira_vez",
+      "scene": "sys02",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "obter_fragmento",
+      "scene": "sys03",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "bolsa_cheia",
+      "scene": "sys04",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retorno_sem_igris",
+      "scene": "sys05",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retorno_pos_creditos",
+      "scene": "sys06",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "troco_iniciar",
+      "scene": "x01a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "troco_comparar_pistas",
+      "scene": "x01b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "troco_resolver",
+      "scene": "x01c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "troco_tentativa_incorreta",
+      "scene": "x01d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "quarto_toque_iniciar",
+      "scene": "x02a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "quarto_toque_pistas",
+      "scene": "x02b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "quarto_toque_resolver",
+      "scene": "x02c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "quarto_toque_dica",
+      "scene": "x02d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "lanternas_iniciar",
+      "scene": "x03a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "lanternas_pistas",
+      "scene": "x03b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "lanternas_resolver",
+      "scene": "x03c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "lanternas_dica",
+      "scene": "x03d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retrato_iniciar",
+      "scene": "x04a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retrato_pistas",
+      "scene": "x04b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retrato_resolver",
+      "scene": "x04c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "retrato_dica",
+      "scene": "x04d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "barco_iniciar",
+      "scene": "x05a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "barco_pistas",
+      "scene": "x05b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "barco_resolver",
+      "scene": "x05c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "barco_dica",
+      "scene": "x05d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "frase_iniciar",
+      "scene": "x06a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "frase_pistas",
+      "scene": "x06b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "frase_resolver",
+      "scene": "x06c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "frase_dica",
+      "scene": "x06d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "sombra_iniciar",
+      "scene": "x07a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "sombra_pistas",
+      "scene": "x07b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "sombra_resolver",
+      "scene": "x07c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "sombra_dica",
+      "scene": "x07d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "margem_iniciar",
+      "scene": "x08a",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "margem_pistas",
+      "scene": "x08b",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "margem_resolver",
+      "scene": "x08c",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    },
+    {
+      "id": "margem_dica",
+      "scene": "x08d",
+      "emitted_by": "world_or_quest_controller",
+      "rule": "Emit only when actual interaction/outcome occurs; dialogue ends commit effects."
+    }
+  ],
+  "world_facts": [
+    "world.guards_clear",
+    "world.weight_locked",
+    "world.bells_solved",
+    "world.encomenda_entregue",
+    "world.nome_barco_confirmado",
+    "world.album_tres_fotos",
+    "world.desenhos_reunidos",
+    "world.instrumento_entregue",
+    "world.farol_alinhado",
+    "world.posto_restaurado",
+    "clue.m01.recibo_mercado",
+    "clue.m01.via_cais",
+    "clue.m01.carimbo_doacao",
+    "clue.m02.placa_chamado",
+    "clue.m02.tubo_bronze",
+    "clue.m02.registro_pausa",
+    "clue.m03.marca_desgaste",
+    "clue.m03.altura_agua",
+    "clue.m03.espelho_lanterna",
+    "clue.m04.reflexo_tres_arcos",
+    "clue.m04.data_inauguracao",
+    "clue.m04.placa_abrigo",
+    "clue.m05.diario_farol",
+    "clue.m05.registro_cais",
+    "clue.m05.espelho_recife",
+    "clue.m06.revisao_01",
+    "clue.m06.revisao_02",
+    "clue.m06.registro_independente",
+    "clue.m07.bobina_sem_energia",
+    "clue.m07.desenho_duas_travas",
+    "clue.m07.mola_carregada",
+    "clue.m08.pagina_esquerda",
+    "clue.m08.pagina_direita",
+    "clue.m08.arcos_da_luz",
+    "mystery.m01.solved",
+    "mystery.m02.solved",
+    "mystery.m03.solved",
+    "mystery.m04.solved",
+    "mystery.m05.solved",
+    "mystery.m06.solved",
+    "mystery.m07.solved",
+    "mystery.m08.solved"
+  ]
+}

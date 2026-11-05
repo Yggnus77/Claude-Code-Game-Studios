@@ -1,0 +1,135 @@
+{
+  "id": "v01_praca",
+  "name": "Praça de Versalhes",
+  "width": 40,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "########################################",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.....####.............................#",
+    "#.....####.............................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.............................####.....#",
+    "#.............................####.....#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "########################################"
+  ],
+  "doors": [
+    {
+      "id": "door.v00_oficina.v01_praca",
+      "side": "west",
+      "tile": [
+        2,
+        12
+      ],
+      "target_room": "v00_oficina",
+      "target_tile": [
+        21,
+        9
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.v00_oficina.v01_praca",
+      "key_consumption": null
+    },
+    {
+      "id": "door.v01_praca.r00_estrada",
+      "side": "east",
+      "tile": [
+        37,
+        12
+      ],
+      "target_room": "r00_estrada",
+      "target_tile": [
+        2,
+        12
+      ],
+      "gate": "seen.p07",
+      "unlock_persistent_flag": "open.door.v01_praca.r00_estrada",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "v01_praca.marco_v",
+      "kind": "checkpoint",
+      "tile": [
+        10,
+        10
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "v01_praca.merchant",
+      "kind": "npc",
+      "tile": [
+        24,
+        7
+      ],
+      "trigger_id": "primeira_loja",
+      "persistent_receipt": null
+    },
+    {
+      "id": "v01_praca.m01_receipt_market",
+      "kind": "mystery_clue",
+      "tile": [
+        21,
+        7
+      ],
+      "sets_flag": "clue.m01.recibo_mercado",
+      "persistent_receipt": "clue.v01_praca.m01_receipt_market"
+    },
+    {
+      "id": "v01_praca.m01_delivery_mark",
+      "kind": "mystery_clue",
+      "tile": [
+        25,
+        15
+      ],
+      "sets_flag": "clue.m01.carimbo_doacao",
+      "persistent_receipt": "clue.v01_praca.m01_delivery_mark"
+    },
+    {
+      "id": "v01_praca.fragment_01",
+      "kind": "unique_fragment",
+      "tile": [
+        31,
+        8
+      ],
+      "collectible_id": "fragment_01",
+      "requires_item": "gancho_retorno",
+      "persistent_receipt": "collectible.fragment_01"
+    },
+    {
+      "id": "v01_praca.reserva_viagem",
+      "kind": "chest",
+      "tile": [
+        7,
+        17
+      ],
+      "persistent_receipt": "loot.v01_praca.reserva_viagem",
+      "trigger_id": "loot_reserva_viagem"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}
