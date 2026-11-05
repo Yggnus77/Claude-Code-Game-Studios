@@ -31,6 +31,12 @@ func _ready() -> void:
 	_banner.add_theme_font_size_override("font_size", 16)
 	_banner.visible = false
 	add_child(_banner)
+	var hint := Label.new()
+	hint.text = "WASD andar · J espada · Espaço esquiva · Shift defesa · R reinicia a sala · Esc pausa"
+	hint.add_theme_font_size_override("font_size", 9)
+	hint.modulate = Color(1, 1, 1, 0.7)
+	hint.position = Vector2(6, 342)
+	add_child(hint)
 
 
 ## Follows [param health]'s changes.

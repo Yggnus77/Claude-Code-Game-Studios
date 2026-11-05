@@ -98,6 +98,12 @@ func _physics_process(delta: float) -> void:
 			player.request_attack()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	# Playtest helper: brings the room's enemies back and the player to the entry.
+	if event.is_action_pressed("reset_room") and not player.is_dead():
+		load_room(room_id)
+
+
 func _on_player_died() -> void:
 	if hud:
 		hud.show_banner("Yggnus caiu")

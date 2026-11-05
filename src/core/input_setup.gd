@@ -19,6 +19,7 @@ const KEYS := {
 	"quick_swap": [KEY_Q],
 	"map": [KEY_TAB],
 	"pause": [KEY_ESCAPE],
+	"reset_room": [KEY_R],
 }
 
 const BUTTONS := {
