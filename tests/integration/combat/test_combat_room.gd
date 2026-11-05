@@ -34,7 +34,7 @@ func test_swing_hits_enemy_once_and_two_swings_defeat_it() -> void:
 	await _frames(25)
 	assert_eq(e.health.current, 1, "one swing removes exactly 1 of 2 life")
 	var defeated := [false]
-	e.defeated.connect(func(_x: Rastejo) -> void: defeated[0] = true)
+	e.defeated.connect(func(_x: EnemyBase) -> void: defeated[0] = true)
 	p.request_attack()
 	await _frames(25)
 	assert_true(defeated[0], "second swing defeats it")

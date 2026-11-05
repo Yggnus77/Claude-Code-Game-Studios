@@ -7,7 +7,7 @@ Engine: Godot 4.7.2.stable.official.ed1daf0bf (Linux, Xvfb, opengl3).
 
 ## Testes automatizados
 
-`godot --headless --path . -s res://tests/run_tests.gd` → **35 passed, 0 failed** (2026-11-05).
+`godot --headless --path . -s res://tests/run_tests.gd` → **42 passed, 0 failed** (2026-11-05). O executor agora reprova um teste que gere erro de script ou de engine.
 
 | Critério da etapa | Teste |
 |---|---|
@@ -19,6 +19,10 @@ Engine: Godot 4.7.2.stable.official.ed1daf0bf (Linux, Xvfb, opengl3).
 | Esquiva: invulnerável só entre 0,03 e 0,15 s, ~50,6 px, recarga de 0,65 s | `test_dodge_guard::test_dodge_*` |
 | Defesa precisa de 0,11 s e nova tentativa só após 0,25 s | `test_dodge_guard::test_perfect_window_and_retrigger` |
 | Morte devolve ao início da sala com vida cheia | `test_combat_room::test_death_respawns_with_full_life` |
+| Mariposa só leva golpe pousada; um mergulho tira 1 de vida | `test_enemies::test_mariposa_*` |
+| Soldado não é interrompido ao erguer a espada; defesa de frente bloqueia o corte | `test_enemies::test_soldado_*` |
+| Guarda pode ser vencido sem gancho (abertura de 0,7 s após a pancada, só pelas laterais e costas) | `test_enemies::test_guarda_shield_blocks_until_slam_opening`, `test_guarda_can_be_beaten_without_hook` |
+| Pancada do Guarda quebra a defesa e tira 1 em vez de 2 | `test_enemies::test_guarda_slam_breaks_guard` |
 
 ## Execução observada (Movie Maker, 640×360)
 
@@ -33,6 +37,14 @@ godot --path . --windowed --resolution 1280x720 --write-movie c.png --quit-after
 - `3_espada_acerta_rastejo.png` (quadro 133): a espada acerta e o Rastejo fica branco; a barra mostra 5/6.
 - `4_rastejo_derrotado.png` (quadro 175): o Rastejo sumiu depois do segundo golpe.
 
+Segunda gravação, sala `t00_base` com Mariposa, Soldado e Guarda (`--spawn=...`):
+
+- `5_soldado_ergue_espada.png` (quadro 108): espada erguida e área do corte marcada.
+- `6_soldado_corta.png` (quadro 135): o corte.
+- `7_guarda_ergue_contrapeso.png` (quadro 234): contrapeso erguido, área da pancada no chão.
+- `8_guarda_pancada.png` (quadro 243): a pancada acerta Yggnus.
+- `9_mariposa_voando.png` (quadro 120): Mariposa no ar, com sombra no chão.
+
 ## Valores novos (propostos, para ajustar em teste)
 
 O kit não definia a investida do Rastejo em números. Acrescentei em `inimigos.json`:
@@ -42,6 +54,9 @@ investida a 150 px/s por 0,35 s (~52 px), atordoamento de 0,2 s e recuo de 10 px
 ## Não verificado ainda
 
 - Sensação: pausa de impacto (0,035 s), tremor de câmera e sons ficaram para depois.
-- Mariposa, Soldado e Guarda (o plano os adiciona depois do primeiro inimigo).
 - Defesa precisa só muda a cor do escudo: ainda não há pulsos para redirecionar.
 - Diretor de encontro (limite de ataques simultâneos): só faz diferença com vários inimigos.
+
+Mariposa, Soldado e Guarda também ganharam números propostos em `inimigos.json`: distâncias de
+percepção e ataque, velocidade e duração do mergulho, alcance do corte, raio da pancada (22 px),
+velocidade de giro do escudo do Guarda e abertura pelo gancho (1,2 s, para quando o gancho existir).

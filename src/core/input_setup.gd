@@ -20,6 +20,10 @@ const KEYS := {
 	"map": [KEY_TAB],
 	"pause": [KEY_ESCAPE],
 	"reset_room": [KEY_R],
+	"spawn_1": [KEY_1],
+	"spawn_2": [KEY_2],
+	"spawn_3": [KEY_3],
+	"spawn_4": [KEY_4],
 }
 
 const BUTTONS := {

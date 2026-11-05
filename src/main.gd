@@ -1,6 +1,6 @@
 extends Node2D
 ## Entry scene: loads one prototype room, places Yggnus at its entry and spawns
-## the enemies the room lists (only the Rastejo exists so far).
+## the enemies the room lists (Rastejo, Mariposa, Soldado and Guarda so far).
 ## Command-line user args (after `--`):
 ##   --room=<id>              open another prototype room;
 ##   --autowalk=<x>,<y>       hold that movement input (for recorded evidence runs);
@@ -12,8 +12,13 @@ const DEFAULT_ROOM := "r00_estrada"
 ## Seconds between death and returning to the room entry.
 const RESPAWN_DELAY := 1.2
 ## Enemy kinds that have an implementation, by inimigos.json id.
+## Playtest keys 1–4 spawn these enemies near the player.
+const SPAWN_KEYS := ["rastejo_tinta", "mariposa_papel", "soldado_corda", "guarda_contrapeso"]
 const ENEMY_SCRIPTS := {
 	"rastejo_tinta": preload("res://src/enemies/rastejo.gd"),
+	"mariposa_papel": preload("res://src/enemies/mariposa.gd"),
+	"soldado_corda": preload("res://src/enemies/soldado.gd"),
+	"guarda_contrapeso": preload("res://src/enemies/guarda.gd"),
 }
 
 var config: GameConfig
@@ -102,6 +107,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Playtest helper: brings the room's enemies back and the player to the entry.
 	if event.is_action_pressed("reset_room") and not player.is_dead():
 		load_room(room_id)
+	for i in SPAWN_KEYS.size():
+		if event.is_action_pressed("spawn_%d" % (i + 1)):
+			spawn_near_player(SPAWN_KEYS[i])
+
+
+## Playtest helper: spawns [param kind] about five tiles from the player,
+## on the first free floor tile found to the right, left, below or above.
+func spawn_near_player(kind: String) -> Node:
+	var data := room.data
+	var here := Vector2i(player.global_position / data.tile_size)
+	for dir in [Vector2i.RIGHT, Vector2i.LEFT, Vector2i.DOWN, Vector2i.UP]:
+		var tile: Vector2i = here + dir * 5
+		if data.is_walkable(tile):
+			return spawn_enemy(kind, tile)
+	return null
 
 
 func _on_player_died() -> void:

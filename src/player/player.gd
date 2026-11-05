@@ -245,4 +245,7 @@ func _draw() -> void:
 		var box := sword_rect()
 		box.position -= global_position
 		var col := COLOR_SWORD if combo.is_active() else Color(COLOR_SWORD, 0.3)
-		draw_rect(box, col, combo.is_active(), 1.0)
+		if combo.is_active():
+			draw_rect(box, col)
+		else:
+			draw_rect(box, col, false, 1.0)
