@@ -1,0 +1,599 @@
+{
+  "schema_version": 1,
+  "relic_slots": 1,
+  "equip_only_outside_combat": true,
+  "mysteries": [
+    {
+      "id": "m01",
+      "title": "O troco da décima terceira venda",
+      "location": "Versalhes, depois de Igris",
+      "requires_flags": [
+        "seen.t11"
+      ],
+      "clues": [
+        {
+          "id": "clue.m01.recibo_mercado",
+          "label": "recibo mercado",
+          "required": true
+        },
+        {
+          "id": "clue.m01.via_cais",
+          "label": "via cais",
+          "required": true
+        },
+        {
+          "id": "clue.m01.carimbo_doacao",
+          "label": "carimbo doacao",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "doacao_antes_da_venda",
+      "on_correct_set_flag": "mystery.m01.solved",
+      "wrong_answer_scene": "x01d",
+      "comparison_scene": "x01b",
+      "reward_scene": "x01c",
+      "hints": [
+        "Compare o recibo da entrega com a via do balcão.",
+        "Os carimbos não são nomes. Um deles indica doação.",
+        "Escolha: a promessa de doação veio antes da cobrança."
+      ],
+      "rewards": {
+        "bronze": 30,
+        "relic_id": "selo_restaurador"
+      },
+      "relic_modifiers": {
+        "healing.startup": 0.55,
+        "healing.recovery": 0.3
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "O carimbo de entrega e os horários mostram que o pão já havia sido prometido como doação. O comerciante registra o erro e envia a reserva à cozinha do porto; o jogador não fica com dinheiro de um desconhecido.",
+      "story_purpose": "Não adivinhar o nome ausente. Comparar evidências públicas e devolver ao contexto certo.",
+      "prototype_scope": true,
+      "submit_requires_all_flags": [
+        "clue.m01.recibo_mercado",
+        "clue.m01.via_cais",
+        "clue.m01.carimbo_doacao",
+        "seen.x01a"
+      ],
+      "answer_options": [
+        {
+          "id": "cobranca_mais_antiga",
+          "text": "Considerar apenas a via de cobrança."
+        },
+        {
+          "id": "doacao_antes_da_venda",
+          "text": "Reconhecer a doação prometida antes da venda."
+        },
+        {
+          "id": "esperar_nome_retornar",
+          "text": "Tratar a ausência do nome como única prova necessária."
+        }
+      ]
+    },
+    {
+      "id": "m02",
+      "title": "O quarto toque de Akurame",
+      "location": "Torre Akurame, depois da libertação",
+      "requires_flags": [
+        "seen.t11"
+      ],
+      "clues": [
+        {
+          "id": "clue.m02.placa_chamado",
+          "label": "placa chamado",
+          "required": true
+        },
+        {
+          "id": "clue.m02.tubo_bronze",
+          "label": "tubo bronze",
+          "required": true
+        },
+        {
+          "id": "clue.m02.registro_pausa",
+          "label": "registro pausa",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "chamado_resposta_pausa",
+      "on_correct_set_flag": "mystery.m02.solved",
+      "wrong_answer_scene": "x02d",
+      "comparison_scene": "x02b",
+      "reward_scene": "x02c",
+      "hints": [
+        "Procure uma forma de resposta além dos sinos.",
+        "A placa mostra uma pausa longa entre chamado e resposta.",
+        "Escolha a sequência chamado → resposta → pausa; o mecanismo representa a espera."
+      ],
+      "rewards": {
+        "bronze": 50,
+        "relic_id": "mola_retorno"
+      },
+      "relic_modifiers": {
+        "hook.return_cooldown": 0.25
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Examinar o tubo de manutenção, repetir o primeiro chamado e selecionar a pausa longa. O quarto toque é a resposta do canal dos trabalhadores, não um sino escondido.",
+      "story_purpose": "O silêncio fazia parte da mensagem. O chamado significava estamos aqui; Igris pode responder por escolha.",
+      "prototype_scope": true,
+      "submit_requires_all_flags": [
+        "clue.m02.placa_chamado",
+        "clue.m02.tubo_bronze",
+        "clue.m02.registro_pausa",
+        "seen.x02a"
+      ],
+      "answer_options": [
+        {
+          "id": "procurar_quarto_sino",
+          "text": "Procurar um quarto sino escondido."
+        },
+        {
+          "id": "chamado_resposta_pausa",
+          "text": "Relacionar o chamado, a resposta e a pausa do tubo."
+        },
+        {
+          "id": "quatro_toques_rapidos",
+          "text": "Fazer quatro toques rápidos sem intervalo."
+        }
+      ]
+    },
+    {
+      "id": "m03",
+      "title": "As lanternas que olham para trás",
+      "location": "Comportas, retorno após obter a lanterna",
+      "requires_flags": [
+        "seen.c07",
+        "seen.v03"
+      ],
+      "clues": [
+        {
+          "id": "clue.m03.marca_desgaste",
+          "label": "marca desgaste",
+          "required": true
+        },
+        {
+          "id": "clue.m03.altura_agua",
+          "label": "altura agua",
+          "required": true
+        },
+        {
+          "id": "clue.m03.espelho_lanterna",
+          "label": "espelho lanterna",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "ler_reflexo_nivel_baixo",
+      "on_correct_set_flag": "mystery.m03.solved",
+      "wrong_answer_scene": "x03d",
+      "comparison_scene": "x03b",
+      "reward_scene": "x03c",
+      "hints": [
+        "O desgaste do chão discorda das setas vistas de cima.",
+        "Examine o canal no nível baixo.",
+        "Leia as setas pela reflexão da água e escolha a passagem do abrigo."
+      ],
+      "rewards": {
+        "bronze": 70,
+        "relic_id": "fivela_lastro"
+      },
+      "relic_modifiers": {
+        "player.knockback_max": 12,
+        "player.speed": 104
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Baixar a água, observar as setas pelo espelho do canal e seguir o desgaste do piso. O abrigo contém o registro completo de saída da equipe.",
+      "story_purpose": "Um registro incompleto não deve ser tomado como prova de uma morte. A equipe saiu antes do apagamento.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m03.marca_desgaste",
+        "clue.m03.altura_agua",
+        "clue.m03.espelho_lanterna",
+        "seen.x03a"
+      ],
+      "answer_options": [
+        {
+          "id": "seguir_setas_frente",
+          "text": "Seguir as setas como são vistas da passarela."
+        },
+        {
+          "id": "ler_reflexo_nivel_baixo",
+          "text": "Ler as setas refletidas com a água baixa."
+        },
+        {
+          "id": "subir_agua_ao_limite",
+          "text": "Subir a água ao limite antes de examinar o corredor."
+        }
+      ]
+    },
+    {
+      "id": "m04",
+      "title": "O retrato que não pede um rosto",
+      "location": "Casa do álbum e cais, depois da caverna",
+      "requires_flags": [
+        "seen.v10"
+      ],
+      "clues": [
+        {
+          "id": "clue.m04.reflexo_tres_arcos",
+          "label": "reflexo tres arcos",
+          "required": true
+        },
+        {
+          "id": "clue.m04.data_inauguracao",
+          "label": "data inauguracao",
+          "required": true
+        },
+        {
+          "id": "clue.m04.placa_abrigo",
+          "label": "placa abrigo",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "inauguracao_do_abrigo",
+      "on_correct_set_flag": "mystery.m04.solved",
+      "wrong_answer_scene": "x04d",
+      "comparison_scene": "x04b",
+      "reward_scene": "x04c",
+      "hints": [
+        "A janela pode ser identificada mesmo sem o rosto.",
+        "Compare os três arcos do reflexo com os prédios do cais.",
+        "Escolha o abrigo e a data de inauguração; não escolha uma pessoa."
+      ],
+      "rewards": {
+        "bronze": 60,
+        "relic_id": "bussola_aurelis"
+      },
+      "relic_modifiers": {
+        "exploration.unique_pickup_sense_radius": 48
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Relacionar os três arcos da janela à placa de inauguração do abrigo. A foto guardava a memória de um lugar acolhedor; não é necessário inventar o rosto.",
+      "story_purpose": "Recuperar algo verdadeiro e aceitar o que ainda falta. A foto permanece incompleta por decisão da dona.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m04.reflexo_tres_arcos",
+        "clue.m04.data_inauguracao",
+        "clue.m04.placa_abrigo",
+        "seen.x04a"
+      ],
+      "answer_options": [
+        {
+          "id": "inauguracao_do_abrigo",
+          "text": "Identificar a inauguração do abrigo pelo reflexo e pela data."
+        },
+        {
+          "id": "escolher_rosto_pela_roupa",
+          "text": "Escolher uma pessoa pela roupa da fotografia."
+        },
+        {
+          "id": "data_aniversario",
+          "text": "Tratar a data como aniversário sem consultar a placa."
+        }
+      ]
+    },
+    {
+      "id": "m05",
+      "title": "O barco que chega antes da luz",
+      "location": "Farol, após obter botas e arco ou com retorno posterior",
+      "requires_flags": [
+        "seen.a02",
+        "seen.b02"
+      ],
+      "clues": [
+        {
+          "id": "clue.m05.diario_farol",
+          "label": "diario farol",
+          "required": true
+        },
+        {
+          "id": "clue.m05.registro_cais",
+          "label": "registro cais",
+          "required": true
+        },
+        {
+          "id": "clue.m05.espelho_recife",
+          "label": "espelho recife",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "reflexo_da_luz_servico",
+      "on_correct_set_flag": "mystery.m05.solved",
+      "wrong_answer_scene": "x05d",
+      "comparison_scene": "x05b",
+      "reward_scene": "x05c",
+      "hints": [
+        "Os registros marcam ações diferentes, não uma única hora.",
+        "Procure de onde veio a primeira luz.",
+        "Escolha o reflexo da janela de serviço e ordene aviso → reflexo → chegada."
+      ],
+      "rewards": {
+        "bronze": 100,
+        "relic_id": "lente_mare"
+      },
+      "relic_modifiers": {
+        "exploration.read_radius": 112
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Alinhar o espelho do recife e comparar aviso, reflexão e chegada. A luz de serviço produzia o sinal antecipado; os registros descreviam acontecimentos diferentes.",
+      "story_purpose": "Corrigir uma interpretação sem apagar o erro que permitiu descobri-la. Não usar relógio real ou espera longa.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m05.diario_farol",
+        "clue.m05.registro_cais",
+        "clue.m05.espelho_recife",
+        "seen.x05a"
+      ],
+      "answer_options": [
+        {
+          "id": "relogio_farol_adiantado",
+          "text": "Concluir que o relógio estava adiantado."
+        },
+        {
+          "id": "reflexo_da_luz_servico",
+          "text": "Identificar o reflexo da luz de serviço como primeiro sinal."
+        },
+        {
+          "id": "registro_cais_apagado",
+          "text": "Descartar o registro do cais por ser diferente do diário."
+        }
+      ]
+    },
+    {
+      "id": "m06",
+      "title": "A frase que o Copista não consegue repetir",
+      "location": "Arquivo das Vigias, depois da confissão e do arco",
+      "requires_flags": [
+        "seen.e05",
+        "seen.b02"
+      ],
+      "clues": [
+        {
+          "id": "clue.m06.revisao_01",
+          "label": "revisao 01",
+          "required": true
+        },
+        {
+          "id": "clue.m06.revisao_02",
+          "label": "revisao 02",
+          "required": true
+        },
+        {
+          "id": "clue.m06.registro_independente",
+          "label": "registro independente",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "distribuir_antes_interromper",
+      "on_correct_set_flag": "mystery.m06.solved",
+      "wrong_answer_scene": "x06d",
+      "comparison_scene": "x06b",
+      "reward_scene": "x06c",
+      "hints": [
+        "A assinatura igual não torna os textos idênticos.",
+        "Confira os números dos selos e uma fonte independente.",
+        "Ordene as revisões e selecione distribuir antes de interromper."
+      ],
+      "rewards": {
+        "bronze": 90,
+        "relic_id": "afinador_eco"
+      },
+      "relic_modifiers": {
+        "magic.pulso.cost": 8,
+        "magic.pulso.cooldown": 1.3
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Ordenar selos de revisão e comparar com o registro independente de manutenção. A instrução original é distribuir antes de interromper; a mais recente foi adulterada.",
+      "story_purpose": "A origem de uma prova importa. O documento público esclarece o sistema sem expor a gravação privada de Lívia.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m06.revisao_01",
+        "clue.m06.revisao_02",
+        "clue.m06.registro_independente",
+        "seen.x06a"
+      ],
+      "answer_options": [
+        {
+          "id": "ultimo_texto_correto",
+          "text": "Escolher automaticamente a revisão mais recente."
+        },
+        {
+          "id": "distribuir_antes_interromper",
+          "text": "Confirmar a instrução original com o registro independente."
+        },
+        {
+          "id": "assinatura_basta",
+          "text": "Aceitar qualquer versão porque a assinatura é a mesma."
+        }
+      ]
+    },
+    {
+      "id": "m07",
+      "title": "A sombra que esperou uma resposta",
+      "location": "Posto anexo à comporta do Núcleo, depois de libertar Yame",
+      "requires_flags": [
+        "seen.n06"
+      ],
+      "clues": [
+        {
+          "id": "clue.m07.bobina_sem_energia",
+          "label": "bobina sem energia",
+          "required": true
+        },
+        {
+          "id": "clue.m07.desenho_duas_travas",
+          "label": "desenho duas travas",
+          "required": true
+        },
+        {
+          "id": "clue.m07.mola_carregada",
+          "label": "mola carregada",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "duas_travas_com_sinal",
+      "on_correct_set_flag": "mystery.m07.solved",
+      "wrong_answer_scene": "x07d",
+      "comparison_scene": "x07b",
+      "reward_scene": "x07c",
+      "hints": [
+        "Movimento não significa necessariamente uma memória presa.",
+        "A placa exige duas travas abertas ao mesmo tempo.",
+        "Prepare sua trava e selecione esperar o sinal de Yame Black."
+      ],
+      "rewards": {
+        "bronze": 80,
+        "relic_id": "broche_vigilia"
+      },
+      "relic_modifiers": {
+        "guard.perfect_window": 0.13
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Examinar a mola carregada, preparar as duas travas e esperar o sinal voluntário de Yame. Igris e a criatura soltam o conjunto em cooperação.",
+      "story_purpose": "O mistério não esconde outra pessoa aprisionada. A solução mostra a relação que Igris e Yame escolheram construir.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m07.bobina_sem_energia",
+        "clue.m07.desenho_duas_travas",
+        "clue.m07.mola_carregada",
+        "seen.x07a"
+      ],
+      "answer_options": [
+        {
+          "id": "ligar_rede",
+          "text": "Religar a rede antes de examinar a mola."
+        },
+        {
+          "id": "duas_travas_com_sinal",
+          "text": "Preparar as duas travas e esperar o sinal voluntário."
+        },
+        {
+          "id": "soltar_uma_trava",
+          "text": "Soltar só a primeira trava e esperar que a outra acompanhe."
+        }
+      ]
+    },
+    {
+      "id": "m08",
+      "title": "A margem que Morina deixou em branco",
+      "location": "Vestígio de acesso ao observatório, depois das duas rotas",
+      "requires_flags": [
+        "seen.b06",
+        "seen.n01"
+      ],
+      "clues": [
+        {
+          "id": "clue.m08.pagina_esquerda",
+          "label": "pagina esquerda",
+          "required": true
+        },
+        {
+          "id": "clue.m08.pagina_direita",
+          "label": "pagina direita",
+          "required": true
+        },
+        {
+          "id": "clue.m08.arcos_da_luz",
+          "label": "arcos da luz",
+          "required": true
+        }
+      ],
+      "steps": [
+        "offered",
+        "collect_three_clues",
+        "compare",
+        "submit_answer",
+        "claim_reward"
+      ],
+      "correct_answer_id": "alinhar_com_margem",
+      "on_correct_set_flag": "mystery.m08.solved",
+      "wrong_answer_scene": "x08d",
+      "comparison_scene": "x08b",
+      "reward_scene": "x08c",
+      "hints": [
+        "O espaço em branco aparece nas duas páginas.",
+        "Compare os arcos sem encostar as folhas.",
+        "Mantenha a faixa vazia e alinhe os arcos da luz."
+      ],
+      "rewards": {
+        "bronze": 120,
+        "relic_id": "anel_calibracao"
+      },
+      "relic_modifiers": {
+        "magic.pulso.radius": 50,
+        "magic.pulso.cost": 12
+      },
+      "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
+      "solution": "Encaixar as páginas na Matrix sem encostar suas bordas. A margem deixa a luz mostrar uma alavanca e revela o vestígio de um abrigo preservado fora do canal central.",
+      "story_purpose": "Deixar uma lacuna pode ser mais fiel do que preenchê-la. Não restaura Aurélis antes do final e não revela a sorte de Melissa.",
+      "prototype_scope": false,
+      "submit_requires_all_flags": [
+        "clue.m08.pagina_esquerda",
+        "clue.m08.pagina_direita",
+        "clue.m08.arcos_da_luz",
+        "seen.x08a"
+      ],
+      "answer_options": [
+        {
+          "id": "encostar_folhas",
+          "text": "Encostar as bordas das duas folhas."
+        },
+        {
+          "id": "alinhar_com_margem",
+          "text": "Alinhar os arcos mantendo a faixa vazia."
+        },
+        {
+          "id": "preencher_faixa",
+          "text": "Preencher a faixa em branco como se fosse uma parede."
+        }
+      ]
+    }
+  ]
+}

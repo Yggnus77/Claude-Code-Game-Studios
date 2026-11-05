@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bjr3tlmp11mfs"
+
+[deps]
+
+files=["res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation"]
+
+source_file="res://design/kit/plantas/t05_sinos.csv"
+dest_files=["res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation", "res://design/kit/plantas/t05_sinos.#.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

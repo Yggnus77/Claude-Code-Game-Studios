@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "coordinate_convention": "tile [column,row], origin top-left; pixel center = tile*16+8",
+  "rooms": [
+    "v00_oficina",
+    "v01_praca",
+    "r00_estrada",
+    "r01_cruzamento",
+    "r02_bomba",
+    "t00_base",
+    "t01_guardas",
+    "t02_oficina",
+    "t03_treino",
+    "t04_pesos",
+    "t05_sinos",
+    "t06_marco",
+    "t07_igris"
+  ],
+  "entry_room": "v00_oficina",
+  "links": [
+    {
+      "from": "v00_oficina",
+      "to": "v01_praca",
+      "gate": null
+    },
+    {
+      "from": "v01_praca",
+      "to": "r00_estrada",
+      "gate": "seen.p07"
+    },
+    {
+      "from": "r00_estrada",
+      "to": "r01_cruzamento",
+      "gate": null
+    },
+    {
+      "from": "r01_cruzamento",
+      "to": "r02_bomba",
+      "gate": null
+    },
+    {
+      "from": "r01_cruzamento",
+      "to": "t00_base",
+      "gate": null
+    },
+    {
+      "from": "t00_base",
+      "to": "t01_guardas",
+      "gate": "key:key_ak_base"
+    },
+    {
+      "from": "t01_guardas",
+      "to": "t02_oficina",
+      "gate": "world.guards_clear"
+    },
+    {
+      "from": "t01_guardas",
+      "to": "t03_treino",
+      "gate": "item:gancho_retorno"
+    },
+    {
+      "from": "t03_treino",
+      "to": "t04_pesos",
+      "gate": null
+    },
+    {
+      "from": "t04_pesos",
+      "to": "t05_sinos",
+      "gate": "world.weight_locked"
+    },
+    {
+      "from": "t05_sinos",
+      "to": "t06_marco",
+      "gate": "world.bells_solved"
+    },
+    {
+      "from": "t06_marco",
+      "to": "t07_igris",
+      "gate": null
+    },
+    {
+      "from": "t07_igris",
+      "to": "t00_base",
+      "gate": "seen.t11"
+    }
+  ],
+  "key_source": {
+    "key_ak_base": "t00_base.ak_key"
+  },
+  "room_data_relative_to": "../mapas/"
+}

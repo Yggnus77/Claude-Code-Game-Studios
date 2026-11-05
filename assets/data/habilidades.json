@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "abilities": [
+    {
+      "id": "pulso_eco",
+      "combat_cost": 10,
+      "startup": 0.16,
+      "cooldown": 1.0,
+      "radius_or_range": 44,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "fio_ancora",
+      "combat_cost": 15,
+      "startup": 0.18,
+      "cooldown": 1.4,
+      "radius_or_range": 80,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "lanterna_lembrancas",
+      "combat_cost": 8,
+      "startup": 0.12,
+      "cooldown": 0.8,
+      "radius_or_range": 80,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "veu_protecao",
+      "combat_cost": 25,
+      "startup": 0.2,
+      "cooldown": 0.5,
+      "radius_or_range": 0,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "leitura_vestigios",
+      "combat_cost": 0,
+      "startup": 0,
+      "cooldown": 0,
+      "radius_or_range": 80,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "acorde_vivo",
+      "combat_cost": 0,
+      "startup": 0,
+      "cooldown": 0,
+      "radius_or_range": 0,
+      "puzzle_cost": 0,
+      "use_case": "gameplay"
+    },
+    {
+      "id": "retorno_memorias",
+      "combat_cost": 0,
+      "startup": 0,
+      "cooldown": 0,
+      "radius_or_range": 0,
+      "puzzle_cost": 0,
+      "use_case": "narrative"
+    }
+  ]
+}

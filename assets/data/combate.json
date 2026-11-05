@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "units": {
+    "distance": "logical_pixels",
+    "time": "seconds",
+    "damage": "integer_points"
+  },
+  "physics_hz": 60,
+  "logical_viewport": [
+    640,
+    360
+  ],
+  "tile_size": 16,
+  "player": {
+    "speed": 110,
+    "acceleration": 1400,
+    "deceleration": 1800,
+    "sprite_frame": [
+      32,
+      48
+    ],
+    "foot_collision": [
+      12,
+      10
+    ],
+    "input_buffer": 0.12,
+    "damage_invulnerability": 0.75,
+    "hitstun": 0.18
+  },
+  "combo": [
+    {
+      "startup": 0.09,
+      "active": 0.08,
+      "recovery": 0.16,
+      "damage": 1,
+      "range": 22
+    },
+    {
+      "startup": 0.1,
+      "active": 0.08,
+      "recovery": 0.18,
+      "damage": 1,
+      "range": 23
+    },
+    {
+      "startup": 0.16,
+      "active": 0.1,
+      "recovery": 0.28,
+      "damage": 2,
+      "range": 25
+    }
+  ],
+  "weapons": {
+    "espada_oficina": [
+      1,
+      1,
+      2
+    ],
+    "espada_diapasao": [
+      2,
+      2,
+      3
+    ],
+    "lamina_ancora": [
+      3,
+      3,
+      4
+    ]
+  },
+  "dodge": {
+    "duration": 0.22,
+    "speed": 230,
+    "invulnerability_start": 0.03,
+    "invulnerability_end": 0.15,
+    "cooldown_from_start": 0.65,
+    "cost": 0,
+    "repeat_on_hold": false
+  },
+  "guard": {
+    "angle_degrees": 100,
+    "speed_factor": 0.45,
+    "perfect_window": 0.11,
+    "minimum_retrigger": 0.25,
+    "heavy_guard_damage": 1,
+    "guard_break": 0.45
+  },
+  "hook": {
+    "range": 112,
+    "startup": 0.1,
+    "tip_speed": 360,
+    "return_cooldown": 0.35,
+    "speed_factor": 0.35,
+    "cost": 0,
+    "guard_exposure": 1.2
+  },
+  "magic_costs": {
+    "pulso_eco": 10,
+    "fio_combat": 15,
+    "fio_puzzle": 0,
+    "lanterna_combat": 8,
+    "lanterna_reading": 0,
+    "veu_protecao": 25,
+    "leitura": 0,
+    "acorde_vivo": 0
+  },
+  "healing": {
+    "life_restored": 3,
+    "startup": 0.65,
+    "recovery": 0.2,
+    "movement_factor": 0.25,
+    "consume_at": "effect_frame",
+    "consume_at_full_life": false
+  },
+  "encounter_budget": {
+    "melee_attack_tokens": 1,
+    "ranged_attack_tokens": 1,
+    "elite_consumes_melee_token": true
+  },
+  "difficulties": {
+    "aventureiro": {
+      "telegraph_factor": 1.0,
+      "recovery_factor": 1.0,
+      "damage_factor": 1.0
+    },
+    "veterano": {
+      "telegraph_factor": 0.85,
+      "telegraph_floor": 0.45,
+      "recovery_factor": 0.9,
+      "damage_factor": 1.0
+    }
+  },
+  "note": "Initial tuning targets; actual input latency, balance and enjoyment require an implemented build and playtests."
+}

@@ -1,0 +1,78 @@
+{
+  "id": "t06_marco",
+  "name": "Antecâmara",
+  "width": 24,
+  "height": 18,
+  "tile_size": 16,
+  "grid": [
+    "########################",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.....####.............#",
+    "#.....####.............#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.............####.....#",
+    "#.............####.....#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "########################"
+  ],
+  "doors": [
+    {
+      "id": "door.t05_sinos.t06_marco",
+      "side": "west",
+      "tile": [
+        2,
+        9
+      ],
+      "target_room": "t05_sinos",
+      "target_tile": [
+        29,
+        12
+      ],
+      "gate": "world.bells_solved",
+      "unlock_persistent_flag": "open.door.t05_sinos.t06_marco",
+      "key_consumption": null
+    },
+    {
+      "id": "door.t06_marco.t07_igris",
+      "side": "east",
+      "tile": [
+        21,
+        9
+      ],
+      "target_room": "t07_igris",
+      "target_tile": [
+        2,
+        14
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.t06_marco.t07_igris",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "t06_marco.marco_preboss",
+      "kind": "checkpoint",
+      "tile": [
+        12,
+        8
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    9
+  ]
+}

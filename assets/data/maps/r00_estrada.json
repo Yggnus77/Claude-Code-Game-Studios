@@ -1,0 +1,125 @@
+{
+  "id": "r00_estrada",
+  "name": "Estrada inicial",
+  "width": 40,
+  "height": 24,
+  "tile_size": 16,
+  "grid": [
+    "########################################",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.....####.............................#",
+    "#.....####.............................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#.............................####.....#",
+    "#.............................####.....#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "#......................................#",
+    "########################################"
+  ],
+  "doors": [
+    {
+      "id": "door.v01_praca.r00_estrada",
+      "side": "west",
+      "tile": [
+        2,
+        12
+      ],
+      "target_room": "v01_praca",
+      "target_tile": [
+        37,
+        12
+      ],
+      "gate": "seen.p07",
+      "unlock_persistent_flag": "open.door.v01_praca.r00_estrada",
+      "key_consumption": null
+    },
+    {
+      "id": "door.r00_estrada.r01_cruzamento",
+      "side": "east",
+      "tile": [
+        37,
+        12
+      ],
+      "target_room": "r01_cruzamento",
+      "target_tile": [
+        2,
+        12
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.r00_estrada.r01_cruzamento",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "r00_estrada.rastejo_1",
+      "kind": "rastejo_tinta",
+      "tile": [
+        12,
+        12
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "r00_estrada.mariposa_1",
+      "kind": "mariposa_papel",
+      "tile": [
+        26,
+        10
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "r00_estrada.pump_a",
+      "kind": "chest",
+      "tile": [
+        5,
+        5
+      ],
+      "trigger_id": "chest_pump_a",
+      "persistent_receipt": "unique.r00_estrada.pump_a"
+    },
+    {
+      "id": "r00_estrada.fragment_02",
+      "kind": "unique_fragment",
+      "tile": [
+        8,
+        18
+      ],
+      "collectible_id": "fragment_02",
+      "requires_item": null,
+      "persistent_receipt": "collectible.fragment_02"
+    },
+    {
+      "id": "r00_estrada.apoio_estrada",
+      "kind": "chest",
+      "tile": [
+        33,
+        7
+      ],
+      "persistent_receipt": "loot.r00_estrada.apoio_estrada",
+      "trigger_id": "loot_apoio_estrada"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    12
+  ]
+}

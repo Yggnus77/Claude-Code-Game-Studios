@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "encounters": [
+    {
+      "id": "igris",
+      "name": "Igris",
+      "prototype": true,
+      "kind": "liberation",
+      "cycles": 2,
+      "damage_hits_per_cycle": 2,
+      "telegraphs": [
+        1.0,
+        0.85,
+        0.75
+      ],
+      "steps": [
+        "three_waves",
+        "hook_muffler",
+        "bell_sequence",
+        "exposed_regulator"
+      ],
+      "hook_window": 2.0,
+      "exposure": 2.4,
+      "bell_order": [
+        "circle",
+        "gap",
+        "waves"
+      ],
+      "success_event": "igris_controle_rompido",
+      "story_followup": "igris_escolhe_sair",
+      "mandatory_energy_cost": 0,
+      "normal_damage_can_kill": false
+    },
+    {
+      "id": "custodia",
+      "name": "Custódia Ferrugem",
+      "prototype": false,
+      "cycles": 3,
+      "steps": [
+        "block_rail",
+        "avoid_water",
+        "reflect_pulse",
+        "hit_regulator"
+      ],
+      "alternative_to_perfect_guard": "fixed_reflector",
+      "success_event": "custodia_restaurada",
+      "mandatory_energy_cost": 0
+    },
+    {
+      "id": "devorador",
+      "name": "Devorador de Ecos",
+      "prototype": false,
+      "steps": [
+        "expose_two_plates",
+        "strike_accumulations",
+        "choose_new_three_note_phrase",
+        "repeat_visually_without_timer",
+        "final_exposure"
+      ],
+      "pause_for_notes": true,
+      "success_event": "devorador_imobilizado",
+      "mandatory_energy_cost": 0
+    },
+    {
+      "id": "aracne",
+      "name": "Aracne de Cobre",
+      "prototype": false,
+      "cycles": 3,
+      "steps": [
+        "anchor_two_legs",
+        "boots_to_back",
+        "cut_control_threads"
+      ],
+      "environmental_anchor_free": true,
+      "success_event": "terminal_agulhas_ativo",
+      "mandatory_energy_cost": 0
+    },
+    {
+      "id": "curador",
+      "name": "Curador Cego",
+      "prototype": false,
+      "cycles": 3,
+      "steps": [
+        "bait_sound",
+        "shoot_exposed_plate",
+        "strike_core",
+        "avoid_sweep"
+      ],
+      "arena_ammo_refill": true,
+      "success_event": "terminal_vigias_ativo",
+      "mandatory_energy_cost": 0
+    },
+    {
+      "id": "yame_gate",
+      "name": "Yame Black — libertação",
+      "prototype": false,
+      "steps": [
+        "release_two_bindings",
+        "stop_combat",
+        "match_three_portraits",
+        "preserve_memories"
+      ],
+      "all_required_clues_in_room": true,
+      "success_event": "yame_libertado",
+      "normal_damage_can_kill": false,
+      "mandatory_energy_cost": 0
+    },
+    {
+      "id": "melissa_chamber",
+      "name": "Câmara de Controle",
+      "prototype": false,
+      "steps": [
+        "cut_control_links",
+        "cross_marked_platforms",
+        "stabilize_three_regulators"
+      ],
+      "target": "structures_and_projections",
+      "success_event": "tres_reguladores_estaveis",
+      "requires_authorization_scene": "melissa_libera_memorias",
+      "normal_damage_can_kill": false,
+      "mandatory_energy_cost": 0
+    }
+  ]
+}

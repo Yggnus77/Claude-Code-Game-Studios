@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "missions": [
+    {
+      "id": "main_00",
+      "title": "Examinar o relógio",
+      "requires_missions": [],
+      "complete_when_all_scenes_seen": [
+        "p01"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_01",
+      "title": "Proteger a Matrix e abrir a oficina",
+      "requires_missions": [
+        "main_00"
+      ],
+      "complete_when_all_scenes_seen": [
+        "p07"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_02",
+      "title": "Libertar Igris e recuperar o registro",
+      "requires_missions": [
+        "main_01"
+      ],
+      "complete_when_all_scenes_seen": [
+        "t11"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_03",
+      "title": "Encontrar Morina e examinar seu caderno",
+      "requires_missions": [
+        "main_02"
+      ],
+      "complete_when_all_scenes_seen": [
+        "m04"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_04",
+      "title": "Restaurar as comportas",
+      "requires_missions": [
+        "main_03"
+      ],
+      "complete_when_all_scenes_seen": [
+        "c07"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_05",
+      "title": "Atravessar a caverna e preservar a gravação",
+      "requires_missions": [
+        "main_04"
+      ],
+      "complete_when_all_scenes_seen": [
+        "v10"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_06",
+      "title": "Ouvir Exódia e preparar a devolução",
+      "requires_missions": [
+        "main_05"
+      ],
+      "complete_when_all_scenes_seen": [
+        "e04",
+        "e05"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_07a",
+      "title": "Restabelecer o terminal das Agulhas",
+      "requires_missions": [
+        "main_06"
+      ],
+      "complete_when_all_scenes_seen": [
+        "a04"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_07b",
+      "title": "Restabelecer o terminal das Vigias",
+      "requires_missions": [
+        "main_06"
+      ],
+      "complete_when_all_scenes_seen": [
+        "b05"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_08",
+      "title": "Abrir a rota submarina",
+      "requires_missions": [
+        "main_07a",
+        "main_07b"
+      ],
+      "complete_when_all_scenes_seen": [
+        "b06"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_09",
+      "title": "Libertar Yame Black",
+      "requires_missions": [
+        "main_08"
+      ],
+      "complete_when_all_scenes_seen": [
+        "n06"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_10",
+      "title": "Estabilizar os três reguladores",
+      "requires_missions": [
+        "main_09"
+      ],
+      "complete_when_all_scenes_seen": [
+        "n14"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_11",
+      "title": "Sair com as memórias",
+      "requires_missions": [
+        "main_10"
+      ],
+      "complete_when_all_scenes_seen": [
+        "n20"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "main_12",
+      "title": "Reconstruir e concluir a jornada",
+      "requires_missions": [
+        "main_11"
+      ],
+      "complete_when_all_scenes_seen": [
+        "f06"
+      ],
+      "required_for_campaign": true
+    },
+    {
+      "id": "side_bomba",
+      "title": "Restaurar a bomba",
+      "requires_missions": [
+        "main_01"
+      ],
+      "complete_when_all_scenes_seen": [
+        "r04"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_encomenda",
+      "title": "Entregar as peças do porto",
+      "requires_missions": [
+        "main_01"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o02"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_nome_barco",
+      "title": "Devolver o registro do barco",
+      "requires_missions": [
+        "main_01"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o04"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_album",
+      "title": "Reunir as fotografias",
+      "requires_missions": [
+        "main_02"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o06"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_morina",
+      "title": "Reunir os desenhos de Morina",
+      "requires_missions": [
+        "main_03"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o07"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_instrumento",
+      "title": "Devolver o instrumento a Igris",
+      "requires_missions": [
+        "main_02"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o08"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_farol",
+      "title": "Restabelecer o farol",
+      "requires_missions": [
+        "main_07a"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o10"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "side_posto",
+      "title": "Reabrir o posto de salvamento",
+      "requires_missions": [
+        "main_06"
+      ],
+      "complete_when_all_scenes_seen": [
+        "o11"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_01",
+      "title": "O troco da décima terceira venda",
+      "requires_missions": [
+        "main_02"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x01c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_02",
+      "title": "O quarto toque de Akurame",
+      "requires_missions": [
+        "main_02"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x02c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_03",
+      "title": "As lanternas que olham para trás",
+      "requires_missions": [
+        "main_04"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x03c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_04",
+      "title": "O retrato que não pede um rosto",
+      "requires_missions": [
+        "main_05"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x04c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_05",
+      "title": "O barco que chega antes da luz",
+      "requires_missions": [
+        "main_07a",
+        "main_07b"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x05c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_06",
+      "title": "A frase que o Copista não consegue repetir",
+      "requires_missions": [
+        "main_06"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x06c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_07",
+      "title": "A sombra que esperou uma resposta",
+      "requires_missions": [
+        "main_09"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x07c"
+      ],
+      "required_for_campaign": false
+    },
+    {
+      "id": "mystery_08",
+      "title": "A margem que Morina deixou em branco",
+      "requires_missions": [
+        "main_08"
+      ],
+      "complete_when_all_scenes_seen": [
+        "x08c"
+      ],
+      "required_for_campaign": false
+    }
+  ],
+  "completion_rule": "Prerequisites must be complete before processing completion; idempotent transaction."
+}

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cbdc4cyvqf8jp"
+
+[deps]
+
+files=["res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation"]
+
+source_file="res://design/kit/plantas/t04_pesos.csv"
+dest_files=["res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation", "res://design/kit/plantas/t04_pesos.#.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -1,0 +1,492 @@
+﻿scene_id;node_id;type;speaker;text;next
+p00;p00.line0;line;EXÓDIA;Antes de trocar uma peça, descubra por que ela parou.;p00.line1
+p00;p00.line1;line;YGGNUS;E se o dono só quiser que volte a funcionar?;p00.line2
+p00;p00.line2;line;EXÓDIA;Então escute o dono também.;p00.line3
+p00;p00.line3;line;YGGNUS;Esse relógio chegou sem nome. Nem endereço de quem mandou.;p00.line4
+p00;p00.line4;line;EXÓDIA;Examine o mecanismo. Eu vou buscar minhas lentes.;p00.line5
+p00;p00.line5;direction;SISTEMA;Examine a bancada. Os comandos exibidos acompanham sua configuração de controle.;p00.end
+p01;p01.line0;line;YGGNUS;A mola está inteira. Tem alguma coisa presa atrás do mostrador.;p01.line1
+p01;p01.line1;line;YGGNUS;Vou acertar os ponteiros primeiro.;p01.line2
+p01;p01.line2;direction;SISTEMA;"O relógio começa a tocar. A câmera acompanha a rua; o jogador pode observar.";p01.end
+p02;p02.line0;line;MORADORA;Eu estava procurando alguém. Ele estava aqui comigo.;p02.line1
+p02;p02.line1;line;YGGNUS;Como ele se chama?;p02.line2
+p02;p02.line2;line;MORADORA;Eu... não sei. Por que eu não sei?;p02.line3
+p02;p02.line3;line;ÁDALLY;Afaste-se do relógio!;p02.line4
+p02;p02.line4;line;YGGNUS;Foram treze badaladas.;p02.line5
+p02;p02.line5;line;ÁDALLY;No meu mapa havia uma rua aqui. A tinta acabou de sumir.;p02.end
+p03;p03.line0;line;YGGNUS;Você desenhou esse mapa?;p03.line1
+p03;p03.line1;line;ÁDALLY;Meu nome é Ádally. Sou de Aurélis.;p03.line2
+p03;p03.line2;line;YGGNUS;Não conheço esse porto.;p03.line3
+p03;p03.line3;line;ÁDALLY;Ninguém conhece mais. Mas eu vivi lá.;p03.line4
+p03;p03.line4;line;ÁDALLY;Tenho redesenhado cada rua. Às vezes acordo e falta outra.;p03.line5
+p03;p03.line5;line;YGGNUS;E esse símbolo?;p03.line6
+p03;p03.line6;line;ÁDALLY;Estava nos mecanismos de Aurélis quando tudo começou.;p03.end
+p04;p04.line0;line;EXÓDIA;Não mexa nesse encaixe. Deixe que eu abra.;p04.line1
+p04;p04.line1;line;YGGNUS;Você sabe o que há aí.;p04.line2
+p04;p04.line2;line;EXÓDIA;Chama-se Matrix. Guarde-a longe do mostrador.;p04.line3
+p04;p04.line3;line;ÁDALLY;A inscrição é a mesma: Reset Sistem.;p04.line4
+p04;p04.line4;line;YGGNUS;Você trabalhou nisso?;p04.line5
+p04;p04.line5;line;EXÓDIA;Trabalhei em algo que deveria ajudar pessoas. Agora precisamos tirá-las da praça.;p04.end
+p05;p05.line0;line;ÁDALLY;As páginas estão fechando a porta!;p05.line1
+p05;p05.line1;line;YGGNUS;Vou cortar as amarrações. Tire o pessoal daqui!;p05.end
+p06;p06.line0;line;EXÓDIA;O escudo segura esses fragmentos. Fique de frente para eles!;p06.end
+p07;p07.line0;line;YGGNUS;Ele foi embora. A Matrix continua aqui.;p07.line1
+p07;p07.line1;line;ÁDALLY;Ouvi vozes naquela coisa. Mais de uma.;p07.line2
+p07;p07.line2;line;EXÓDIA;Yame Black. O sistema usa o que encontra para alcançar o que perdeu.;p07.line3
+p07;p07.line3;line;YGGNUS;Você está me dando pedaços de uma explicação.;p07.line4
+p07;p07.line4;line;EXÓDIA;Na Torre Akurame existe um registro do início do projeto. Ele pode mostrar mais do que eu consigo provar agora.;p07.line5
+p07;p07.line5;line;ÁDALLY;Então começamos pela torre.;p07.end
+p08;p08.line0;line;ÁDALLY;Esta pedra guardou um traço seu quando você se aproximou.;p08.line1
+p08;p08.line1;line;EXÓDIA;Um Marco de Memória. Podemos recuperar forças aqui e registrar o caminho.;p08.line2
+p08;p08.line2;line;YGGNUS;Sem tirar nada de ninguém?;p08.line3
+p08;p08.line3;line;EXÓDIA;Sem tirar. Foi para isso que começamos.;p08.line4
+p08;p08.line4;direction;SISTEMA;Progresso salvo. Vida e Ressonância restauradas.;p08.end
+r01;r01.line0;line;ÁDALLY;Ele infla antes de avançar. Vou ficar fora do caminho.;r01.end
+r02;r02.line0;line;YGGNUS;A argola ainda está firme. Falta alguma coisa para alcançá-la.;r02.line1
+r02;r02.line1;line;ÁDALLY;Vou marcar no mapa. A torre tinha uma oficina de manutenção.;r02.end
+r03;r03.line0;line;MECÂNICA DO CAIS;A água parou. O eixo perdeu duas peças na estrada.;r03.line1
+r03;r03.line1;line;YGGNUS;Posso procurar enquanto vamos para a torre.;r03.line2
+r03;r03.line2;line;MECÂNICA DO CAIS;Uma caiu perto do muro. A outra foi levada por um bicho de sucata.;r03.line3
+r03;r03.line3;line;MECÂNICA DO CAIS;Se trouxer as duas, tenho um frasco que não uso mais. Está vazio, mas inteiro.;r03.end
+r04;r04.line0;line;MECÂNICA DO CAIS;São estas. Segure o eixo um instante.;r04.line1
+r04;r04.line1;line;YGGNUS;Agora gira sem prender.;r04.line2
+r04;r04.line2;line;MECÂNICA DO CAIS;A água vai chegar às casas. Fique com o frasco, como combinamos.;r04.line3
+r04;r04.line3;direction;SISTEMA;"Frasco Vazio recebido. Você agora possui dois frascos; a capacidade inicial já era de dois.";r04.end
+r05;r05.line0;line;COMERCIANTE;Pão para a viagem? Uma porção custa cinco Bronze.;r05.line1
+r05;r05.line1;line;YGGNUS;E os frascos?;r05.line2
+r05;r05.line2;line;COMERCIANTE;Recarrego os seus. Não vou cobrar por um frasco que já é seu.;r05.line3
+r05;r05.line3;line;COMERCIANTE;Se quiser saber o preço, olhe antes. Ninguém compra nada só por conversar.;r05.end
+r06;r06.line0;line;ÁDALLY;A mariposa ainda não mergulhou. Não fique preso entre os dois.;r06.end
+t01;t01.line0;line;ÁDALLY;Estes sinos avisavam as ilhas sobre as marés.;t01.line1
+t01;t01.line1;line;VOZ DA TORRE;Origem... preservar... Reset Sistem...;t01.line2
+t01;t01.line2;line;YGGNUS;Isso não parece um aviso de maré.;t01.line3
+t01;t01.line3;line;ÁDALLY;A frase vem de cima. Vamos seguir as escadas centrais.;t01.end
+t02;t02.line0;line;YGGNUS;A trava responde às placas dos dois lados.;t02.line1
+t02;t02.line1;line;ÁDALLY;Os guardas deixam a defesa aberta quando a arma bate no chão.;t02.line2
+t02;t02.line2;line;YGGNUS;Então posso contorná-los. Não preciso arrancar o escudo.;t02.line3
+t02;t02.line3;direction;SISTEMA;A porta abre após o encontro. Este desafio não exige o Gancho de Retorno.;t02.end
+t03;t03.line0;line;YGGNUS;Um lançador de manutenção. O cabo volta sozinho.;t03.line1
+t03;t03.line1;line;ÁDALLY;Gancho de Retorno. Este manual mostra as argolas que ele aceita.;t03.line2
+t03;t03.line2;line;YGGNUS;Vou testar naquela parede antes de subir.;t03.line3
+t03;t03.line3;direction;SISTEMA;"Gancho recebido. Use o comando de item; não consome Ressonância.";t03.end
+t04;t04.line0;line;ÁDALLY;O aro ficou aberto quando você mirou. Esse é seguro.;t04.end
+t05;t05.line0;line;YGGNUS;Se eu levantar o peso, a ponte desce. Mas ela volta antes de atravessarmos.;t05.line1
+t05;t05.line1;line;ÁDALLY;Puxe o peso. Eu fixo a trava quando ele chegar ao alto.;t05.line2
+t05;t05.line2;line;YGGNUS;Avise quando estiver pronto.;t05.line3
+t05;t05.line3;line;ÁDALLY;"Pronto. Pode cruzar; a trava fica no lugar.";t05.end
+t06;t06.line0;line;YGGNUS;Três símbolos. O mesmo traço aparece em cada sino.;t06.line1
+t06;t06.line1;line;ÁDALLY;Aqui há uma ordem: círculo, fenda, ondas.;t06.line2
+t06;t06.line2;line;YGGNUS;Vamos guardar o desenho. Não precisamos adivinhar pelo som.;t06.end
+t07;t07.line0;line;ÁDALLY;Quer uma indicação?;t07.line1
+t07;t07.line1;line;ÁDALLY;Compare o desenho na parede com as placas sob os sinos. A ordem começa pelo círculo.;t07.line2
+t07;t07.line2;direction;SISTEMA;A dica só aparece quando solicitada. As placas continuam disponíveis para consulta.;t07.end
+t08;t08.line0;line;IGRIS;Acesso não autorizado. Devolva a peça de origem.;t08.line1
+t08;t08.line1;line;YGGNUS;Não viemos danificar a torre.;t08.line2
+t08;t08.line2;line;IGRIS;Devolva... a peça...;t08.line3
+t08;t08.line3;line;ÁDALLY;Ele está tentando falar outra coisa. Os sinais mudam entre as ordens.;t08.line4
+t08;t08.line4;line;YGGNUS;Vou soltar os abafadores. Fique longe das ondas.;t08.end
+t09;t09.line0;line;IGRIS;O som... não é meu.;t09.line1
+t09;t09.line1;line;ÁDALLY;Ele conseguiu nos ouvir. Falta o outro vínculo!;t09.end
+t10;t10.line0;line;IGRIS;O sino parou. Sou eu que estou dizendo isto?;t10.line1
+t10;t10.line1;line;YGGNUS;É você. Não vamos ligar esse comando de novo.;t10.line2
+t10;t10.line2;line;IGRIS;Passei tanto tempo aqui que não sei o que resta de mim fora da torre.;t10.line3
+t10;t10.line3;line;ÁDALLY;Podemos procurar um jeito de separar o mecanismo.;t10.line4
+t10;t10.line4;line;IGRIS;Quero tentar. Quero escolher o que fazer quando a porta abrir.;t10.line5
+t10;t10.line5;line;YGGNUS;Então a escolha é sua.;t10.end
+t11;t11.line0;line;IGRIS;Vou sair. Mesmo que precise caminhar devagar.;t11.line1
+t11;t11.line1;line;IGRIS;Antes, levem este registro. Ele não foi transmitido às outras ilhas.;t11.line2
+t11;t11.line2;line;REGISTRO;Teste urbano: Aurélis. Autorização de execução: Melissa.;t11.line3
+t11;t11.line3;line;ÁDALLY;Não foi um acidente.;t11.line4
+t11;t11.line4;line;YGGNUS;Vamos descobrir onde os moradores foram parar.;t11.end
+t12;t12.line0;line;EXÓDIA;Igris escolheu deixar a torre?;t12.line1
+t12;t12.line1;line;YGGNUS;Escolheu. Por que Aurélis aparece como teste neste registro?;t12.line2
+t12;t12.line2;line;EXÓDIA;Porque alguém usou a rede muito além do que deveria.;t12.line3
+t12;t12.line3;line;YGGNUS;E quem permitiu que fosse tão longe?;t12.line4
+t12;t12.line4;line;EXÓDIA;Eu lhe devo essa resposta. Preciso abrir meus próprios registros.;t12.line5
+t12;t12.line5;line;EXÓDIA;Enquanto isso, posso ajustar sua espada para os metais ressonantes. Você não vai pagar por isso.;t12.end
+m01;m01.line0;line;ÁDALLY;Morina?;m01.line1
+m01;m01.line1;line;MORINA;Desculpe. Nós nos conhecemos?;m01.line2
+m01;m01.line2;line;ÁDALLY;Você desenhava os barcos do observatório. Eu copiava seus mapas errados para te irritar.;m01.line3
+m01;m01.line3;line;MORINA;Eu sinto que deveria lembrar. Mas não consigo.;m01.line4
+m01;m01.line4;line;ÁDALLY;Não precisa fingir. Posso me sentar?;m01.end
+m02;m02.option0.0;line;MORINA;Às vezes já estão na página quando acordo. Eu não lembro de pegar o carvão.;m02.line0
+m02;m02.option1.0;line;MORINA;O rosto me parece próximo. Mas não quero inventar uma lembrança para agradar vocês.;m02.line0
+m02;m02.option2.0;line;MORINA;"Podem. Só me avisem antes de virar uma página; tenho medo de perder o desenho.";m02.line0
+m02;m02.line0;line;YGGNUS;Você conhece as ruas destes desenhos?;m02.line1
+m02;m02.line1;line;MORINA;Só enquanto estou dormindo. Quando acordo, minha mão sabe mais do que eu.;m02.line2
+m02;m02.line2;line;ÁDALLY;Esta é a praça de Aurélis. Aqui ficava uma padaria.;m02.line3
+m02;m02.line3;line;MORINA;Não lembro do lugar. Lembro de esperar por alguém nessa esquina.;m02.end
+m03;m03.line0;line;ÁDALLY;Tem uma canção que cantávamos no caminho para casa.;m03.line1
+m03;m03.line1;line;MORINA;A que continua mesmo depois de o barco sumir?;m03.line2
+m03;m03.line2;line;ÁDALLY;Você lembra?;m03.line3
+m03;m03.line3;line;MORINA;Da próxima nota. Não sei como, mas sei.;m03.line4
+m03;m03.line4;direction;SISTEMA;As duas completam a melodia. O jogador pode ouvir novamente ou acompanhar os símbolos visuais.;m03.end
+m04;m04.line0;line;MORINA;Há mais uma página. Desenhei ontem, depois de acordar sem voz.;m04.line1
+m04;m04.line1;line;ÁDALLY;Não conheço esta passagem.;m04.line2
+m04;m04.line2;line;YGGNUS;Caverna dos Terrores. A estrada foi coberta pelo canal.;m04.line3
+m04;m04.line3;line;MORINA;Se forem, não sigam uma voz só porque ela parece conhecida.;m04.line4
+m04;m04.line4;line;ÁDALLY;Primeiro precisamos baixar a água das comportas.;m04.end
+c01;c01.line0;line;YGGNUS;A válvula está inteira. O bloqueio é automático.;c01.line1
+c01;c01.line1;line;ÁDALLY;Os símbolos mostram três níveis. Vamos acompanhar o caminho da água.;c01.line2
+c01;c01.line2;direction;SISTEMA;O mapa registra a posição atual das comportas. Mudanças podem ser revertidas.;c01.end
+c02;c02.line0;line;ÁDALLY;A passarela voltou a aparecer. A escada central continua livre.;c02.end
+c03;c03.line0;line;YGGNUS;Estas luvas distribuem o peso pelo braço inteiro.;c03.line1
+c03;c03.line1;line;ÁDALLY;Os blocos com esse encaixe devem ter sido feitos para elas.;c03.line2
+c03;c03.line2;direction;SISTEMA;"Luvas de Lastro recebidas. Empurre ou puxe pesos marcados; não é necessário gastar magia.";c03.end
+c04;c04.line0;line;YGGNUS;O metal devolve a vibração.;c04.line1
+c04;c04.line1;line;ÁDALLY;O aparelho da parede dispara em intervalos fixos. Podemos treinar aqui.;c04.line2
+c04;c04.line2;direction;SISTEMA;Escudo Ressonante recebido. Uma defesa precisa redireciona o pulso. Há também um refletor fixo para os enigmas obrigatórios.;c04.end
+c05;c05.line0;line;CUSTÓDIA FERRUGEM;Travessia suspensa. Risco de contaminação de memória.;c05.line1
+c05;c05.line1;line;YGGNUS;Há pessoas do outro lado!;c05.line2
+c05;c05.line2;line;CUSTÓDIA FERRUGEM;Protocolo de contenção mantido.;c05.line3
+c05;c05.line3;line;ÁDALLY;O regulador fica sob a carapaça. Precisamos travar o trilho.;c05.end
+c06;c06.line0;line;ÁDALLY;O regulador abriu. Agora!;c06.end
+c07;c07.line0;line;CUSTÓDIA FERRUGEM;Falha de contenção removida. Canal liberado.;c07.line1
+c07;c07.line1;line;YGGNUS;Ela não precisava continuar prendendo ninguém.;c07.line2
+c07;c07.line2;line;ÁDALLY;A Matrix está respondendo ao canal. Veja o fio entre as duas margens.;c07.line3
+c07;c07.line3;direction;SISTEMA;"Fio de Âncora habilitado. Pontes de memória não consomem energia; imobilizar inimigos consome 15.";c07.end
+c08;c08.line0;line;YGGNUS;Yame Black! Ele veio atrás da Matrix.;c08.line1
+c08;c08.line1;line;ÁDALLY;Ou atrás do que ela carrega. O sinal de Igris o fez recuar.;c08.end
+v01;v01.line0;line;VOZ IMITADA DE MORINA;Se forem, não sigam uma voz só porque ela parece conhecida.;v01.line1
+v01;v01.line1;line;ÁDALLY;São as mesmas palavras. Até a pausa é igual.;v01.line2
+v01;v01.line2;line;YGGNUS;Morina não veio conosco.;v01.line3
+v01;v01.line3;line;ÁDALLY;Vamos olhar antes de seguir.;v01.end
+v02;v02.line0;line;YGGNUS;Não há passos. A voz sai da parede.;v02.end
+v03;v03.line0;line;YGGNUS;A luz reage à Matrix. As letras apagadas estão aparecendo.;v03.line1
+v03;v03.line1;line;ÁDALLY;O registro chama isso de Lanterna de Lembranças.;v03.line2
+v03;v03.line2;direction;SISTEMA;"Lanterna recebida. Ler vestígios é gratuito; expor criaturas ocultas custa 8 de Ressonância.";v03.end
+v04;v04.line0;line;ÁDALLY;O fio sustenta o contorno. Vou esperar você alcançar o outro lado.;v04.end
+v05;v05.line0;line;DEVORADOR DE ECOS;Ádally... venha... eu lembro de você...;v05.line1
+v05;v05.line1;line;ÁDALLY;Você pegou a voz dela. Não é ela.;v05.line2
+v05;v05.line2;line;YGGNUS;As placas vibram quando ele fala. Vou iluminá-las.;v05.end
+v06;v06.line0;line;ÁDALLY;Ele repete nossa canção. Não escuta o que vem depois.;v06.line1
+v06;v06.line1;line;YGGNUS;Então vamos tocar uma sequência que ainda não existe.;v06.line2
+v06;v06.line2;line;ÁDALLY;Eu começo. Você escolhe a próxima nota.;v06.line3
+v06;v06.line3;direction;SISTEMA;Escolha três símbolos. Não há limite de tempo nem teste obrigatório de ritmo.;v06.end
+v07;v07.line0;line;YGGNUS;Ele parou de repetir as vozes.;v07.line1
+v07;v07.line1;line;ÁDALLY;A passagem abriu. Não precisamos continuar golpeando.;v07.line2
+v07;v07.line2;line;YGGNUS;Vamos ao arquivo.;v07.end
+v08;v08.line0;line;LÍVIA — GRAVAÇÃO;Você não precisa carregar tudo sozinha. Eu te amo, Melissa.;v08.line1
+v08;v08.line1;line;MELISSA — GRAVAÇÃO;Se eu pudesse guardar este momento...;v08.line2
+v08;v08.line2;line;ÁDALLY;A voz se corta antes de terminar.;v08.line3
+v08;v08.line3;line;YGGNUS;Há um intervalo removido. A Matrix preservou outro trecho.;v08.end
+v09;v09.line0;line;LÍVIA — GRAVAÇÃO;Guardar a minha voz não dá a você o direito de escolher o que eu lembro.;v09.line1
+v09;v09.line1;line;MELISSA — GRAVAÇÃO;Quero impedir que isso aconteça de novo.;v09.line2
+v09;v09.line2;line;LÍVIA — GRAVAÇÃO;E quem vai poder dizer que você errou, se apagar essa pessoa da história?;v09.line3
+v09;v09.line3;line;LÍVIA — GRAVAÇÃO;Abandone o projeto, Melissa. Ainda dá tempo.;v09.line4
+v09;v09.line4;line;YGGNUS;Ela retirou a discussão. Deixou só o carinho.;v09.end
+v10;v10.line0;line;YGGNUS;Essa gravação poderia mostrar aos outros o que Melissa fez.;v10.line1
+v10;v10.line1;line;ÁDALLY;Mostrar o sistema, sim. Expor a irmã dela para conseguir apoio, não.;v10.line2
+v10;v10.line2;line;ÁDALLY;Eu quero Aurélis de volta. Não vou transformar Lívia numa ferramenta.;v10.line3
+v10;v10.line3;line;YGGNUS;Vou manter o registro protegido.;v10.line4
+v10;v10.line4;direction;SISTEMA;Registro privado preservado. Ele não pode ser vendido, divulgado ou usado em chantagem.;v10.end
+e01;e01.line0;line;YGGNUS;Aurélis foi um teste. A gravação foi cortada. Você sabia do que o sistema era capaz?;e01.line1
+e01;e01.line1;line;EXÓDIA;Eu construí os canais. Achei que conseguiria limitar o alcance depois.;e01.line2
+e01;e01.line2;line;ÁDALLY;Havia gente dentro da minha cidade.;e01.line3
+e01;e01.line3;line;EXÓDIA;Havia. A minha intenção não diminui o que ajudei a fazer.;e01.line4
+e01;e01.line4;line;YGGNUS;Então pare de escolher o que podemos saber.;e01.end
+e02;e02.line0;line;EXÓDIA;Existe uma interrupção de emergência. Ela impede novos apagamentos.;e02.line1
+e02;e02.line1;line;ÁDALLY;Por que ainda não usou?;e02.line2
+e02;e02.line2;line;EXÓDIA;Porque o depósito de memórias perde a sustentação. Podemos destruir o que restou de Aurélis e das outras cidades.;e02.line3
+e02;e02.line3;line;YGGNUS;Você esperava consertar tudo sem contar a ninguém.;e02.line4
+e02;e02.line4;line;EXÓDIA;Esperava. E o tempo que perdi também é minha responsabilidade.;e02.end
+e03;e03.option0.0;line;EXÓDIA;Não. Pode conservar lembranças de uma pessoa. Não torna essa pessoa viva de novo.;e03.line0
+e03;e03.option1.0;line;EXÓDIA;Abrindo a distribuição antes da interrupção. Guardar tudo em um único lugar continua sendo um risco.;e03.line0
+e03;e03.option2.0;line;ÁDALLY;Primeiro os canais. Depois o núcleo. Não deixaremos as cidades desaparecerem em silêncio.;e03.line0
+e03;e03.line0;line;ÁDALLY;A Matrix guardou o trecho que Melissa apagou. Pode guardar os outros registros?;e03.line1
+e03;e03.line1;line;EXÓDIA;Pode recebê-los. Devolver cada um ao seu lugar exige os canais do Núcleo Zero.;e03.line2
+e03;e03.line2;line;YGGNUS;Então não desligamos primeiro. Abrimos os canais, devolvemos e só depois interrompemos.;e03.line3
+e03;e03.line3;line;EXÓDIA;Precisaremos alcançar o controle central. Melissa reservou a autorização para si.;e03.line4
+e03;e03.line4;line;ÁDALLY;Vamos chegar lá. Sem decidir que algumas pessoas podem ser deixadas para trás.;e03.end
+e04;e04.line0;line;EXÓDIA;Ajustei a lâmina para tocar matéria e vestígio. Ela não dá poder sobre a vontade de ninguém.;e04.line1
+e04;e04.line1;line;YGGNUS;E este encaixe?;e04.line2
+e04;e04.line2;line;EXÓDIA;Sustenta um Véu de Proteção por um impacto. Use antes de se expor, não depois.;e04.line3
+e04;e04.line3;direction;SISTEMA;Lâmina da Âncora, Véu de Proteção e primeiro Ampliador recebidos. Ressonância máxima: 90.;e04.end
+e05;e05.line0;line;IGRIS;Localizei a rota submarina. Dois terminais mantêm a entrada fechada.;e05.line1
+e05;e05.line1;line;ÁDALLY;Onde?;e05.line2
+e05;e05.line2;line;IGRIS;Ilha das Agulhas e Pátio das Vigias. Podem restaurá-los em qualquer ordem.;e05.line3
+e05;e05.line3;line;YGGNUS;E você?;e05.line4
+e05;e05.line4;line;IGRIS;Estou escolhendo um caminho de volta ao mar. Quando terminarem, me avisem.;e05.end
+a01;a01.line0;line;ÁDALLY;O vento muda depois de cada sinal da torre menor.;a01.line1
+a01;a01.line1;line;YGGNUS;As pontes foram feitas para recuar, não para cair.;a01.line2
+a01;a01.line2;line;ÁDALLY;Vou marcar os apoios. Não tente atravessar fora deles.;a01.end
+a02;a02.line0;line;YGGNUS;As molas dão impulso, mas não sustentam um salto longo.;a02.line1
+a02;a02.line1;line;ÁDALLY;A distância do primeiro vão está desenhada no chão.;a02.line2
+a02;a02.line2;direction;SISTEMA;Botas de Travessia recebidas. Teste o impulso na plataforma segura. A esquiva comum continua diferente da travessia de vãos.;a02.end
+a03;a03.line0;line;ÁDALLY;Os fios no dorso passam pelas pernas.;a03.line1
+a03;a03.line1;line;YGGNUS;Se eu prender duas, consigo alcançar o alto.;a03.line2
+a03;a03.line2;direction;SISTEMA;Os pontos de fixação são sinalizados antes de a arena perder plataformas.;a03.end
+a04;a04.line0;line;YGGNUS;O sinal alcançou o fundo do mar.;a04.line1
+a04;a04.line1;line;IGRIS;Terminal das Agulhas restabelecido. A linha está estável.;a04.line2
+a04;a04.line2;line;ÁDALLY;Vou registrar a rota. A outra linha aparece no comunicador.;a04.end
+b01;b01.line0;line;ÁDALLY;Estes arquivos foram fechados antes de Aurélis desaparecer.;b01.line1
+b01;b01.line1;line;YGGNUS;As vigias seguem o som. Vamos usar os muros para nos aproximar.;b01.end
+b02;b02.line0;line;YGGNUS;A corda é quase invisível. As agulhas podem ser recuperadas.;b02.line1
+b02;b02.line1;line;ÁDALLY;Os alvos quadrados se movem com as janelas. Espere a abertura.;b02.line2
+b02;b02.line2;direction;SISTEMA;Arco de Fio recebido. Há reposição de agulhas antes de cada enigma obrigatório.;b02.end
+b03;b03.line0;line;ÁDALLY;Ele repete o último ataque. Mude o que está fazendo!;b03.end
+b04;b04.line0;line;CURADOR CEGO;Arquivo divergente. Descartar duplicatas.;b04.line1
+b04;b04.line1;line;ÁDALLY;Essas lembranças não são duplicatas.;b04.line2
+b04;b04.line2;line;YGGNUS;As placas se abrem quando ele procura a origem do som. Vou esperar.;b04.end
+b05;b05.line0;line;YGGNUS;O seletor parou de apagar os registros.;b05.line1
+b05;b05.line1;line;IGRIS;Linha do Pátio das Vigias restabelecida.;b05.line2
+b05;b05.line2;line;ÁDALLY;O terminal pode distribuir o que ainda está guardado.;b05.end
+b06;b06.line0;line;IGRIS;As duas linhas responderam. A entrada do Núcleo Zero está acessível.;b06.line1
+b06;b06.line1;line;EXÓDIA;O segundo Ampliador está no kit que mandei com o barco. Vai precisar dele.;b06.line2
+b06;b06.line2;line;YGGNUS;Igris, você não precisa voltar para uma máquina por nossa causa.;b06.line3
+b06;b06.line3;line;IGRIS;Eu sei. Vou ajudar porque quero.;b06.line4
+b06;b06.line4;direction;SISTEMA;Segundo Ampliador recebido. Ressonância máxima: 120. Rota submarina marcada.;b06.end
+n01;n01.line0;line;MORINA;Desenhei uma comporta debaixo d'água. Não me lembrava dela até ontem.;n01.line1
+n01;n01.line1;line;ÁDALLY;Este corredor liga ao observatório. Você conseguiu desenhá-lo inteiro.;n01.line2
+n01;n01.line2;line;MORINA;Se encontrarem a cidade, não preencham o que não souberem. Deixem espaço no mapa.;n01.line3
+n01;n01.line3;line;ÁDALLY;Vamos deixar.;n01.end
+n02;n02.line0;line;YAME BLACK;Voltar... guardar... não perder...;n02.line1
+n02;n02.line1;line;YGGNUS;Ele está preso às próprias vozes.;n02.line2
+n02;n02.line2;line;ÁDALLY;A luz mostra os vínculos. Se arrancarmos tudo, podemos destruir as lembranças.;n02.line3
+n02;n02.line3;line;YGGNUS;Primeiro solto as amarras. Depois vemos como ajudá-lo.;n02.end
+n03;n03.line0;line;ÁDALLY;Pare de atacar! As memórias estão se separando.;n03.end
+n04;n04.line0;line;ÁDALLY;Há nomes nos retratos. Os mesmos dos registros desta sala.;n04.line1
+n04;n04.line1;line;YGGNUS;A Matrix pode recebê-los, um de cada vez.;n04.line2
+n04;n04.line2;line;ÁDALLY;Vou chamar cada pessoa. Você mantém o caminho aberto.;n04.line3
+n04;n04.line3;direction;SISTEMA;Relacione três retratos aos registros. Todas as pistas necessárias estão nesta sala.;n04.end
+n05;n05.line0;line;YGGNUS;As vozes pararam. Ainda tem alguém aí.;n05.line1
+n05;n05.line1;line;ÁDALLY;Ele não está recebendo ordens.;n05.line2
+n05;n05.line2;line;YGGNUS;Pode vir, se quiser. Minha mão fica aqui.;n05.line3
+n05;n05.line3;direction;SISTEMA;A pequena criatura se aproxima por vontade própria. Não há escolha de capturá-la.;n05.end
+n06;n06.line0;line;IGRIS;Não alcanço a trava pelo lado de dentro.;n06.line1
+n06;n06.line1;line;YGGNUS;Yame Black cabe naquele duto.;n06.line2
+n06;n06.line2;line;ÁDALLY;Ele está olhando para você, Igris.;n06.line3
+n06;n06.line3;line;IGRIS;Quer tentar comigo? Eu espero o seu sinal.;n06.line4
+n06;n06.line4;direction;SISTEMA;Yame Black toca a mão de Igris e entra no duto.;n06.line5
+n06;n06.line5;line;IGRIS;Temos a saída. Sigam em frente.;n06.end
+n07;n07.line0;line;ÁDALLY;Aqui estão os primeiros mapas. Exódia assinou estes projetos.;n07.line1
+n07;n07.line1;line;YGGNUS;E estas alterações vieram depois, com autorização de Melissa.;n07.line2
+n07;n07.line2;line;ÁDALLY;Vamos guardar os registros do sistema. A gravação de Lívia continua privada.;n07.end
+n08;n08.line0;line;YGGNUS;Os canais não apontam todos para a mesma cidade.;n08.line1
+n08;n08.line1;line;ÁDALLY;Cada símbolo corresponde a um mapa. Vou separar Aurélis das outras rotas.;n08.line2
+n08;n08.line2;line;ÁDALLY;Você pode conferir os nomes antes de confirmar. Uma ligação errada não precisa apagar nada.;n08.end
+n09;n09.line0;line;MELISSA;Você trouxe a peça de volta.;n09.line1
+n09;n09.line1;line;ÁDALLY;Trouxemos as lembranças de quem você apagou.;n09.line2
+n09;n09.line2;line;MELISSA;Posso devolver Aurélis. Entregue a Matrix e sua cidade reaparece.;n09.line3
+n09;n09.line3;line;YGGNUS;E as outras?;n09.line4
+n09;n09.line4;line;MELISSA;Primeiro precisamos preservar o que ainda funciona.;n09.end
+n10;n10.line0;line;ÁDALLY;Não.;n10.line1
+n10;n10.line1;line;MELISSA;Você atravessou o arquipélago para recuperá-la.;n10.line2
+n10;n10.line2;line;ÁDALLY;Atravessei. Não vou escolher minha cidade e deixar o resto aqui.;n10.line3
+n10;n10.line3;line;MELISSA;Não entende o que uma guerra leva.;n10.line4
+n10;n10.line4;line;ÁDALLY;Entendo o que é procurar alguém e descobrir que o mundo esqueceu seu nome.;n10.end
+n11;n11.line0;line;MELISSA;Não permitirei que desliguem os canais.;n11.line1
+n11;n11.line1;line;YGGNUS;Queremos devolver o que está guardado, não destruir.;n11.line2
+n11;n11.line2;line;MELISSA;Afaste-se do regulador.;n11.line3
+n11;n11.line3;line;ÁDALLY;Vou localizar as rotas. Yggnus, alcance os três controles.;n11.end
+n12;n12.line0;line;ÁDALLY;Um canal aberto. Faltam dois!;n12.end
+n13;n13.line0;line;YGGNUS;A próxima plataforma está marcada. Vou pela argola!;n13.end
+n14;n14.line0;line;YGGNUS;O caminho está pronto. Só falta sua autorização, Melissa.;n14.line1
+n14;n14.line1;line;MELISSA;Se eu liberar, a reconstrução perde o suporte.;n14.line2
+n14;n14.line2;line;ÁDALLY;Você está falando de Lívia.;n14.line3
+n14;n14.line3;line;MELISSA;Estou falando da única coisa que restou dela.;n14.end
+n15;n15.line0;line;LÍVIA — RECONSTRUÇÃO;Você não precisa carregar tudo sozinha...;n15.line1
+n15;n15.line1;line;MELISSA;Espere. Ainda posso manter uma parte.;n15.line2
+n15;n15.line2;line;YGGNUS;Cada parte continua usando lembranças de alguém.;n15.line3
+n15;n15.line3;line;MELISSA;Eu sei.;n15.line4
+n15;n15.line4;direction;SISTEMA;"A voz se fragmenta. O jogador mantém o controle da câmera; nenhuma seleção cronometrada aparece.";n15.end
+n16;n16.line0;line;ÁDALLY;Morina saiu de Aurélis. Está viva.;n16.line1
+n16;n16.line1;line;MELISSA;Então alguém voltou.;n16.line2
+n16;n16.line2;line;ÁDALLY;Quando me encontrou, não sabia quem eu era. Eu podia contar nossa vida inteira e continuava sendo uma estranha.;n16.line3
+n16;n16.line3;line;ÁDALLY;Não usei as lembranças dela para exigir que acreditasse em mim. Sentei ao lado dela.;n16.line4
+n16;n16.line4;line;MELISSA;E ela lembrou?;n16.line5
+n16;n16.line5;line;ÁDALLY;De uma nota de uma canção. Foi onde pudemos começar.;n16.end
+n17;n17.line0;line;MELISSA;Se eu devolver tudo, as coisas voltam a ser como eram?;n17.line1
+n17;n17.line1;line;YGGNUS;Não sei.;n17.line2
+n17;n17.line2;line;YGGNUS;A Matrix preserva o que foi retirado. Não pode devolver os anos, nem trazer uma pessoa morta de volta.;n17.line3
+n17;n17.line3;line;ÁDALLY;Mas as pessoas que estão vivas precisam receber o que é delas.;n17.end
+n18;n18.line0;line;MELISSA;Os canais precisam ficar abertos até a distribuição terminar.;n18.line1
+n18;n18.line1;line;YGGNUS;Podemos manter o mecanismo juntos.;n18.line2
+n18;n18.line2;line;MELISSA;A válvula manual fica deste lado. Se todos ficarmos, ninguém leva a Matrix até a saída.;n18.line3
+n18;n18.line3;line;MELISSA;Eu abro. Vocês devolvem.;n18.line4
+n18;n18.line4;line;ÁDALLY;Melissa...;n18.line5
+n18;n18.line5;line;MELISSA;Vá ver sua cidade.;n18.end
+n19;n19.line0;line;IGRIS;A comporta está aberta. Yame Black soltou a trava interna!;n19.line1
+n19;n19.line1;line;ÁDALLY;Estamos chegando. Não feche ainda!;n19.end
+n20;n20.line0;line;MELISSA — COMUNICADOR;Se Aurélis voltar, me conte como ela é.;n20.line1
+n20;n20.line1;line;ÁDALLY;Melissa? O sinal está caindo.;n20.line2
+n20;n20.line2;line;IGRIS;Precisamos atravessar agora.;n20.line3
+n20;n20.line3;direction;SISTEMA;O comunicador silencia. O destino de Melissa não é confirmado.;n20.end
+f01;f01.line0;line;ÁDALLY;O observatório... o telhado não voltou.;f01.line1
+f01;f01.line1;line;YGGNUS;Há gente na praça.;f01.line2
+f01;f01.line2;line;MORINA;Ádally!;f01.line3
+f01;f01.line3;line;ÁDALLY;Você me reconheceu.;f01.line4
+f01;f01.line4;line;MORINA;Lembrei de você antes de lembrar o caminho. Venha. Esta rua ainda está de pé.;f01.end
+f02;f02.line0;line;MORINA;Não vou desenhar a casa como era. O muro caiu.;f02.line1
+f02;f02.line1;line;ÁDALLY;Desenhe o que está aqui. Depois marcamos o que queremos construir.;f02.line2
+f02;f02.line2;line;YGGNUS;Deixo as ferramentas com vocês?;f02.line3
+f02;f02.line3;line;ÁDALLY;Deixe duas cadeiras também. Ainda vamos precisar conversar muito.;f02.end
+f03;f03.line0;line;EXÓDIA;Estes são meus projetos, as alterações que aceitei e os avisos que ignorei.;f03.line1
+f03;f03.line1;line;MORADOR;Vai ajudar a reparar o que fez?;f03.line2
+f03;f03.line2;line;EXÓDIA;Vou. E os registros ficam com vocês. Não decido sozinha o que será feito deles.;f03.line3
+f03;f03.line3;line;YGGNUS;A oficina está aberta para quem quiser verificar.;f03.end
+f04;f04.line0;line;IGRIS;Um toque quando a linha estiver livre. Dois se precisar que eu espere.;f04.line1
+f04;f04.line1;direction;SISTEMA;Yame Black toca duas vezes a carcaça do comunicador.;f04.line2
+f04;f04.line2;line;IGRIS;Eu espero.;f04.end
+f05;f05.line0;line;ÁDALLY — CARTA;Morina está redesenhando as ruas comigo. Cobrimos o observatório até conseguirmos consertar a cúpula.;f05.line1
+f05;f05.line1;line;ÁDALLY — CARTA;Encontramos um lugar para a oficina. Ainda não tem portas. As cadeiras já estão aqui.;f05.line2
+f05;f05.line2;line;YGGNUS;Vou terminar este relógio primeiro.;f05.end
+f06;f06.line0;direction;SISTEMA;Yggnus ajusta a mola e acerta os ponteiros. O relógio bate doze vezes.;f06.line1
+f06;f06.line1;direction;SISTEMA;Ele espera. Não vem uma décima terceira badalada.;f06.line2
+f06;f06.line2;line;MORADOR — RUA;Bom dia! Você voltou cedo.;f06.line3
+f06;f06.line3;direction;SISTEMA;Uma carroça passa pelas pedras. O relógio continua seu movimento.;f06.line4
+f06;f06.line4;direction;SISTEMA;Yggnus abre a oficina. Encerramento da campanha.;f06.end
+o01;o01.line0;line;BARQUEIRA;Uma caixa de peças ficou no depósito da estrada. Não consigo abandonar o barco para buscá-la.;o01.line1
+o01;o01.line1;line;YGGNUS;Se estiver no caminho, eu trago.;o01.line2
+o01;o01.line2;line;BARQUEIRA;"Tem meu selo na tampa. Só peço que não abra; algumas peças cortam.";o01.end
+o02;o02.line0;line;BARQUEIRA;Essa mesma! O faroleiro vai conseguir terminar o reparo.;o02.line1
+o02;o02.line1;line;YGGNUS;O depósito ainda tem uma passagem atrás das caixas.;o02.line2
+o02;o02.line2;line;BARQUEIRA;Pode marcar no seu mapa. E leve esta bolsa reforçada. A capa de navegante estava com ela.;o02.line3
+o02;o02.line3;direction;SISTEMA;Capacidade de bolsa: 600 Bronze. Roupa Navegante desbloqueada.;o02.end
+o03;o03.line0;line;BARQUEIRO;Conheço cada tábua deste barco, mas não lembro o nome que pintei na proa.;o03.line1
+o03;o03.line1;line;ÁDALLY;Há um contorno sob a tinta. Podemos examinar com a Matrix.;o03.line2
+o03;o03.line2;line;BARQUEIRO;Se encontrarem, perguntem antes de pintar de novo. Talvez eu queira escolher outro.;o03.end
+o04;o04.line0;line;YGGNUS;O registro mostra o nome antigo. Quer que eu restaure?;o04.line1
+o04;o04.line1;line;BARQUEIRO;Quero guardar o registro. Na proa, vou escrever o nome da minha filha.;o04.line2
+o04;o04.line2;line;ÁDALLY;Podemos ajudá-lo com as letras.;o04.line3
+o04;o04.line3;direction;SISTEMA;O registro é entregue ao dono. Recompensa única registrada.;o04.end
+o05;o05.line0;line;MORADORA DO ÁLBUM;Encontrei fotografias soltas. Algumas não são da minha família.;o05.line1
+o05;o05.line1;line;ÁDALLY;Vamos comparar os lugares. Não precisamos inventar quem falta.;o05.line2
+o05;o05.line2;line;MORADORA DO ÁLBUM;Deixe as páginas vazias quando não souber. Eu espero.;o05.end
+o06;o06.line0;line;MORADORA DO ÁLBUM;Estas três voltaram para casa. As outras eu vou guardar até encontrar os donos.;o06.line1
+o06;o06.line1;line;YGGNUS;Os espaços podem continuar vazios por enquanto.;o06.line2
+o06;o06.line2;line;MORADORA DO ÁLBUM;Obrigada por não preenchê-los com qualquer história.;o06.end
+o07;o07.line0;line;MORINA;Eu desenhei a mesma janela em folhas diferentes. Não tinha percebido.;o07.line1
+o07;o07.line1;line;ÁDALLY;Ficava em frente à nossa sala de estudo.;o07.line2
+o07;o07.line2;line;MORINA;Posso ficar com uma cópia do seu mapa?;o07.line3
+o07;o07.line3;line;ÁDALLY;Claro. Vamos anotar o que sabemos e o que ainda não sabemos.;o07.line4
+o07;o07.line4;direction;SISTEMA;Terceiro frasco vazio e terceira capacidade recebidos, apenas uma vez.;o07.end
+o08;o08.line0;line;IGRIS;Achei que tivessem levado isto quando me ligaram à torre.;o08.line1
+o08;o08.line1;line;YGGNUS;O estojo estava no depósito, atrás da passagem do gancho.;o08.line2
+o08;o08.line2;line;IGRIS;As teclas ainda funcionam. Quero aprender uma música que não seja um aviso.;o08.end
+o09;o09.line0;line;FAROLEIRA;Sem esta luz, os barcos confundem o recife com a entrada do porto.;o09.line1
+o09;o09.line1;line;YGGNUS;Posso alinhar o espelho. Precisamos alcançar a lente superior.;o09.line2
+o09;o09.line2;line;ÁDALLY;Agora temos as botas e o gancho. Vamos examinar a estrutura.;o09.end
+o10;o10.line0;line;FAROLEIRA;A luz chegou ao outro lado da enseada.;o10.line1
+o10;o10.line1;line;YGGNUS;O espelho não precisa de energia das memórias. Só de manutenção.;o10.line2
+o10;o10.line2;line;FAROLEIRA;Leve a bolsa de navegante. Tem espaço para as peças das próximas viagens.;o10.line3
+o10;o10.line3;direction;SISTEMA;Capacidade de bolsa: 1.500 Bronze. Recompensa única.;o10.end
+o11;o11.line0;line;SOCORRISTA;A bancada voltou a funcionar. Posso preparar um frasco extra para sua viagem.;o11.line1
+o11;o11.line1;line;YGGNUS;Há mais gente precisando daqui.;o11.line2
+o11;o11.line2;line;SOCORRISTA;Os suprimentos estão separados. Este faz parte do kit de quem mantém as rotas abertas.;o11.line3
+o11;o11.line3;direction;SISTEMA;Quarta capacidade e quarto frasco vazio recebidos. Frascos não são preenchidos automaticamente.;o11.end
+h01;h01.line0;line;ÁDALLY;Os aros de manutenção têm uma abertura. Aponte o gancho para um deles e veja se o marcador responde.;h01.end
+h02;h02.line0;line;ÁDALLY;A cor da tubulação acompanha o desenho da válvula. Comece pela que deixa a escada central livre.;h02.end
+h03;h03.line0;line;ÁDALLY;Ouça a pausa. A voz repete a mesma respiração. Vamos procurar um sinal no chão antes de segui-la.;h03.end
+h04;h04.line0;line;ÁDALLY;Não precisa tocar depressa. Escolha uma sequência nova e repita os símbolos que ficaram marcados.;h04.end
+h05;h05.line0;line;ÁDALLY;Espere a fita do poste apontar para o lado. O próximo intervalo sem rajada é suficiente para atravessar.;h05.end
+h06;h06.line0;line;ÁDALLY;Ele não abre todas as placas de uma vez. Faça um som, observe qual se move e espere a janela.;h06.end
+h07;h07.line0;line;ÁDALLY;Cada retrato tem o mesmo pequeno símbolo de um registro. Todos os pares estão nesta sala.;h07.end
+h08;h08.line0;line;ÁDALLY;Confira o nome do destino antes de confirmar o canal. Podemos desfazer uma ligação errada.;h08.end
+sys01;sys01.line0;direction;SISTEMA;Ressonância insuficiente. Leitura e mecanismos de exploração continuam disponíveis.;sys01.end
+sys02;sys02.line0;direction;SISTEMA;Retorno ao último Marco de Memória. Equipamentos, registros e atalhos permanentes continuam preservados.;sys02.line1
+sys02;sys02.line1;direction;SISTEMA;A tentativa de combate é reiniciada. Não há perda de Bronze por morte.;sys02.end
+sys03;sys03.line0;direction;SISTEMA;Fragmento de Âncora recebido. Quatro fragmentos únicos aumentam a vida máxima em um ponto.;sys03.end
+sys04;sys04.line0;direction;SISTEMA;Bolsa cheia. Bronze excedente enviado à reserva da oficina.;sys04.end
+sys05;sys05.line0;line;EXÓDIA;Ainda não encontrou o operador?;sys05.line1
+sys05;sys05.line1;line;YGGNUS;Encontrei a oficina, mas a galeria dos sinos está bloqueada.;sys05.line2
+sys05;sys05.line2;line;EXÓDIA;Verifique os contrapesos. Os mecanismos da torre sempre deixavam uma passagem de manutenção.;sys05.end
+sys06;sys06.line0;direction;SISTEMA;Campanha concluída. Você pode revisitar o salvamento anterior ao confronto final.;sys06.line1
+sys06;sys06.line1;direction;SISTEMA;O epílogo permanece registrado. A roupa Reconstrutor de Aurélis fica disponível como bônus cosmético.;sys06.end
+x01a;x01a.line0;line;COMERCIANTE;Há uma venda a mais no livro. O dinheiro continua separado, mas não lembro a quem pertence.;x01a.line1
+x01a;x01a.line1;line;YGGNUS;A página está rasgada?;x01a.line2
+x01a;x01a.line2;line;COMERCIANTE;Inteira. Só a linha do nome ficou branca depois das badaladas.;x01a.line3
+x01a;x01a.line3;line;ÁDALLY;Podemos comparar a via do balcão com a encomenda no cais. Sem mexer no dinheiro por enquanto.;x01a.end
+x01b;x01b.line0;line;YGGNUS;As duas vias têm o mesmo carimbo. Nesta, o pão está marcado como doação.;x01b.line1
+x01b;x01b.line1;line;ÁDALLY;E a marca da água mostra que o papel do cais foi escrito antes da venda.;x01b.line2
+x01b;x01b.line2;line;COMERCIANTE;Eu cobrei uma entrega que já tinha prometido oferecer. Não preciso de um nome para corrigir isso.;x01b.end
+x01c;x01c.line0;line;COMERCIANTE;A reserva vai para a cozinha do porto, como estava combinado no recibo.;x01c.line1
+x01c;x01c.line1;line;YGGNUS;Deixe a explicação no livro. Se a pessoa lembrar, poderá conferir.;x01c.line2
+x01c;x01c.line2;line;COMERCIANTE;E leve este selo de preparo. Foi feito para abrir frascos com uma mão. Vocês vão precisar.;x01c.line3
+x01c;x01c.line3;direction;SISTEMA;Mistério resolvido. 30 Bronze e Selo do Restaurador recebidos uma única vez.;x01c.end
+x01d;x01d.line0;line;ÁDALLY;Esta marca não é uma assinatura. É o carimbo da entrega.;x01d.line1
+x01d;x01d.line1;line;ÁDALLY;Compare os dois horários escritos. Não precisamos esperar o relógio mudar.;x01d.end
+x02a;x02a.line0;line;IGRIS;Depois de cada sinal, eu ouvia um quarto toque. O comando mandava ignorá-lo.;x02a.line1
+x02a;x02a.line1;line;YGGNUS;Há só três sinos nesta galeria.;x02a.line2
+x02a;x02a.line2;line;IGRIS;Talvez alguém estivesse respondendo de outro lugar.;x02a.line3
+x02a;x02a.line3;line;ÁDALLY;Vamos procurar uma pausa no registro, não um quarto sino.;x02a.end
+x02b;x02b.line0;line;YGGNUS;O tubo de bronze sai daqui e termina na janela baixa.;x02b.line1
+x02b;x02b.line1;line;ÁDALLY;A placa mostra um chamado, uma resposta e uma pausa longa.;x02b.line2
+x02b;x02b.line2;line;IGRIS;Era o canal dos trabalhadores. O sinal dizia: estamos aqui.;x02b.end
+x02c;x02c.line0;direction;SISTEMA;Yggnus repete o chamado e aguarda a pausa indicada pelo mecanismo. Não há espera em tempo real.;x02c.line1
+x02c;x02c.line1;line;IGRIS;Eu ouvi. Agora pude responder.;x02c.line2
+x02c;x02c.line2;line;YGGNUS;A passagem abriu. Tem uma peça guardada no tubo.;x02c.line3
+x02c;x02c.line3;line;IGRIS;Mola de Retorno. Use-a. Prefiro que continue levando alguém para fora de um lugar fechado.;x02c.line4
+x02c;x02c.line4;direction;SISTEMA;50 Bronze e Mola de Retorno recebidos uma única vez.;x02c.end
+x02d;x02d.line0;line;IGRIS;O silêncio também está desenhado na placa. Repita o primeiro sinal, depois escolha a pausa longa.;x02d.end
+x03a;x03a.line0;line;MECÂNICA DO CAIS;As lanternas de emergência apontam para um corredor que alaga.;x03a.line1
+x03a;x03a.line1;line;YGGNUS;Alguém as virou?;x03a.line2
+x03a;x03a.line2;line;MECÂNICA DO CAIS;Não sei. Mas uma equipe seguiu as setas antes do apagamento.;x03a.line3
+x03a;x03a.line3;line;ÁDALLY;Os sinais antigos podem estar preservados debaixo dos novos.;x03a.end
+x03b;x03b.line0;line;ÁDALLY;O desgaste do chão vai na direção contrária às setas.;x03b.line1
+x03b;x03b.line1;line;YGGNUS;E o desenho da água mostra a altura em que o corredor ficava seguro.;x03b.line2
+x03b;x03b.line2;line;ÁDALLY;Vamos comparar as lanternas com o canal no nível baixo.;x03b.end
+x03c;x03c.line0;line;YGGNUS;As setas apontavam para o abrigo quando vistas pelo espelho da água.;x03c.line1
+x03c;x03c.line1;line;ÁDALLY;Há um registro de saída. A equipe conseguiu chegar ao cais.;x03c.line2
+x03c;x03c.line2;line;MECÂNICA DO CAIS;Eu não lembrava que tinham escapado. Obrigada por trazer o registro inteiro.;x03c.line3
+x03c;x03c.line3;direction;SISTEMA;70 Bronze e Fivela de Lastro recebidos. O abrigo fica marcado no mapa.;x03c.end
+x03d;x03d.line0;line;ÁDALLY;As setas parecem erradas vistas daqui. Procure a posição em que o espelho d'água permite ler o desenho.;x03d.end
+x04a;x04a.line0;line;MORADORA DO ÁLBUM;Este retrato perdeu o rosto. Todo mundo quer me dizer quem estava nele.;x04a.line1
+x04a;x04a.line1;line;ÁDALLY;Você reconhece o lugar?;x04a.line2
+x04a;x04a.line2;line;MORADORA DO ÁLBUM;A janela. Não a pessoa.;x04a.line3
+x04a;x04a.line3;line;YGGNUS;Podemos começar pela janela, sem inventar um rosto.;x04a.end
+x04b;x04b.line0;line;ÁDALLY;O reflexo tem três arcos. Só um prédio do cais aparece desse ângulo.;x04b.line1
+x04b;x04b.line1;line;YGGNUS;A moldura guarda a data de uma inauguração, não de um aniversário.;x04b.line2
+x04b;x04b.line2;line;ÁDALLY;Então o retrato pode registrar um lugar de encontro, não uma pessoa da família.;x04b.end
+x04c;x04c.line0;line;MORADORA DO ÁLBUM;É a abertura do abrigo. Eu guardava a foto para lembrar que a porta estava sempre aberta.;x04c.line1
+x04c;x04c.line1;line;YGGNUS;O rosto ainda não voltou.;x04c.line2
+x04c;x04c.line2;line;MORADORA DO ÁLBUM;Pode ficar assim. O que descobrimos já é verdadeiro.;x04c.line3
+x04c;x04c.line3;direction;SISTEMA;60 Bronze e Bússola de Aurélis recebidos. Nenhum rosto é preenchido automaticamente.;x04c.end
+x04d;x04d.line0;line;ÁDALLY;Não escolha uma pessoa pela roupa. Os arcos no reflexo permitem descobrir onde a fotografia foi feita.;x04d.end
+x05a;x05a.line0;line;FAROLEIRA;Meu diário diz que um barco respondeu antes de eu acender a luz.;x05a.line1
+x05a;x05a.line1;line;YGGNUS;O relógio estava errado?;x05a.line2
+x05a;x05a.line2;line;FAROLEIRA;Conferi com a torre. Mas a resposta vinha sempre do mesmo recife.;x05a.line3
+x05a;x05a.line3;line;ÁDALLY;Talvez o que chegou primeiro não tenha vindo do barco.;x05a.end
+x05b;x05b.line0;line;YGGNUS;Há um espelho preso na rocha. Ele recebe luz da janela de serviço.;x05b.line1
+x05b;x05b.line1;line;ÁDALLY;O registro da torre marca o aviso. O do cais marca a chegada. Estávamos comparando acontecimentos diferentes.;x05b.line2
+x05b;x05b.line2;line;FAROLEIRA;Então aquela resposta era o meu próprio sinal, refletido.;x05b.end
+x05c;x05c.line0;line;YGGNUS;Alinhei os dois sinais. Agora a resposta do barco fica separada do reflexo.;x05c.line1
+x05c;x05c.line1;line;FAROLEIRA;Vou corrigir o diário sem apagar o erro. Alguém pode precisar entender o que houve.;x05c.line2
+x05c;x05c.line2;line;ÁDALLY;Foi assim que encontramos a pista.;x05c.line3
+x05c;x05c.line3;direction;SISTEMA;100 Bronze e Lente de Maré recebidos uma única vez.;x05c.end
+x05d;x05d.line0;line;ÁDALLY;"Os registros não medem a mesma coisa. Compare o símbolo do aviso com o da chegada; não procure mudar a hora do seu computador.";x05d.end
+x06a;x06a.line0;line;ÁDALLY;O mesmo relatório aparece três vezes. Só a última frase muda.;x06a.line1
+x06a;x06a.line1;line;YGGNUS;O Copista preservou a assinatura em todas as versões.;x06a.line2
+x06a;x06a.line2;line;ÁDALLY;Vamos conferir os números das revisões antes de confiar no texto.;x06a.end
+x06b;x06b.line0;line;YGGNUS;A primeira versão dizia distribuir. Na segunda, alguém substituiu por armazenar.;x06b.line1
+x06b;x06b.line1;line;ÁDALLY;A terceira manda interromper antes de qualquer coisa. É o contrário do que Exódia explicou.;x06b.line2
+x06b;x06b.line2;line;YGGNUS;Os carimbos mostram a ordem das mudanças. A frase mais recente não é necessariamente a correta.;x06b.end
+x06c;x06c.line0;line;ÁDALLY;Distribuir antes de interromper. O relatório original deixou uma cópia no registro de manutenção.;x06c.line1
+x06c;x06c.line1;line;YGGNUS;Agora temos as alterações e a origem. Nenhuma precisa desaparecer.;x06c.line2
+x06c;x06c.line2;direction;SISTEMA;"90 Bronze e Afinador de Eco recebidos. O registro público vai para o diário; a gravação de Lívia continua privada.";x06c.end
+x06d;x06d.line0;line;ÁDALLY;Ordene pelos números de revisão gravados no selo. Depois compare com o registro independente da manutenção.;x06d.end
+x07a;x07a.line0;line;IGRIS;O ponteiro deste aparelho treme mesmo com a rede desligada.;x07a.line1
+x07a;x07a.line1;line;YGGNUS;Alguma fonte ainda está alimentando a bobina.;x07a.line2
+x07a;x07a.line2;line;IGRIS;Yame Black encontrou uma portinhola, mas não consegue abri-la sozinho.;x07a.line3
+x07a;x07a.line3;line;ÁDALLY;Vamos ver o que há do outro lado antes de ligar qualquer coisa.;x07a.end
+x07b;x07b.line0;line;YGGNUS;Não é uma memória presa. É uma mola carregada.;x07b.line1
+x07b;x07b.line1;line;ÁDALLY;O desenho da tampa mostra duas travas que precisam ficar abertas juntas.;x07b.line2
+x07b;x07b.line2;line;IGRIS;Eu seguro uma. Yame Black pode alcançar a outra, se quiser.;x07b.end
+x07c;x07c.line0;direction;SISTEMA;Yame Black dá um toque, espera Igris responder e solta a segunda trava.;x07c.line1
+x07c;x07c.line1;line;IGRIS;Vocês não precisam obedecer a um comando para trabalhar juntos.;x07c.line2
+x07c;x07c.line2;line;YGGNUS;A mola está segura. E esse broche estava protegendo a bobina.;x07c.line3
+x07c;x07c.line3;line;IGRIS;Broche da Vigília. Ele pode ajudar você a sentir o instante de um impacto.;x07c.line4
+x07c;x07c.line4;direction;SISTEMA;80 Bronze e Broche da Vigília recebidos uma única vez.;x07c.end
+x07d;x07d.line0;line;ÁDALLY;As travas precisam ficar abertas juntas. Você não precisa ser a única pessoa a fazer tudo.;x07d.end
+x08a;x08a.line0;line;MORINA;Desenhei este corredor com uma faixa branca no meio. Pensei que estivesse faltando alguma coisa.;x08a.line1
+x08a;x08a.line1;line;ÁDALLY;Você tentou completar?;x08a.line2
+x08a;x08a.line2;line;MORINA;Não. Lembrei do que combinamos: deixar espaço quando não souber.;x08a.line3
+x08a;x08a.line3;line;YGGNUS;Talvez a faixa também seja uma pista.;x08a.end
+x08b;x08b.line0;line;ÁDALLY;Os desenhos só se alinham se deixarmos a margem vazia entre eles.;x08b.line1
+x08b;x08b.line1;line;YGGNUS;A luz passa por ela e mostra uma alavanca do outro lado.;x08b.line2
+x08b;x08b.line2;line;MORINA — COMUNICADOR;Então eu estava desenhando uma passagem, não uma parede.;x08b.end
+x08c;x08c.line0;line;YGGNUS;O abrigo ficou preservado fora do canal principal. Há um instrumento de calibração aqui.;x08c.line1
+x08c;x08c.line1;line;ÁDALLY;E uma lista de quem saiu antes do apagamento. Vamos entregar uma cópia a Morina.;x08c.line2
+x08c;x08c.line2;line;MORINA — COMUNICADOR;Deixem as margens no mapa novo. Quero lembrar como vocês encontraram isso.;x08c.line3
+x08c;x08c.line3;direction;SISTEMA;120 Bronze e Anel de Calibração recebidos uma única vez.;x08c.end
+x08d;x08d.line0;line;ÁDALLY;As páginas não precisam encostar. Alinhe os arcos mantendo a faixa vazia entre os desenhos.;x08d.end

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base": {
+    "healing": {
+      "startup": 0.65,
+      "recovery": 0.2
+    },
+    "hook": {
+      "return_cooldown": 0.35
+    },
+    "player": {
+      "knockback_max": 18,
+      "speed": 110
+    },
+    "exploration": {
+      "unique_pickup_sense_radius": 0,
+      "read_radius": 80
+    },
+    "magic": {
+      "pulso": {
+        "cost": 10,
+        "cooldown": 1.0,
+        "radius": 44
+      }
+    },
+    "guard": {
+      "perfect_window": 0.11
+    }
+  },
+  "rule": "Rebuild current parameters from base, then apply exactly one active relic. Never modify base in place."
+}

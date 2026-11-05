@@ -25,3 +25,34 @@ framework:
 # here. `/settings --local <key>=<value>` writes there; `/settings <key>=<value>`
 # edits this file. See `.claude/docs/config-resolution.md` for the full
 # precedence order.
+
+project:
+  name: "A Lenda de Yggnus"
+
+engine:
+  name: "Godot"
+  version: "4.7.2"
+  language: "GDScript"
+  rendering: "Forward+"
+  physics: "Godot Physics 2D"
+
+specialists:
+  code: "godot-gdscript-specialist"
+  shader: "godot-shader-specialist"
+  ui: "godot-specialist"
+  additional: ["godot-gdextension-specialist"]
+
+naming:
+  classes: PascalCase
+  variables: snake_case
+  constants: SCREAMING_SNAKE
+  signals: past_tense
+  files: snake_case
+  scenes: snake_case
+
+# godot is not on PATH in every environment; set engine.path via /settings if needed.
+commands:
+  build: "[TO BE CONFIGURED]"
+  test: "godot --headless --path . -s res://tests/run_tests.gd"
+  run: "godot --path . --windowed --resolution 1280x720"
+  smoke: "godot --headless --path . --quit-after 5"

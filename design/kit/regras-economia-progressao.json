@@ -1,0 +1,69 @@
+{
+  "titulo": "A Lenda de Yggnus",
+  "versao": "1.0",
+  "status": "Proposta de balanceamento; nao implementado",
+  "vida": {
+    "inicial": 6,
+    "maxima": 14,
+    "fragmentos_unicos": 32,
+    "fragmentos_por_melhoria": 4
+  },
+  "ressonancia": {
+    "inicial": 60,
+    "ampliadores": 2,
+    "aumento_por_ampliador": 30,
+    "maxima": 120
+  },
+  "moeda": {
+    "nome": "Bronze",
+    "valores_de_coleta": [
+      1,
+      5,
+      20,
+      100
+    ],
+    "capacidades_de_bolsa": [
+      200,
+      600,
+      1500
+    ],
+    "excedente": "Reserva da oficina, com aviso"
+  },
+  "precos": {
+    "pao_de_porto": 5,
+    "recarga_restauradora": 20,
+    "essencia_ressonancia": 15,
+    "tres_cargas": 12,
+    "po_revelacao": 10,
+    "reparo_opcional": 60,
+    "tinta_cosmetica": 40
+  },
+  "recuperacao": {
+    "pao_vida": 1,
+    "frasco_vida": 3,
+    "essencia_energia": 30
+  },
+  "magias": {
+    "leitura": 0,
+    "pulso": 10,
+    "fio_combate": 15,
+    "fio_enigma": 0,
+    "lanterna_combate": 8,
+    "lanterna_leitura": 0,
+    "acorde_vivo": 0,
+    "veu": 25
+  },
+  "frascos": {
+    "espacos_iniciais": 2,
+    "frascos_vazios_iniciais": 1,
+    "espacos_maximos": 4
+  },
+  "skins": {
+    "cosmeticas": true,
+    "total": 6,
+    "compra_de_poder": false
+  },
+  "progressao_por_experiencia": false,
+  "equipamentos_de_campanha_compraveis": false,
+  "recompensas_unicas_repetiveis": false
+}

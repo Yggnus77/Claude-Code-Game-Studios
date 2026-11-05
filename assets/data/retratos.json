@@ -1,0 +1,14 @@
+{
+  "portraits": {
+    "YGGNUS": "../referencias/roteiro/personagens/yggnus.png",
+    "ÁDALLY": "../referencias/roteiro/personagens/adally.png",
+    "MELISSA": "../referencias/roteiro/personagens/melissa.png",
+    "EXÓDIA": "../referencias/roteiro/personagens/exodia.png",
+    "IGRIS": "../referencias/roteiro/personagens/igris.png",
+    "MORINA": "../referencias/roteiro/personagens/morina.png",
+    "LÍVIA": "../referencias/roteiro/personagens/livia.png",
+    "YAME BLACK": "../referencias/roteiro/personagens/yame-black.png",
+    "DEVORADOR DE ECOS": "../referencias/roteiro/personagens/devorador-de-ecos.png"
+  },
+  "unlisted_speakers": "Use role label and neutral portrait; do not duplicate another character identity."
+}
