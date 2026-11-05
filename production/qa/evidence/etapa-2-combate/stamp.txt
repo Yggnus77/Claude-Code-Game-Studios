@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: src/player/player.gd a0d7306238e9a585fb58383d7e268500535ce57a
+Reviewed-Content-Hash: src/combat/dodge.gd 2d023be93825a2f4a38d46f3d8a0aff026e5824a
+Reviewed-Content-Hash: src/combat/guard.gd 3ba12eda3f34c5f572e3c809e903c5234413524d
+Reviewed-Content-Hash: src/combat/health.gd 77a37c76846b745b654584be2528b3fcbe40ced5
+Reviewed-Content-Hash: src/combat/hit_resolver.gd 221d0b69b205e596e1553d8cd7d590517a98d5d9
+Reviewed-Content-Hash: src/combat/sword_combo.gd c7c3f816bad583295d3ce830610e4dc72920fd44
+Reviewed-Content-Hash: src/enemies/rastejo.gd 6c09c60fd87f4ec0d11c5b7e58140b82578b8bac
+Reviewed-Content-Hash: src/ui/hud.gd c5969356d8996d3777a7ee21d14c4639a17f66fc
+Reviewed-Content-Hash: src/main.gd fecc0bbc551d30ac61919bf0c57049286839324e
+Reviewed-Content-Hash: src/core/game_config.gd f8d58edda41670d412fe1fc64eed17f5d168eb5b
+Reviewed-Content-Hash: assets/data/inimigos.json 16a89c68335745d1ddb1bb8898743391098d06d0

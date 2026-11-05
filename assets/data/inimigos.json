@@ -14,7 +14,15 @@
       "repeatable_drop": "bronze_1",
       "hp_per_unit": false,
       "weakness_without_hook": null,
-      "unique_reward_receipt": null
+      "unique_reward_receipt": null,
+      "perception_range": 112,
+      "attack_range": 64,
+      "lock_direction_before": 0.2,
+      "charge_speed": 150,
+      "charge_duration": 0.35,
+      "hitstun": 0.2,
+      "knockback": 10,
+      "body_radius": 7
     },
     {
       "id": "mariposa_papel",
