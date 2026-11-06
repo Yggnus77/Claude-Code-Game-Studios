@@ -35,6 +35,11 @@ var read_input := true
 var input_override := Vector2.ZERO
 ## Guard button state used when [member read_input] is false.
 var guard_override := false
+## False until the sword is in the inventory: a new game starts unarmed
+## (plano-implementacao.md Etapa 4); attack presses are ignored.
+var has_sword := true
+## False until the shield is in the inventory: the guard button does nothing.
+var has_shield := true
 
 var _hitstun := 0.0
 var _hitstun_time := 0.18
@@ -85,7 +90,7 @@ func set_camera_limits(size_px: Vector2i) -> void:
 
 ## Queues a sword press (same as the attack action).
 func request_attack() -> void:
-	if combo:
+	if combo and has_sword:
 		combo.request()
 
 
@@ -184,7 +189,7 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 		return
 
-	guard.set_held(guard_pressed and not combo.is_busy())
+	guard.set_held(guard_pressed and has_shield and not combo.is_busy())
 	if guard.is_up():
 		combo.reset()
 		velocity = motor.step(velocity, input, delta, guard.speed_factor)

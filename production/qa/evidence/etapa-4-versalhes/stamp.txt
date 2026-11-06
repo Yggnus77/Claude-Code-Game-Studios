@@ -1,0 +1,7 @@
+Reviewed-Content-Hash: src/main.gd 3e5f8bfe3e7068ce543ac043ce52da0cc25bf0cb
+Reviewed-Content-Hash: src/story/prologue.gd ab36057fa5eca6eaec5d115f99188e7e7e1ee94a
+Reviewed-Content-Hash: src/story/yame_invasion.gd 4950c4352077e8fca9f8b59288f36dd41dd52709
+Reviewed-Content-Hash: src/player/player.gd 11c186a47f913e78f19f69a7bff7a7fb621b0b70
+Reviewed-Content-Hash: src/ui/hud.gd 22f47565d5bd4c7ddebfee2c06e0957f36732cd1
+Reviewed-Content-Hash: src/world/room.gd d5a6ba3740b4c3fe09d35c13b243e4af40e60b31
+Reviewed-Content-Hash: src/core/game_config.gd fba101dbe18b63b29d5adfa607d84cb00220f91e

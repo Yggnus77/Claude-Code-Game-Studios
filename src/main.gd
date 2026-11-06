@@ -53,6 +53,12 @@ var _transitioning := false
 var _fade: ColorRect
 ## Chest whose story scene is playing: its receipt is added when the scene ends.
 var _pending_chest_receipt := ""
+## Prologue rules (Etapa 4) and the running Yame Black invasion, if any.
+var prologue: Prologue
+var invasion: YameInvasion
+## A new game starts unarmed. Playtests and tests that skip the intro (or
+## start in another room) get the sword and shield, unless this is true.
+var start_unarmed := false
 
 @onready var hud: Hud = $Hud
 @onready var pause_overlay: PauseOverlay = $PauseOverlay
@@ -61,6 +67,13 @@ var _pending_chest_receipt := ""
 func _ready() -> void:
 	config = GameConfig.load_all()
 	state = GameState.new()
+	prologue = Prologue.new(config.encounter("yame_oficina"))
+	if not start_unarmed and (not play_intro or _arg("--room=", DEFAULT_ROOM) != DEFAULT_ROOM or "--gear" in OS.get_cmdline_user_args()):
+		# Same receipts as scene p05, so the scene never hands them out twice.
+		state.apply([
+			{"op": "grant_unique", "item_id": "espada_oficina", "quantity": 1, "receipt_id": "scene.p05.espada_oficina"},
+			{"op": "grant_unique", "item_id": "escudo_bronze", "quantity": 1, "receipt_id": "scene.p05.escudo_bronze"},
+		])
 	var preset := _arg("--flags=", "")
 	if not preset.is_empty():
 		var effects := []
@@ -86,7 +99,9 @@ func _ready() -> void:
 	add_child(fade_layer)
 	hud.bind_state(state)
 	state.changed.connect(func() -> void: if room: room.queue_redraw())
+	state.changed.connect(_refresh_story)
 	load_room(_arg("--room=", DEFAULT_ROOM))
+	_refresh_story()
 	dialogue.player_busy = func() -> bool: return player.is_busy() or player.is_dead()
 	var walk := _arg("--autowalk=", "")
 	if not walk.is_empty() and player:
@@ -107,6 +122,7 @@ func _ready() -> void:
 		player.motor.facing = Vector2.UP
 	if play_intro and room_id == DEFAULT_ROOM:
 		dialogue.request.call_deferred("nova_partida")
+	_on_room_entered.call_deferred()
 
 
 ## Builds [param id] and places the player on [param entry] (the room's
@@ -128,6 +144,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 		player.configure(config)
 		add_child(player)
 		player.died.connect(_on_player_died)
+		player.hit_taken.connect(_on_player_hit)
 		if hud:
 			hud.bind(player.health)
 	var tile := entry if entry.x >= 0 else data.entry_default
@@ -140,6 +157,57 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 		if ENEMY_SCRIPTS.has(kind):
 			var t: Array = entity.get("tile", [0, 0])
 			spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
+	_sync_invasion()
+
+
+## Starts or removes the Yame Black invasion to match the story state.
+func _sync_invasion() -> void:
+	var wanted := room_id == Prologue.WORKSHOP and prologue.invasion_active(state)
+	if wanted and prologue.all_bindings_cut(state):
+		# Cut before a death or a reload, scene not seen yet: finish it now.
+		wanted = false
+		dialogue.request.call_deferred("tres_amarras_cortadas")
+	if invasion and is_instance_valid(invasion) and (not wanted or invasion.room_data != room.data):
+		invasion.queue_free()
+		invasion = null
+	if wanted and invasion == null:
+		invasion = YameInvasion.new()
+		invasion.setup(config.encounter("yame_oficina"), state, prologue, room.data, player)
+		invasion.thrown.connect(func(_paper: Node2D) -> void: dialogue.request(str(invasion.def.get("hint_bark", ""))))
+		invasion.binding_cut.connect(_on_binding_cut)
+		invasion.cleared.connect(_on_invasion_cleared)
+		add_child(invasion)
+		move_child(invasion, 1)
+
+
+func _on_binding_cut(_binding_id: String, left: int) -> void:
+	hud.toast("Amarra cortada!" if left > 0 else "A última amarra se rompeu!")
+
+
+func _on_invasion_cleared() -> void:
+	invasion = null
+	dialogue.request(str(config.encounter("yame_oficina").get("success_event", "tres_amarras_cortadas")))
+
+
+func _on_player_hit(outcome: HitResolver.Outcome) -> void:
+	if outcome == HitResolver.Outcome.HIT and invasion != null:
+		dialogue.request(str(invasion.def.get("hint_bark", "")))
+
+
+## Raises the story trigger of the room just entered, if any.
+func _on_room_entered() -> void:
+	var trigger := prologue.trigger_on_enter(state, room_id)
+	if not trigger.is_empty():
+		dialogue.request(trigger)
+
+
+## Follows the story state: weapons in hand and the objective line.
+func _refresh_story() -> void:
+	if player:
+		player.has_sword = state.item_count("espada_oficina") > 0
+		player.has_shield = state.item_count("escudo_bronze") > 0
+	if hud:
+		hud.set_objective(prologue.objective(state))
 
 
 ## Adds enemy [param kind] on [param tile]. Returns it, or null if unknown.
@@ -159,6 +227,8 @@ func clear_enemies() -> void:
 		if is_instance_valid(e):
 			e.queue_free()
 	enemies.clear()
+	for paper in get_tree().get_nodes_in_group("projectiles"):
+		paper.queue_free()
 
 
 func _physics_process(delta: float) -> void:
@@ -265,10 +335,14 @@ func interact() -> String:
 			return "nothing"
 
 
-func _on_scene_finished(_scene_id: String, applied: bool) -> void:
+func _on_scene_finished(scene_id: String, applied: bool) -> void:
 	if applied and not _pending_chest_receipt.is_empty():
 		state.apply([{"op": "add_receipt", "receipt_id": _pending_chest_receipt}])
 	_pending_chest_receipt = ""
+	var next := prologue.trigger_after(scene_id)
+	if not next.is_empty():
+		dialogue.request.call_deferred(next)
+	_sync_invasion.call_deferred()
 
 
 func _pick_up_fragments() -> void:
@@ -294,6 +368,8 @@ func _pick_up_fragments() -> void:
 
 ## Whether [param door] can be used with the current progress.
 func is_door_open(door: Dictionary) -> bool:
+	if prologue.blocks_door(state, room_id, str(door.get("id", ""))):
+		return false
 	var gate: Variant = door.get("gate")
 	if gate == null or str(gate).is_empty():
 		return true
@@ -329,7 +405,7 @@ func _check_doors() -> void:
 		if not is_door_open(door):
 			if _locked_notice != here:
 				_locked_notice = here
-				hud.toast("A passagem está fechada.")
+				hud.toast("As amarras de Yame prendem a porta." if prologue.blocks_door(state, room_id, here) else "A passagem está fechada.")
 			return
 		_go_through(door)
 
@@ -354,6 +430,7 @@ func _go_through(door: Dictionary) -> void:
 	await back.finished
 	get_tree().paused = false
 	_transitioning = false
+	_on_room_entered()
 
 
 ## Playtest helper: spawns [param kind] about five tiles from the player,

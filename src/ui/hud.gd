@@ -13,6 +13,7 @@ var _banner: Label
 var _bronze: Label
 var _toast: Label
 var _toast_left := 0.0
+var _objective: Label
 var _inventory: PanelContainer
 var _inventory_text: Label
 var _current := 0
@@ -42,6 +43,15 @@ func _ready() -> void:
 	_bronze.add_theme_font_size_override("font_size", 10)
 	_bronze.add_theme_color_override("font_color", Color("d9a441"))
 	add_child(_bronze)
+	_objective = Label.new()
+	_objective.position = Vector2(232, 4)
+	_objective.size = Vector2(400, 16)
+	_objective.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_objective.add_theme_font_size_override("font_size", 10)
+	_objective.add_theme_color_override("font_color", Color("f2e6c4"))
+	_objective.add_theme_color_override("font_outline_color", Color.BLACK)
+	_objective.add_theme_constant_override("outline_size", 4)
+	add_child(_objective)
 	_toast = Label.new()
 	_toast.position = Vector2(16, 244)
 	_toast.size = Vector2(608, 20)
@@ -139,6 +149,16 @@ func toggle_inventory(state: GameState, config: GameConfig) -> void:
 
 
 ## Shows a centred message, or hides it with an empty string.
+## Shows the current goal in the top-right corner; empty hides it.
+func set_objective(text: String) -> void:
+	_objective.text = "► " + text if not text.is_empty() else ""
+
+
+## The objective text on screen (for tests).
+func objective_text() -> String:
+	return _objective.text
+
+
 func show_banner(text: String) -> void:
 	_banner.text = text
 	_banner.visible = not text.is_empty()
