@@ -154,7 +154,7 @@ func _refresh() -> void:
 			_choices.add_child(l)
 	else:
 		var speaker := str(n.get("speaker", ""))
-		_speaker.text = "" if speaker == "SISTEMA" else speaker.capitalize()
+		_speaker.text = "" if speaker == "SISTEMA" else display_name(speaker)
 		_text.text = str(n.get("text", ""))
 		_text.modulate = Color(0.75, 0.85, 1.0) if n.get("type", "") == "direction" else Color.WHITE
 	_hint.text = "%s continuar · %s pular cena · %s histórico" % [_key("interact"), _key("skip_scene"), _key("history")]
@@ -164,8 +164,18 @@ func _refresh_history() -> void:
 	var lines := PackedStringArray()
 	for h in runner.history:
 		var who := str(h["speaker"])
-		lines.append(("%s: %s" % [who.capitalize(), h["text"]]) if who != "SISTEMA" and not who.is_empty() else "(%s)" % h["text"])
+		lines.append(("%s: %s" % [display_name(who), h["text"]]) if who != "SISTEMA" and not who.is_empty() else "(%s)" % h["text"])
 	_history.text = "\n".join(lines)
+
+
+## "MECÂNICA DO CAIS" → "Mecânica do Cais": title case, but Portuguese
+## particles (de, do, da, dos, das, e) stay lower case after the first word.
+static func display_name(speaker: String) -> String:
+	var words := speaker.to_lower().split(" ")
+	for i in words.size():
+		if i == 0 or not ["de", "do", "da", "dos", "das", "e"].has(words[i]):
+			words[i] = words[i].left(1).to_upper() + words[i].substr(1)
+	return " ".join(words)
 
 
 ## Name of the first key bound to [param action] (reflects remapping).

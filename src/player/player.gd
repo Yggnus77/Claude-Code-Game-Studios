@@ -27,6 +27,11 @@ var combo: SwordCombo
 var dodge: Dodge
 var guard: Guard
 var health: Health
+var healing: Healing
+## Returns the life the best healing item would restore now (0 = none).
+var heal_source: Callable = func() -> int: return 0
+## Consumes that item at the effect frame; false if it is gone.
+var heal_commit: Callable = func() -> bool: return false
 ## Size of the drawn placeholder sprite (combate.json player.sprite_frame).
 var sprite_frame := Vector2(32, 48)
 ## When false the node ignores the input map; tests drive the fields below.
@@ -65,6 +70,7 @@ func configure(config: GameConfig) -> void:
 	combo = SwordCombo.new(config.combo(), config.weapon_damage("espada_oficina"), buffer)
 	dodge = Dodge.new(config.dodge(), buffer)
 	guard = Guard.new(config.guard())
+	healing = Healing.new(config.data.get("healing", {}))
 	health = Health.new(config.starting_life(), float(p.get("damage_invulnerability", 0.75)))
 	health.died.connect(_on_died)
 	_hitstun_time = float(p.get("hitstun", 0.18))
@@ -108,13 +114,24 @@ func respawn_at(pos: Vector2) -> void:
 	combo.reset()
 	dodge.reset()
 	guard.reset()
+	healing.reset()
 	health.reset()
 	reset_physics_interpolation()
 
 
-## True while attacking, dodging or stunned: story scenes wait for this to end.
+## Starts drinking a flask (or eating bread). False at full life, with
+## nothing to use, or while busy.
+func request_heal() -> bool:
+	if healing == null or is_dead() or health.current >= health.maximum:
+		return false
+	if combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0:
+		return false
+	return healing.start(int(heal_source.call()))
+
+
+## True while attacking, dodging, healing or stunned: story scenes wait for this to end.
 func is_busy() -> bool:
-	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0
+	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or (healing != null and healing.is_busy())
 
 
 func is_dead() -> bool:
@@ -137,6 +154,7 @@ func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: b
 
 func _start_hitstun(from: Vector2, seconds: float) -> void:
 	combo.cancel()
+	healing.interrupt()
 	_hitstun = seconds
 	var away := (global_position - from).normalized()
 	if away == Vector2.ZERO:
@@ -148,8 +166,10 @@ func _start_hitstun(from: Vector2, seconds: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not read_input or is_dead():
 		return
-	if event.is_action_pressed("attack"):
+	if event.is_action_pressed("attack") and not healing.is_busy():
 		request_attack()
+	elif event.is_action_pressed("item"):
+		request_heal()
 	elif event.is_action_pressed("dodge"):
 		request_dodge()
 
@@ -178,6 +198,16 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 		return
 
+	if healing.is_busy():
+		var restored := healing.tick(delta)
+		if restored > 0 and heal_commit.call():
+			health.heal(restored)
+		if healing.is_busy() and not dodge.wants_to_start():
+			velocity = motor.step(velocity, input, delta, healing.speed_factor())
+			move_and_slide()
+			queue_redraw()
+			return
+		healing.interrupt()
 	# Priority: dodge > guard > attack > movement (mecanicas §3).
 	if dodge.wants_to_start() and combo.can_cancel():
 		combo.cancel()
@@ -247,6 +277,8 @@ func _draw() -> void:
 	draw_circle(Vector2(0, -h * 0.8), w * 0.22, Color(COLOR_BODY, alpha))
 	var f := motor.facing if motor else Vector2.DOWN
 	draw_circle(Vector2(0, -h * 0.4) + f * w * 0.35, 3.0, COLOR_FACING)
+	if healing and healing.phase == Healing.Phase.USING:
+		draw_arc(Vector2(0, -h - 4), 4.0, 0, TAU, 10, Color("e05a5a"), 2.0)
 	if guard and guard.is_up():
 		var c := COLOR_PERFECT if guard.is_perfect() or _last_outcome_flash > 0.0 else COLOR_SHIELD
 		var center := f * 10.0 + Vector2(0, -8)

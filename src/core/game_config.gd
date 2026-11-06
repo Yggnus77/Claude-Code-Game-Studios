@@ -13,6 +13,7 @@ const PROGRESSION_PATH := "res://assets/data/economia-progressao.json"
 const ITEMS_PATH := "res://assets/data/itens.json"
 const REWARDS_PATH := "res://assets/data/recompensas-mundo.json"
 const ENCOUNTERS_PATH := "res://assets/data/chefes.json"
+const MYSTERIES_PATH := "res://assets/data/misterios.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -28,6 +29,8 @@ var rewards: Dictionary = {}
 var fragments: Dictionary = {}
 ## Boss and story encounters from chefes.json, keyed by id.
 var encounters: Dictionary = {}
+## Optional mysteries from misterios.json, keyed by id.
+var mysteries: Dictionary = {}
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -51,6 +54,8 @@ static func load_all() -> GameConfig:
 		cfg.fragments[str(f["id"])] = f
 	for e in read_json(ENCOUNTERS_PATH).get("encounters", []):
 		cfg.encounters[str(e["id"])] = e
+	for m in read_json(MYSTERIES_PATH).get("mysteries", []):
+		cfg.mysteries[str(m["id"])] = m
 	return cfg
 
 
@@ -108,6 +113,17 @@ func guard() -> Dictionary:
 ## Definition of enemy [param id], or an empty Dictionary.
 func enemy(id: String) -> Dictionary:
 	return enemies.get(id, {})
+
+
+## Flags a clue setting [param clue_flag] waits for before it can be noted:
+## the owning mystery's "requires_flags" (m01 opens after Igris's record,
+## seen.t11). Empty when the clue belongs to no mystery.
+func clue_requirements(clue_flag: String) -> Array:
+	for m in mysteries.values():
+		for c in m.get("clues", []):
+			if str(c.get("id", "")) == clue_flag:
+				return m.get("requires_flags", [])
+	return []
 
 
 ## Encounter [param id] from chefes.json, or {}.

@@ -94,6 +94,6 @@ func objective(state: GameState) -> String:
 		return "Corte as amarras da porta (%d/%d). Defenda os papéis com o escudo." % [total - bindings_left(state).size(), total]
 	if not state.has_flag("seen.p08"):
 		return "Ative o Marco de Memória na praça."
-	if not state.has_flag("open.door.v01_praca.r00_estrada"):
+	if not state.has_flag("visited.t00_base"):
 		return "Siga pela estrada a leste, rumo à Torre Akurame."
 	return ""

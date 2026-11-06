@@ -83,3 +83,8 @@ func test_choices_converge_and_go_to_history() -> void:
 	assert_eq(r.node()["speaker"], "MORINA", "answer follows")
 	r.advance()
 	assert_eq(r.node_id, "m02.line0", "all options converge")
+
+
+func test_speaker_names_keep_particles_lower_case() -> void:
+	assert_eq(DialogueBox.display_name("MECÂNICA DO CAIS"), "Mecânica do Cais", "particle lower case")
+	assert_eq(DialogueBox.display_name("ÁDALLY"), "Ádally", "accented initial")
