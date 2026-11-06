@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: src/main.gd fbba13152284406ba983ed1eb81cfbb888ca88dc
+Reviewed-Content-Hash: src/player/player.gd af56ece9477545b68dbb8655aa8134bae8ed5c83
+Reviewed-Content-Hash: src/combat/hook.gd 0295785acea7cdd36cfe9705492a123e6fc1bb02
+Reviewed-Content-Hash: src/world/bell.gd 3c17a03b608411d063b10f5ac03a0647a55edab5
+Reviewed-Content-Hash: src/world/bell_puzzle.gd 29f20ee8bd7f344ec278442dc0b9fdd434764d25
+Reviewed-Content-Hash: src/world/room.gd f9831522492811bfa50c3cf8e4ccce52fa165d3f
+Reviewed-Content-Hash: src/world/room_data.gd fb13e5c053b8649aef5bd0df4c94e109dee7e5ca
+Reviewed-Content-Hash: src/core/game_config.gd 47e038b1e07f13ed15298689ef8172474de05bcd
+Reviewed-Content-Hash: src/story/prologue.gd 6383445354034c27fc3cf704bfe52e0dc832f0b7
+Reviewed-Content-Hash: src/ui/hud.gd f52618c5825c1894b03b5094601f3db32af114a5

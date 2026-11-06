@@ -96,4 +96,15 @@ func objective(state: GameState) -> String:
 		return "Ative o Marco de Memória na praça."
 	if not state.has_flag("visited.t00_base"):
 		return "Siga pela estrada a leste, rumo à Torre Akurame."
+	# Torre Akurame (Etapa 6): one line per mechanism, in the order met.
+	if not state.has_flag("world.guards_clear"):
+		return "Passe pelos guardas: ataque quando a arma bater no chão."
+	if not state.has_flag("seen.t03"):
+		return "Procure a oficina atrás dos guardas."
+	if not state.has_flag("world.weight_locked"):
+		return "Atravesse o vão com o gancho e prenda o contrapeso."
+	if not state.has_flag("world.bells_solved"):
+		return "Toque os sinos na ordem da inscrição."
+	if not state.has_flag("seen.t11"):
+		return "Suba até a câmara de Igris."
 	return ""

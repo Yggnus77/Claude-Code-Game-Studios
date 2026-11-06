@@ -19,6 +19,9 @@ var grid: PackedStringArray = PackedStringArray()
 var doors: Array = []
 var entities: Array = []
 var entry_default: Vector2i = Vector2i.ZERO
+## Special crossings, e.g. {"from": [c, r], "to": [c, r], "requires_item":
+## "gancho_retorno", "bidirectional": true, "type": "grapple_traversal"}.
+var special_edges: Array = []
 
 
 ## Builds a RoomData from the parsed JSON dictionary of one room.
@@ -32,6 +35,7 @@ static func from_dict(d: Dictionary) -> RoomData:
 	room.grid = PackedStringArray(d.get("grid", []))
 	room.doors = d.get("doors", [])
 	room.entities = d.get("entities", [])
+	room.special_edges = d.get("special_edges", [])
 	var entry: Array = d.get("entry_default", [1, 1])
 	room.entry_default = Vector2i(int(entry[0]), int(entry[1]))
 	return room
@@ -100,3 +104,25 @@ func merged_rects(ch: String) -> Array[Rect2i]:
 	for r in open.values():
 		result.append(r)
 	return result
+
+
+## The tile a grapple edge leads to when hooking [param anchor_tile] from
+## near [param from_pos] (within [param start_radius] px of the other end),
+## or Vector2i(-1, -1) when no edge allows it. Requires [param has_item]
+## to name an owned item.
+func grapple_destination(anchor_tile: Vector2i, from_pos: Vector2, start_radius: float, has_item: Callable) -> Vector2i:
+	for edge in special_edges:
+		if str(edge.get("type", "")) != "grapple_traversal":
+			continue
+		var a := Vector2i(int(edge["from"][0]), int(edge["from"][1]))
+		var b := Vector2i(int(edge["to"][0]), int(edge["to"][1]))
+		var need := str(edge.get("requires_item", ""))
+		if not need.is_empty() and need != "<null>" and not has_item.call(need):
+			continue
+		var pairs := [[a, b]]
+		if bool(edge.get("bidirectional", false)):
+			pairs.append([b, a])
+		for pair in pairs:
+			if pair[1] == anchor_tile and tile_center(pair[0]).distance_to(from_pos) <= start_radius and is_walkable(pair[1]):
+				return pair[1]
+	return Vector2i(-1, -1)

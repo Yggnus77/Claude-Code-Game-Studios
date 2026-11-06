@@ -25,7 +25,7 @@ const COLOR_FRAGMENT := Color("6fe0e0")
 const COLOR_OTHER := Color("5fa8a0")
 const COLOR_HIGHLIGHT := Color("ffffff")
 ## Entity kinds drawn by the room (enemies are their own nodes).
-const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "bell", "push_block"]
+const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "push_block"]
 
 var data: RoomData
 ## Progress used to draw opened/collected things; may be null in tests.
@@ -34,6 +34,8 @@ var state: GameState
 var door_open: Callable = func(_door: Dictionary) -> bool: return true
 ## Entity id to outline (the one the player can interact with).
 var highlight_id := ""
+## Raised state of push blocks pulled by the hook (by entity id).
+var raised: Dictionary = {}
 
 
 ## Replaces the current content with [param room_data].
@@ -109,6 +111,17 @@ func _draw() -> void:
 				draw_colored_polygon(PackedVector2Array([c + Vector2(0, -6), c + Vector2(6, 0), c + Vector2(0, 6), c + Vector2(-6, 0)]), COLOR_INTERACT)
 			"checkpoint":
 				draw_rect(Rect2(c - Vector2(3, 14), Vector2(6, 16)), COLOR_CHECKPOINT)
+			"anchor":
+				# Traversal ring: a double ring, unlike any decoration.
+				draw_arc(c, 6.0, 0, TAU, 16, COLOR_CHECKPOINT, 2.0)
+				draw_arc(c, 2.5, 0, TAU, 10, COLOR_CHECKPOINT, 1.0)
+			"push_block":
+				var lift := Vector2(0, -10) if raised.get(str(e.get("id", "")), false) else Vector2.ZERO
+				if lift != Vector2.ZERO:
+					draw_rect(Rect2(c - Vector2(7, 2), Vector2(14, 6)), Color(0, 0, 0, 0.4))
+				draw_rect(Rect2(c - Vector2(7, 7) + lift, Vector2(14, 14)), Color("7a7f8a"))
+				# Pull ring (single, filled) — different from the traversal ring.
+				draw_circle(c + lift + Vector2(0, -9), 2.5, COLOR_INTERACT)
 			"unique_fragment":
 				if not spent:
 					draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(4, 0), c + Vector2(0, 5), c + Vector2(-4, 0)]), COLOR_FRAGMENT)
