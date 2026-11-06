@@ -10,6 +10,8 @@ extends RefCounted
 const DEFAULT_PATH := "res://assets/data/combate.json"
 const ENEMIES_PATH := "res://assets/data/inimigos.json"
 const PROGRESSION_PATH := "res://assets/data/economia-progressao.json"
+const ITEMS_PATH := "res://assets/data/itens.json"
+const REWARDS_PATH := "res://assets/data/recompensas-mundo.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -17,6 +19,12 @@ var data: Dictionary
 var enemies: Dictionary = {}
 ## economia-progressao.json (starting life, currency, prices...).
 var progression: Dictionary = {}
+## Item definitions from itens.json, keyed by id.
+var items: Dictionary = {}
+## World rewards from recompensas-mundo.json, keyed by reward id.
+var rewards: Dictionary = {}
+## Prototype fragments from recompensas-mundo.json, keyed by fragment id.
+var fragments: Dictionary = {}
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -30,7 +38,15 @@ func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Di
 static func load_all() -> GameConfig:
 	var combat := read_json(DEFAULT_PATH)
 	var enemy_doc := read_json(ENEMIES_PATH)
-	return GameConfig.new(combat, enemy_doc.get("enemies", []), read_json(PROGRESSION_PATH))
+	var cfg := GameConfig.new(combat, enemy_doc.get("enemies", []), read_json(PROGRESSION_PATH))
+	for item in read_json(ITEMS_PATH).get("items", []):
+		cfg.items[str(item["id"])] = item
+	var world := read_json(REWARDS_PATH)
+	for r in world.get("rewards", []):
+		cfg.rewards[str(r["id"])] = r
+	for f in world.get("fragments", []):
+		cfg.fragments[str(f["id"])] = f
+	return cfg
 
 
 ## Reads a JSON object from [param path]; empty Dictionary (and an error) on failure.
@@ -92,3 +108,26 @@ func enemy(id: String) -> Dictionary:
 ## Starting life (economia-progressao.json vida.inicial).
 func starting_life() -> int:
 	return int(progression.get("vida", {}).get("inicial", 6))
+
+
+## Display name of [param item_id] (falls back to the id).
+func item_name(item_id: String) -> String:
+	return str(items.get(item_id, {}).get("name", item_id))
+
+
+## The GameState effects that hand out world reward [param reward_id]
+## (an item or Bronze, guarded by the reward's receipt). Empty if unknown.
+func reward_effects(reward_id: String) -> Array:
+	var r: Dictionary = rewards.get(reward_id, {})
+	if r.is_empty():
+		return []
+	var receipt := str(r.get("receipt", "reward.%s" % reward_id))
+	if r.has("bronze"):
+		return [{"op": "grant_bronze_unique", "amount": int(r["bronze"]), "receipt_id": receipt}]
+	return [{"op": "grant_unique", "item_id": str(r["item"]), "quantity": int(r.get("quantity", 1)), "receipt_id": receipt}]
+
+
+## Receipt id of world reward [param reward_id], or "".
+func reward_receipt(reward_id: String) -> String:
+	var r: Dictionary = rewards.get(reward_id, {})
+	return "" if r.is_empty() else str(r.get("receipt", "reward.%s" % reward_id))

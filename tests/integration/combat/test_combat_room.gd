@@ -6,6 +6,7 @@ var main: Node
 
 func _setup(room_id: String = "t00_base") -> Player:
 	main = load("res://src/scenes/main.tscn").instantiate()
+	main.play_intro = false
 	tree.root.add_child(main)
 	main.load_room(room_id)
 	var p: Player = main.player

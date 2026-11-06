@@ -20,6 +20,8 @@ const KEYS := {
 	"map": [KEY_TAB],
 	"pause": [KEY_ESCAPE],
 	"reset_room": [KEY_R],
+	"skip_scene": [KEY_BACKSPACE],
+	"history": [KEY_H],
 	"spawn_1": [KEY_1],
 	"spawn_2": [KEY_2],
 	"spawn_3": [KEY_3],
@@ -39,6 +41,8 @@ const BUTTONS := {
 	"quick_swap": [JOY_BUTTON_RIGHT_SHOULDER],
 	"map": [JOY_BUTTON_BACK],
 	"pause": [JOY_BUTTON_START],
+	"skip_scene": [JOY_BUTTON_RIGHT_STICK],
+	"history": [JOY_BUTTON_LEFT_STICK],
 }
 
 const AXES := {

@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: src/main.gd 78d1ac208dbda7f87d0284aebac495600521f021
+Reviewed-Content-Hash: src/state/game_state.gd 73e2b6b808bba6100e33f59b73ea0548fa811427
+Reviewed-Content-Hash: src/dialogue/dialogue_db.gd 6f76d80b6d2654164c1bb4c8598b644bdbf0cfe1
+Reviewed-Content-Hash: src/dialogue/dialogue_runner.gd 3043bb7c09998a71aee992c3b59bd37e82ece325
+Reviewed-Content-Hash: src/dialogue/dialogue_service.gd f54022df096009ef7ea1cdbe7bd1dd0f39cbbbac
+Reviewed-Content-Hash: src/ui/dialogue_box.gd c58367710c4f554d1045657f06243befdad9c994
+Reviewed-Content-Hash: src/ui/hud.gd f965ba662b2d9ea6c83ea00899339bc5161ecc05
+Reviewed-Content-Hash: src/ui/pause_overlay.gd e0b2fc11313f45f524d9794efb189177e116e7fd
+Reviewed-Content-Hash: src/world/room.gd b80c60048e96d1977e7354e582e823f74c71a96e
+Reviewed-Content-Hash: src/core/game_config.gd 80eabbb5ec6eea7e7a4a6377276e825054cb80b9

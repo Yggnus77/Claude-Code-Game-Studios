@@ -23,26 +23,32 @@ func _ready() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 
 
+## Returns true while something else (a scene, the inventory) holds the pause.
+var is_blocked: Callable = func() -> bool: return false
+var _paused_by_me := false
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause"):
-		set_paused(not get_tree().paused)
+	if event.is_action_pressed("pause") and not is_blocked.call():
+		set_paused(not _paused_by_me)
 		get_viewport().set_input_as_handled()
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_inside_tree():
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_inside_tree() and not is_blocked.call():
 		set_paused(true)
 
 
 ## Pauses or resumes the whole tree and shows the overlay.
 func set_paused(value: bool, reason: String = "Pausado") -> void:
+	_paused_by_me = value
 	get_tree().paused = value
 	_label.text = reason
 	_set_visible(value)
 
 
 func _on_joy_connection_changed(_device: int, connected: bool) -> void:
-	if not connected:
+	if not connected and not is_blocked.call():
 		set_paused(true, "Controle desconectado")
 
 

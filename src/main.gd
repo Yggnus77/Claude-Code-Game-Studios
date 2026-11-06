@@ -1,19 +1,30 @@
 extends Node2D
-## Entry scene: loads one prototype room, places Yggnus at its entry and spawns
-## the enemies the room lists (Rastejo, Mariposa, Soldado and Guarda so far).
+## Entry scene: loads a prototype room, places Yggnus, spawns the room's
+## enemies, and wires progress ([GameState]), story scenes ([DialogueService]),
+## interaction (chests, clues, checkpoints, NPCs), fragments and doors.
 ## Command-line user args (after `--`):
 ##   --room=<id>              open another prototype room;
+##   --flags=<a>,<b>          start with these story flags set (tests, evidence);
 ##   --autowalk=<x>,<y>       hold that movement input (for recorded evidence runs);
 ##   --spawn=<enemy>@<col>,<row>  add an enemy on that tile;
-##   --autoattack             press attack every 0.4 s (for recorded evidence runs).
+##   --autoattack             press attack every 0.4 s (for recorded evidence runs);
+##   --at=<col>,<row>         start on that tile, facing up (evidence runs);
+##   --autointeract           press interact every 0.8 s (evidence runs).
 
 const PLAYER_SCENE := preload("res://src/scenes/player.tscn")
-const DEFAULT_ROOM := "r00_estrada"
-## Seconds between death and returning to the room entry.
+const DEFAULT_ROOM := "v00_oficina"
+## Seconds between death and returning to the checkpoint.
 const RESPAWN_DELAY := 1.2
-## Enemy kinds that have an implementation, by inimigos.json id.
+## Fade out and fade in of a room transition (mecanicas §2).
+const FADE_TIME := 0.18
+## Reach of the interact action, in front of the feet.
+const INTERACT_REACH := 14.0
+const INTERACT_RADIUS := 14.0
+## Kinds the interact action can use.
+const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint"]
 ## Playtest keys 1–4 spawn these enemies near the player.
 const SPAWN_KEYS := ["rastejo_tinta", "mariposa_papel", "soldado_corda", "guarda_contrapeso"]
+## Enemy kinds that have an implementation, by inimigos.json id.
 const ENEMY_SCRIPTS := {
 	"rastejo_tinta": preload("res://src/enemies/rastejo.gd"),
 	"mariposa_papel": preload("res://src/enemies/mariposa.gd"),
@@ -21,20 +32,62 @@ const ENEMY_SCRIPTS := {
 	"guarda_contrapeso": preload("res://src/enemies/guarda.gd"),
 }
 
+## Plays the opening scene on a new game in the first room. Tests turn it off.
+var play_intro := true
 var config: GameConfig
+var state: GameState
+var dialogue: DialogueService
+var dialogue_box: DialogueBox
 var room: Room
 var room_id := ""
 var player: Player
 var enemies: Array[Node] = []
 var _autoattack := false
 var _autoattack_timer := 0.0
+var _autointeract := false
+var _autointeract_timer := 0.5
+## Door the player arrived on; doors fire again only after leaving it.
+var _arrival_door := ""
+var _locked_notice := ""
+var _transitioning := false
+var _fade: ColorRect
+## Chest whose story scene is playing: its receipt is added when the scene ends.
+var _pending_chest_receipt := ""
 
 @onready var hud: Hud = $Hud
+@onready var pause_overlay: PauseOverlay = $PauseOverlay
 
 
 func _ready() -> void:
 	config = GameConfig.load_all()
+	state = GameState.new()
+	var preset := _arg("--flags=", "")
+	if not preset.is_empty():
+		var effects := []
+		for f in preset.split(","):
+			effects.append({"op": "set_flag", "flag": f, "value": true})
+		state.apply(effects)
+	dialogue_box = DialogueBox.new()
+	add_child(dialogue_box)
+	dialogue = DialogueService.new()
+	add_child(dialogue)
+	dialogue.setup(DialogueDB.load_from(), state, dialogue_box)
+	dialogue.bark.connect(func(text: String) -> void: hud.toast(text, 3.0))
+	dialogue.scene_finished.connect(_on_scene_finished)
+	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or _transitioning
+	_fade = ColorRect.new()
+	_fade.color = Color.BLACK
+	_fade.modulate.a = 0.0
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.size = Vector2(640, 360)
+	var fade_layer := CanvasLayer.new()
+	fade_layer.layer = 20
+	fade_layer.add_child(_fade)
+	add_child(fade_layer)
+	hud.bind_state(state)
+	state.changed.connect(func() -> void: if room: room.queue_redraw())
 	load_room(_arg("--room=", DEFAULT_ROOM))
+	dialogue.player_busy = func() -> bool: return player.is_busy() or player.is_dead()
 	var walk := _arg("--autowalk=", "")
 	if not walk.is_empty() and player:
 		var parts := walk.split(",")
@@ -46,16 +99,27 @@ func _ready() -> void:
 			var tile := spec[1].split(",")
 			spawn_enemy(spec[0], Vector2i(int(tile[0]), int(tile[1])))
 	_autoattack = "--autoattack" in OS.get_cmdline_user_args()
+	_autointeract = "--autointeract" in OS.get_cmdline_user_args()
+	var at := _arg("--at=", "")
+	if not at.is_empty():
+		var xy := at.split(",")
+		player.respawn_at(room.data.tile_center(Vector2i(int(xy[0]), int(xy[1]))))
+		player.motor.facing = Vector2.UP
+	if play_intro and room_id == DEFAULT_ROOM:
+		dialogue.request.call_deferred("nova_partida")
 
 
-## Builds [param id], (re)places the player and spawns the room's enemies.
-func load_room(id: String) -> void:
+## Builds [param id] and places the player on [param entry] (the room's
+## default entry when omitted), then spawns the room's enemies.
+func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 	var data := RoomData.load_room(id)
 	if data == null:
 		return
 	room_id = id
 	if room == null:
 		room = Room.new()
+		room.state = state
+		room.door_open = is_door_open
 		add_child(room)
 		move_child(room, 0)
 	room.build(data)
@@ -66,8 +130,10 @@ func load_room(id: String) -> void:
 		player.died.connect(_on_player_died)
 		if hud:
 			hud.bind(player.health)
-	player.respawn_at(data.tile_center(data.entry_default))
+	var tile := entry if entry.x >= 0 else data.entry_default
+	player.respawn_at(data.tile_center(tile))
 	player.set_camera_limits(data.pixel_size())
+	_arrival_door = _door_at(player.global_position)
 	clear_enemies()
 	for entity in data.entities:
 		var kind := str(entity.get("kind", ""))
@@ -96,20 +162,198 @@ func clear_enemies() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _autoattack and player and not player.is_dead():
+	if player == null or player.is_dead():
+		return
+	if _autoattack:
 		_autoattack_timer -= delta
 		if _autoattack_timer <= 0.0:
 			_autoattack_timer = 0.4
 			player.request_attack()
+	if _autointeract:
+		_autointeract_timer -= delta
+		if _autointeract_timer <= 0.0:
+			_autointeract_timer = 0.8
+			interact()
+	var target := interactable_in_front()
+	room.highlight_id = str(target.get("id", ""))
+	room.queue_redraw()
+	_pick_up_fragments()
+	_check_doors()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Playtest helper: brings the room's enemies back and the player to the entry.
-	if event.is_action_pressed("reset_room") and not player.is_dead():
+	if player == null or player.is_dead() or dialogue.is_open():
+		return
+	if event.is_action_pressed("map"):
+		hud.toggle_inventory(state, config)
+		get_tree().paused = hud.is_inventory_open()
+		get_viewport().set_input_as_handled()
+		return
+	if hud.is_inventory_open() or _transitioning:
+		return
+	if event.is_action_pressed("interact"):
+		interact()
+	elif event.is_action_pressed("reset_room"):
+		# Playtest helper: brings the room's enemies back and the player to the entry.
 		load_room(room_id)
 	for i in SPAWN_KEYS.size():
 		if event.is_action_pressed("spawn_%d" % (i + 1)):
 			spawn_near_player(SPAWN_KEYS[i])
+
+
+## The interactable entity in front of the player, or {}.
+func interactable_in_front() -> Dictionary:
+	var probe := player.global_position + player.motor.facing * INTERACT_REACH
+	var best: Dictionary = {}
+	var best_d := INTERACT_RADIUS
+	for e in room.data.entities:
+		if not INTERACTABLE.has(str(e.get("kind", ""))):
+			continue
+		var t: Array = e.get("tile", [0, 0])
+		var d := room.data.tile_center(Vector2i(int(t[0]), int(t[1]))).distance_to(probe)
+		if d <= best_d:
+			best = e
+			best_d = d
+	return best
+
+
+## Uses the entity in front of the player. Returns what happened, for tests:
+## "chest", "chest_empty", "scene", "clue", "checkpoint", "nothing".
+func interact() -> String:
+	if dialogue.is_open() or player.is_busy():
+		return "nothing"
+	var e := interactable_in_front()
+	if e.is_empty():
+		return "nothing"
+	var trigger := str(e.get("trigger_id", ""))
+	var receipt := str(e.get("persistent_receipt", ""))
+	match str(e["kind"]):
+		"chest":
+			if room.is_spent(e):
+				hud.toast("Vazio.")
+				return "chest_empty"
+			var effects := config.reward_effects(trigger)
+			if not effects.is_empty():
+				effects.append({"op": "add_receipt", "receipt_id": receipt})
+				if state.apply(effects):
+					var r: Dictionary = config.rewards[trigger]
+					hud.toast("Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"]))))
+				return "chest"
+			_pending_chest_receipt = receipt
+			if dialogue.request(trigger):
+				return "scene"
+			_pending_chest_receipt = ""
+			hud.toast("Está trancado por um mecanismo.")
+			return "nothing"
+		"mystery_clue":
+			if room.is_spent(e):
+				hud.toast("Você já anotou esta pista.")
+				return "nothing"
+			state.apply([{"op": "set_flag", "flag": str(e["sets_flag"]), "value": true}, {"op": "add_receipt", "receipt_id": receipt}])
+			hud.toast("Pista registrada.")
+			return "clue"
+		"checkpoint":
+			state.apply([{"op": "set_checkpoint", "room": room_id, "entity_id": str(e["id"])}])
+			player.health.reset()
+			hud.toast("Marco ativado. Vida restaurada.")
+			dialogue.request("ativar_primeiro_marco")
+			return "checkpoint"
+		_:
+			if not trigger.is_empty() and trigger != "<null>" and dialogue.request(trigger):
+				return "scene"
+			hud.toast("...")
+			return "nothing"
+
+
+func _on_scene_finished(_scene_id: String, applied: bool) -> void:
+	if applied and not _pending_chest_receipt.is_empty():
+		state.apply([{"op": "add_receipt", "receipt_id": _pending_chest_receipt}])
+	_pending_chest_receipt = ""
+
+
+func _pick_up_fragments() -> void:
+	for e in room.data.entities:
+		if str(e.get("kind", "")) != "unique_fragment" or room.is_spent(e):
+			continue
+		var t: Array = e.get("tile", [0, 0])
+		if room.data.tile_center(Vector2i(int(t[0]), int(t[1]))).distance_to(player.global_position) > 10.0:
+			continue
+		var frag: Dictionary = config.fragments.get(str(e.get("collectible_id", "")), {})
+		var need := str(frag.get("requires_item", e.get("requires_item", "")))
+		if not need.is_empty() and need != "<null>" and state.item_count(need) == 0:
+			continue
+		var before := state.life_max()
+		state.apply([{"op": "collect_fragment", "fragment_id": str(e["collectible_id"]), "receipt_id": str(e["persistent_receipt"])}])
+		if state.life_max() > before:
+			player.health.maximum = state.life_max()
+			player.health.heal(state.life_max())
+			hud.toast("Vida máxima aumentou!")
+		else:
+			hud.toast("Fragmento de Âncora (%d/4)" % (state.fragments.size() % 4))
+
+
+## Whether [param door] can be used with the current progress.
+func is_door_open(door: Dictionary) -> bool:
+	var gate: Variant = door.get("gate")
+	if gate == null or str(gate).is_empty():
+		return true
+	if state.has_flag(str(door.get("unlock_persistent_flag", ""))):
+		return true
+	var g := str(gate)
+	if g.begins_with("key:") or g.begins_with("item:"):
+		return state.item_count(g.split(":")[1]) > 0
+	return state.has_flag(g)
+
+
+func _door_at(pos: Vector2) -> String:
+	for door in room.data.doors:
+		var t: Array = door.get("tile", [0, 0])
+		if room.data.tile_center(Vector2i(int(t[0]), int(t[1]))).distance_to(pos) <= 8.0:
+			return str(door["id"])
+	return ""
+
+
+func _check_doors() -> void:
+	if _transitioning:
+		return
+	var here := _door_at(player.global_position)
+	if here != _arrival_door:
+		_arrival_door = ""
+	if here.is_empty() or here == _arrival_door:
+		if here.is_empty():
+			_locked_notice = ""
+		return
+	for door in room.data.doors:
+		if str(door["id"]) != here:
+			continue
+		if not is_door_open(door):
+			if _locked_notice != here:
+				_locked_notice = here
+				hud.toast("A passagem está fechada.")
+			return
+		_go_through(door)
+
+
+func _go_through(door: Dictionary) -> void:
+	var gate := str(door.get("gate", ""))
+	var flag := str(door.get("unlock_persistent_flag", ""))
+	if not state.has_flag(flag) and door.get("gate") != null:
+		var effects: Array = [{"op": "set_flag", "flag": flag, "value": true}]
+		if gate.begins_with("key:") and str(door.get("key_consumption", "")) == "once_when_first_open":
+			effects.push_front({"op": "consume_quest_items_once", "items": {gate.split(":")[1]: 1}, "receipt_id": "key.%s" % door["id"]})
+		state.apply(effects)
+	_transitioning = true
+	get_tree().paused = true
+	var out := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	out.tween_property(_fade, "modulate:a", 1.0, FADE_TIME)
+	await out.finished
+	var t: Array = door.get("target_tile", [1, 1])
+	load_room(str(door["target_room"]), Vector2i(int(t[0]), int(t[1])))
+	var back := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	back.tween_property(_fade, "modulate:a", 0.0, FADE_TIME)
+	await back.finished
+	get_tree().paused = false
+	_transitioning = false
 
 
 ## Playtest helper: spawns [param kind] about five tiles from the player,
@@ -130,8 +374,18 @@ func _on_player_died() -> void:
 	await get_tree().create_timer(RESPAWN_DELAY).timeout
 	if hud:
 		hud.show_banner("")
-	# Death keeps progress; the room's common enemies reset (mecanicas §9).
-	load_room(room_id)
+	# Death keeps progress; return to the last checkpoint (or this room's entry)
+	# with full life; the room's common enemies reset (mecanicas §9).
+	if state.checkpoint.is_empty():
+		load_room(room_id)
+		return
+	var cp_room := str(state.checkpoint["room"])
+	var data := RoomData.load_room(cp_room)
+	var tile := data.entry_default
+	for e in data.entities:
+		if str(e.get("id", "")) == str(state.checkpoint["entity_id"]):
+			tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)
+	load_room(cp_room, tile)
 
 
 func _arg(prefix: String, fallback: String) -> String:

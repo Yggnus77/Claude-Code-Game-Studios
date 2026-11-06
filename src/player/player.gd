@@ -107,6 +107,11 @@ func respawn_at(pos: Vector2) -> void:
 	reset_physics_interpolation()
 
 
+## True while attacking, dodging or stunned: story scenes wait for this to end.
+func is_busy() -> bool:
+	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0
+
+
 func is_dead() -> bool:
 	return health != null and health.is_dead()
 
