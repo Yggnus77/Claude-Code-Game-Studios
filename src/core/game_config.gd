@@ -12,6 +12,7 @@ const ENEMIES_PATH := "res://assets/data/inimigos.json"
 const PROGRESSION_PATH := "res://assets/data/economia-progressao.json"
 const ITEMS_PATH := "res://assets/data/itens.json"
 const REWARDS_PATH := "res://assets/data/recompensas-mundo.json"
+const ENCOUNTERS_PATH := "res://assets/data/chefes.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -25,6 +26,8 @@ var items: Dictionary = {}
 var rewards: Dictionary = {}
 ## Prototype fragments from recompensas-mundo.json, keyed by fragment id.
 var fragments: Dictionary = {}
+## Boss and story encounters from chefes.json, keyed by id.
+var encounters: Dictionary = {}
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -46,6 +49,8 @@ static func load_all() -> GameConfig:
 		cfg.rewards[str(r["id"])] = r
 	for f in world.get("fragments", []):
 		cfg.fragments[str(f["id"])] = f
+	for e in read_json(ENCOUNTERS_PATH).get("encounters", []):
+		cfg.encounters[str(e["id"])] = e
 	return cfg
 
 
@@ -103,6 +108,11 @@ func guard() -> Dictionary:
 ## Definition of enemy [param id], or an empty Dictionary.
 func enemy(id: String) -> Dictionary:
 	return enemies.get(id, {})
+
+
+## Encounter [param id] from chefes.json, or {}.
+func encounter(id: String) -> Dictionary:
+	return encounters.get(id, {})
 
 
 ## Starting life (economia-progressao.json vida.inicial).

@@ -2,6 +2,39 @@
   "schema_version": 1,
   "encounters": [
     {
+      "id": "yame_oficina",
+      "name": "Yame Black — invasão da oficina",
+      "prototype": true,
+      "kind": "escape",
+      "proposed": "Números propostos para a etapa 4; ajustar no teste de jogo.",
+      "yame_tile": [
+        12,
+        2
+      ],
+      "bindings": [
+        "v00_oficina.yame_bind_1",
+        "v00_oficina.yame_bind_2",
+        "v00_oficina.yame_bind_3"
+      ],
+      "binding_hits": 2,
+      "binding_radius": 7,
+      "projectile_interval": [
+        1.8,
+        1.5,
+        1.2
+      ],
+      "projectile_telegraph": 0.45,
+      "projectile_speed": 95,
+      "projectile_damage": 1,
+      "projectile_radius": 4,
+      "blocks_exit": "door.v00_oficina.v01_praca",
+      "start_after": "seen.p05",
+      "success_event": "tres_amarras_cortadas",
+      "hint_bark": "primeira_defesa",
+      "normal_damage_can_kill": false,
+      "mandatory_energy_cost": 0
+    },
+    {
       "id": "igris",
       "name": "Igris",
       "prototype": true,

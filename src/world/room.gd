@@ -25,7 +25,7 @@ const COLOR_FRAGMENT := Color("6fe0e0")
 const COLOR_OTHER := Color("5fa8a0")
 const COLOR_HIGHLIGHT := Color("ffffff")
 ## Entity kinds drawn by the room (enemies are their own nodes).
-const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "binding", "bell", "push_block"]
+const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "bell", "push_block"]
 
 var data: RoomData
 ## Progress used to draw opened/collected things; may be null in tests.
