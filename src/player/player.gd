@@ -136,6 +136,18 @@ func respawn_at(pos: Vector2, restore_life: bool = true) -> void:
 	reset_physics_interpolation()
 
 
+## Applies the numbers a relic may change (RelicLoadout.params), always the
+## full set rebuilt from the base, so nothing accumulates. Unknown keys are
+## for systems not in this slice yet and are ignored.
+func apply_relic_params(p: Dictionary) -> void:
+	healing.startup = float(p.get("healing.startup", healing.startup))
+	healing.recovery = float(p.get("healing.recovery", healing.recovery))
+	hook.cooldown = float(p.get("hook.return_cooldown", hook.cooldown))
+	guard.perfect_window = float(p.get("guard.perfect_window", guard.perfect_window))
+	motor.speed = float(p.get("player.speed", motor.speed))
+	_knockback_px = float(p.get("player.knockback_max", _knockback_px))
+
+
 ## Starts drinking a flask (or eating bread). False at full life, with
 ## nothing to use, or while busy.
 func request_heal() -> bool:

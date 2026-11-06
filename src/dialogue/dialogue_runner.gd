@@ -13,6 +13,8 @@ var node_id := ""
 var is_finished := false
 ## Every line shown so far: [{speaker, text}], kept whole for the history.
 var history: Array = []
+## Index of the last option chosen, or -1 (none, or the scene was skipped).
+var last_choice := -1
 var _nodes: Dictionary = {}
 
 
@@ -47,6 +49,7 @@ func choose(index: int) -> void:
 	var options: Array = node().get("options", [])
 	if index < 0 or index >= options.size():
 		return
+	last_choice = index
 	history.append({"speaker": "YGGNUS", "text": str(options[index].get("text", ""))})
 	_go(str(options[index].get("next", "")))
 

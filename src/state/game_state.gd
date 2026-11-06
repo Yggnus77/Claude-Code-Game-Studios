@@ -30,7 +30,14 @@ var checkpoint: Dictionary = {}
 ## Ids of the flasks that hold a Restorative charge. Flasks are items whose
 ## id starts with [constant FLASK_PREFIX]; a new one arrives empty.
 var full_flasks: Array = []
+## The one relic in the slot, or "" (misterios-e-reliquias.md).
+var equipped_relic := ""
 
+## Ids that may go in the relic slot (injected from misterios.json by the
+## game; not saved). Empty accepts any owned item.
+var relic_ids: Array = []
+## Flag that opens the relic slot (set by the first mystery reward).
+const RELIC_SLOT_FLAG := "gear.relic_slot_unlocked"
 const FLASK_PREFIX := "frasco_"
 
 
@@ -74,6 +81,7 @@ func life_max() -> int:
 ## when any effect is unknown or cannot be applied.
 func apply(effects: Array) -> bool:
 	var next := GameState.from_dict(to_dict())
+	next.relic_ids = relic_ids
 	for effect in effects:
 		if not next._apply_one(effect):
 			return false
@@ -180,6 +188,15 @@ func _apply_one(e: Dictionary) -> bool:
 				items["pao_porto"] = bread
 			else:
 				items.erase("pao_porto")
+		"equip_relic":
+			# One slot, opened by the first reward; "" empties it. Only a
+			# relic the player owns can go in.
+			var relic := str(e.get("relic_id", ""))
+			if not has_flag(RELIC_SLOT_FLAG):
+				return false
+			if not relic.is_empty() and (item_count(relic) <= 0 or (not relic_ids.is_empty() and not relic_ids.has(relic))):
+				return false
+			equipped_relic = relic
 		"set_checkpoint":
 			checkpoint = {"room": str(e["room"]), "entity_id": str(e["entity_id"])}
 		_:
@@ -201,7 +218,7 @@ func to_dict() -> Dictionary:
 		"bronze": bronze, "bronze_reserve": bronze_reserve, "wallet_capacity": wallet_capacity,
 		"flask_capacity": flask_capacity, "resonance_max": resonance_max,
 		"skins": skins.duplicate(), "fragments": fragments.duplicate(), "checkpoint": checkpoint.duplicate(),
-		"full_flasks": full_flasks.duplicate(),
+		"full_flasks": full_flasks.duplicate(), "equipped_relic": equipped_relic,
 	}
 
 
@@ -224,3 +241,7 @@ func _load(d: Dictionary) -> void:
 	fragments = d.get("fragments", []).duplicate()
 	checkpoint = d.get("checkpoint", {}).duplicate()
 	full_flasks = d.get("full_flasks", []).duplicate()
+	equipped_relic = str(d.get("equipped_relic", ""))
+	# A save can only keep a relic the player owns, in an open slot.
+	if not equipped_relic.is_empty() and (not has_flag(RELIC_SLOT_FLAG) or item_count(equipped_relic) <= 0):
+		equipped_relic = ""

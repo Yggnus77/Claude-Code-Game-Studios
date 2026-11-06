@@ -71,7 +71,26 @@ func _physics_process(_delta: float) -> void:
 		_start(scene)
 
 
-func _start(scene: Dictionary) -> void:
+## Asks a question built at run time (a mystery answer): shows [param question]
+## with [param options] and calls [param on_done] with the chosen index, or
+## -1 when the player skips. Pauses like any blocking scene.
+func ask(question: String, options: Array[String], on_done: Callable) -> void:
+	if is_open():
+		on_done.call(-1)
+		return
+	var nodes: Array = [{"id": "ask.end", "type": "end"}]
+	var choice := {"id": "ask.q", "type": "choice", "text": question, "options": []}
+	for text in options:
+		choice["options"].append({"text": text, "next": "ask.end"})
+	nodes.push_front(choice)
+	var scene := {"id": "ask", "entry_node": "ask.q", "nodes": nodes, "completion_effects": []}
+	var runner := _start(scene)
+	# One-shot: the lambda holds the runner, so a lasting connection would
+	# keep both alive forever.
+	runner.finished.connect(func(_ok: bool) -> void: on_done.call(runner.last_choice), CONNECT_DEFERRED | CONNECT_ONE_SHOT)
+
+
+func _start(scene: Dictionary) -> DialogueRunner:
 	_active_id = str(scene["id"])
 	db.mark_played(_active_id, _now())
 	var runner := DialogueRunner.new(scene, state)
@@ -80,6 +99,7 @@ func _start(scene: Dictionary) -> void:
 	get_tree().paused = true
 	scene_started.emit(_active_id)
 	box.open(runner)
+	return runner
 
 
 func _play_bark(scene: Dictionary) -> void:

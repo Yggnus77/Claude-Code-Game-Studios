@@ -15,6 +15,8 @@ const REWARDS_PATH := "res://assets/data/recompensas-mundo.json"
 const ENCOUNTERS_PATH := "res://assets/data/chefes.json"
 const MYSTERIES_PATH := "res://assets/data/misterios.json"
 const TOWER_PATH := "res://assets/data/torre-akurame.json"
+const RELIC_BASE_PATH := "res://assets/data/base-modificadores-reliquias.json"
+const MYSTERY_WIRING_PATH := "res://assets/data/misterios-ligacao.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -35,6 +37,10 @@ var mysteries: Dictionary = {}
 ## Torre Akurame wiring (torre-akurame.json): room triggers, clear flags,
 ## hook, counterweight and bell puzzle.
 var tower: Dictionary = {}
+## Base numbers that relics modify (base-modificadores-reliquias.json).
+var relic_base: Dictionary = {}
+## Where each mystery lives in the world (misterios-ligacao.json).
+var mystery_wiring: Dictionary = {}
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -61,6 +67,8 @@ static func load_all() -> GameConfig:
 	for m in read_json(MYSTERIES_PATH).get("mysteries", []):
 		cfg.mysteries[str(m["id"])] = m
 	cfg.tower = read_json(TOWER_PATH)
+	cfg.relic_base = read_json(RELIC_BASE_PATH)
+	cfg.mystery_wiring = read_json(MYSTERY_WIRING_PATH)
 	return cfg
 
 
@@ -129,6 +137,21 @@ func clue_requirements(clue_flag: String) -> Array:
 			if str(c.get("id", "")) == clue_flag:
 				return m.get("requires_flags", [])
 	return []
+
+
+## Mysteries wired into the prototype world, as [MysteryQuest]s keyed by id.
+func mystery_quests() -> Dictionary:
+	var out := {}
+	var wired: Dictionary = mystery_wiring.get("mysteries", {})
+	for id: String in wired:
+		if mysteries.has(id):
+			out[id] = MysteryQuest.new(mysteries[id], wired[id])
+	return out
+
+
+## The relic slot rules built from the base file and every mystery reward.
+func relic_loadout() -> RelicLoadout:
+	return RelicLoadout.new(relic_base, mysteries.values())
 
 
 ## Encounter [param id] from chefes.json, or {}.

@@ -1,0 +1,3 @@
+Reviewed-Content-Hash: production/qa/evidence/etapa-8-misterios/1_pergunta_do_troco_por_opcao.png 8b9583e7982e786758b10452912594e32892c20b
+Reviewed-Content-Hash: production/qa/evidence/etapa-8-misterios/2_reliquia_e_misterios_no_inventario.png 36056207aa15baff8185125740f3907ccf3ca00a
+Reviewed-Content-Hash: production/qa/evidence/etapa-8-misterios/README.md ab3220e09a8521dec7bcd3a52bdd2db5922fc995
