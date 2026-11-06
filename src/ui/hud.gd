@@ -10,11 +10,17 @@ const COLOR_EMPTY := Color("4a3a24")
 var _bar: Control
 var _label: Label
 var _banner: Label
+var _bronze: Label
+var _toast: Label
+var _toast_left := 0.0
+var _inventory: PanelContainer
+var _inventory_text: Label
 var _current := 0
 var _maximum := 1
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 5
 	_bar = Control.new()
 	_bar.position = Vector2(8, 8)
@@ -31,8 +37,35 @@ func _ready() -> void:
 	_banner.add_theme_font_size_override("font_size", 16)
 	_banner.visible = false
 	add_child(_banner)
+	_bronze = Label.new()
+	_bronze.position = Vector2(8, 18)
+	_bronze.add_theme_font_size_override("font_size", 10)
+	_bronze.add_theme_color_override("font_color", Color("d9a441"))
+	add_child(_bronze)
+	_toast = Label.new()
+	_toast.position = Vector2(16, 244)
+	_toast.size = Vector2(608, 20)
+	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast.add_theme_font_size_override("font_size", 11)
+	_toast.add_theme_color_override("font_outline_color", Color.BLACK)
+	_toast.add_theme_constant_override("outline_size", 4)
+	add_child(_toast)
+	_inventory = PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.07, 0.09, 0.94)
+	style.border_color = COLOR_LIFE
+	style.set_border_width_all(1)
+	style.set_content_margin_all(8)
+	_inventory.add_theme_stylebox_override("panel", style)
+	_inventory.position = Vector2(160, 40)
+	_inventory.size = Vector2(320, 260)
+	_inventory_text = Label.new()
+	_inventory_text.add_theme_font_size_override("font_size", 10)
+	_inventory.add_child(_inventory_text)
+	_inventory.visible = false
+	add_child(_inventory)
 	var hint := Label.new()
-	hint.text = "WASD andar · J espada · Espaço esquiva · Shift defesa · 1-4 chama inimigo · R reinicia · Esc pausa"
+	hint.text = "WASD andar · J espada · K examinar · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
 	hint.add_theme_font_size_override("font_size", 9)
 	hint.modulate = Color(1, 1, 1, 0.7)
 	hint.position = Vector2(6, 342)
@@ -50,6 +83,59 @@ func set_life(current: int, maximum: int) -> void:
 	_maximum = maxi(1, maximum)
 	_label.text = "%d/%d" % [current, maximum]
 	_bar.queue_redraw()
+
+
+func _process(delta: float) -> void:
+	if _toast_left > 0.0:
+		_toast_left -= delta
+		_toast.modulate.a = clampf(_toast_left / 0.4, 0.0, 1.0)
+
+
+## Shows a short message above the dialogue area for [param seconds].
+func toast(text: String, seconds: float = 2.5) -> void:
+	_toast.text = text
+	_toast_left = seconds
+	_toast.modulate.a = 1.0
+
+
+## Follows Bronze and reserve from [param state].
+func bind_state(state: GameState) -> void:
+	state.changed.connect(func() -> void: _show_bronze(state))
+	_show_bronze(state)
+
+
+func _show_bronze(state: GameState) -> void:
+	_bronze.text = "Bronze %d/%d" % [state.bronze, state.wallet_capacity] + ("  (reserva %d)" % state.bronze_reserve if state.bronze_reserve > 0 else "")
+
+
+func is_inventory_open() -> bool:
+	return _inventory.visible
+
+
+## Opens or closes the inventory listing for [param state].
+func toggle_inventory(state: GameState, config: GameConfig) -> void:
+	_inventory.visible = not _inventory.visible
+	if not _inventory.visible:
+		return
+	var lines := PackedStringArray(["INVENTÁRIO", ""])
+	var ids := state.items.keys()
+	ids.sort()
+	for id in ids:
+		lines.append("%s  x%d" % [config.item_name(id), state.items[id]])
+	if ids.is_empty():
+		lines.append("(vazio)")
+	lines.append("")
+	lines.append("Bronze %d/%d · reserva %d" % [state.bronze, state.wallet_capacity, state.bronze_reserve])
+	lines.append("Fragmentos de Âncora: %d (%d/4 para a próxima vida)" % [state.fragments.size(), state.fragments.size() % 4])
+	lines.append("Espaços de frasco: %d" % state.flask_capacity)
+	var clues := 0
+	for f in state.flags:
+		if str(f).begins_with("clue.") and state.flags[f]:
+			clues += 1
+	lines.append("Pistas registradas: %d" % clues)
+	lines.append("")
+	lines.append("Tab fecha")
+	_inventory_text.text = "\n".join(lines)
 
 
 ## Shows a centred message, or hides it with an empty string.
