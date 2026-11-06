@@ -7,7 +7,7 @@ Engine: Godot 4.7.2.stable.official.ed1daf0bf (Linux, Xvfb, opengl3).
 
 ## Testes automatizados
 
-`godot --headless --path . -s res://tests/run_tests.gd` → **132 passed, 0 failed**, sem SCRIPT ERROR.
+`godot --headless --path . -s res://tests/run_tests.gd` → **133 passed, 0 failed**, sem SCRIPT ERROR.
 
 | Achado corrigido | Teste |
 |---|---|
@@ -31,9 +31,20 @@ combo e cancelamento do golpe final lidos de `combate.json`; abertura do guarda 
 - `1_escolhas_cabem_na_tela.png`: cena e03 com três opções; a caixa cresce para cima e a dica de teclas fica visível.
 - `2_fala_curta_com_duas_linhas.png`: câmara de Igris, abafador solto; a fala t09 mostra Igris e Ádally, com a dica "Falta o outro vínculo!".
 
+## Pontos de fixação da arena (decidido pelo usuário: "Faça agora!")
+
+`catalogo-atlas.md`: arena de Igris com quatro pontos de fixação. O mapa do kit tinha dois aros sem
+função; foram acrescentados `hook_c` (4,12) e `hook_d` (35,12). Na arena, o gancho num aro puxa Yggnus
+até ele, e durante o puxão nenhum golpe acerta: é uma rota de fuga das ondas
+(`torre-akurame.json` igris.free_anchors). Teste: `test_igris::test_arena_rings_pull_yggnus_out_of_a_wave`.
+
+- `3_aro_da_arena_puxa_para_fora_da_onda.png`: a onda marcada sob Yggnus; o gancho prendeu no aro da
+  esquerda e o puxou para fora do círculo (fala de Ádally sobre o aro seguro).
+
+O executor de testes agora conta como falha um arquivo de teste que não carrega (antes rodava zero
+testes em silêncio).
+
 ## Não alterado, com motivo
 
 - Reserva de Bronze pagando a loja: o kit diz "compras na vila"; o comerciante fica na estrada. Mantido.
-- Quatro pontos de fixação na arena de Igris (catálogo): o mapa do kit tem dois, sem travessia; a arena
-  "perder plataformas" não está nas regras de Igris de `mecanicas-e-dificuldade.md`. Fica para decisão.
 - Salvamento em disco: é a etapa 9.

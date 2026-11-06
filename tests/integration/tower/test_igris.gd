@@ -119,6 +119,25 @@ func test_death_returns_flasks_and_skips_the_opening() -> void:
 	assert_eq(main.igris.fight.cycle, 0, "from the first cycle")
 
 
+func test_arena_rings_pull_yggnus_out_of_a_wave() -> void:
+	# catalogo-atlas: four fixing points in the arena; a ring pulls Yggnus to it.
+	var p := _setup("t07_igris")
+	await _skip_scenes()
+	var anchors := 0
+	for e in main.room.data.entities:
+		if str(e.get("kind", "")) == "anchor":
+			anchors += 1
+	assert_eq(anchors, 4, "four rings in the arena")
+	var ring: Vector2 = main.room.data.tile_center(Vector2i(4, 12))
+	p.respawn_at(ring + Vector2(80, 0))
+	p.motor.facing = Vector2.LEFT
+	var life := p.health.current
+	assert_true(p.fire_hook(), "hook thrown at the ring")
+	await _frames(60)
+	assert_true(p.global_position.distance_to(ring) < 2.0, "pulled onto the ring")
+	assert_true(p.health.current >= life - 1, "at most one wave on the way")
+
+
 func test_outcome_scenes_offer_no_choice() -> void:
 	# Etapa 7: the result never depends on pressing a button during the talk.
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/data/dialogos.pt-BR.json"))

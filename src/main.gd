@@ -394,6 +394,9 @@ func _on_hook_hit(hit: Dictionary) -> void:
 	match str(hit.get("type", "")):
 		"anchor":
 			var dest := room.data.grapple_destination(hit["tile"], player.global_position, float(tower_hook.get("start_radius", 32)), func(item: String) -> bool: return state.item_count(item) > 0)
+			if dest.x < 0 and _is_free_anchor(str(hit.get("id", ""))) and room.data.is_walkable(hit["tile"]):
+				# Igris's arena: the ring itself is a safe spot to pull to.
+				dest = hit["tile"]
 			if dest.x < 0:
 				hud.toast("Daqui o aro não leva a um lugar seguro.")
 				return
@@ -468,6 +471,12 @@ func _build_igris() -> void:
 	enemies.append(igris)
 	if state.has_flag("seen.%s" % str(wiring.get("start_scene", "t08"))):
 		_start_igris_attempt()
+
+
+## True for the arena rings that pull Yggnus to themselves
+## (torre-akurame.json igris.free_anchors).
+func _is_free_anchor(anchor_id: String) -> bool:
+	return config.tower.get("igris", {}).get("free_anchors", []).has(anchor_id)
 
 
 ## Scene that plays when Igris's control breaks (torre-akurame.json igris.end_scene).

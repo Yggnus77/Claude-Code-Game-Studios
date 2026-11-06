@@ -49,6 +49,13 @@
     "encounter": "igris",
     "start_scene": "t08",
     "end_scene": "t10",
+    "free_anchors_note": "catalogo-atlas: arena com quatro pontos de fixação. O gancho num desses aros puxa Yggnus até ele; durante o puxão nenhum golpe acerta, então serve para escapar de uma onda.",
+    "free_anchors": [
+      "t07_igris.hook_a",
+      "t07_igris.hook_b",
+      "t07_igris.hook_c",
+      "t07_igris.hook_d"
+    ],
     "note": "Ciclos e janelas vêm de chefes.json (igris). O ciclo 1 usa as três telegrafias de chefes.json em ordem; later_cycle_waves dá, por índice nelas, as ondas dos ciclos seguintes (ciclo 2: lenta, rápida, lenta; mecanicas: ambas ensinadas). Raio, dano, intervalo e sequências: propostos para teste de jogo.",
     "later_cycle_waves": [
       [

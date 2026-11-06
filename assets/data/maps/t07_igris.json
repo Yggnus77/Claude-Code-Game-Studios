@@ -118,6 +118,26 @@
       ],
       "trigger_id": null,
       "persistent_receipt": null
+    },
+    {
+      "id": "t07_igris.hook_c",
+      "kind": "anchor",
+      "tile": [
+        4,
+        12
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "t07_igris.hook_d",
+      "kind": "anchor",
+      "tile": [
+        35,
+        12
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
     }
   ],
   "special_edges": [],

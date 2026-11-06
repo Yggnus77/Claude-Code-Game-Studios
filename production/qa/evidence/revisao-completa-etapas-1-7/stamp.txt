@@ -1,3 +1,4 @@
 Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/1_escolhas_cabem_na_tela.png 46fc262cd0458da8e61c67b51de06086d38d912d
 Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/2_fala_curta_com_duas_linhas.png 7f9516238ce1d7b6e28116baffa72bd2a1f9a1bc
-Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/README.md 47a4c68d5a20d91a2e8b8acc6684d3e797af1e74
+Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/3_aro_da_arena_puxa_para_fora_da_onda.png 7745cbfb4e65ca4babe44affaad6def034a86f88
+Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/README.md d8dc3986aefa9f9e0abe7d5fc1519d121c9968fc

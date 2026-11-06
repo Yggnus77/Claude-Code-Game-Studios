@@ -27,6 +27,11 @@ func _run() -> void:
 	var failed := 0
 	for path in files:
 		var script: GDScript = load(path)
+		if script == null or not script.can_instantiate():
+			# A file that does not parse would otherwise just run zero tests.
+			failed += 1
+			print("FAIL %s (script does not load)" % path.get_file())
+			continue
 		for method in script.get_script_method_list():
 			var name: String = method["name"]
 			if not name.begins_with("test_"):
