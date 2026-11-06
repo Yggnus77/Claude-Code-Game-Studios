@@ -25,10 +25,12 @@ func tick(delta: float) -> void:
 	_invulnerable_left = maxf(0.0, _invulnerable_left - delta)
 
 
+## True during the invulnerability after a hit.
 func is_invulnerable() -> bool:
 	return _invulnerable_left > 0.0
 
 
+## True at zero life.
 func is_dead() -> bool:
 	return current <= 0
 

@@ -82,6 +82,7 @@ func begin_pull() -> void:
 	phase = Phase.PULL
 
 
+## Ends the pull on arrival and starts the cooldown.
 func end_pull() -> void:
 	distance = 0.0
 	_start_cooldown()
@@ -98,10 +99,12 @@ func is_busy() -> bool:
 	return phase in [Phase.STARTUP, Phase.OUT, Phase.BACK, Phase.PULL]
 
 
+## Position of the tip seen from [param origin].
 func tip(origin: Vector2) -> Vector2:
 	return origin + direction * distance
 
 
+## Back to idle with no cooldown.
 func reset() -> void:
 	phase = Phase.IDLE
 	distance = 0.0

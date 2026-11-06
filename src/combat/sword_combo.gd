@@ -96,6 +96,17 @@ func reset() -> void:
 	_next_stage = 0
 
 
+## Ages the press buffer and the chain-reset clock without starting a swing.
+## The player calls it every step while idle; [method tick] does the rest.
+func tick_idle(delta: float) -> void:
+	if phase != Phase.IDLE:
+		return
+	_buffer = maxf(0.0, _buffer - delta)
+	_idle += delta
+	if _idle > chain_reset:
+		_next_stage = 0
+
+
 ## Advances timers. Returns true on the step a new swing starts.
 func tick(delta: float) -> bool:
 	_buffer = maxf(0.0, _buffer - delta)

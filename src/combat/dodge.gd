@@ -38,14 +38,17 @@ func wants_to_start() -> bool:
 	return _buffer > 0.0 and is_ready()
 
 
+## True when the cooldown allows a new dodge.
 func is_ready() -> bool:
 	return not is_dodging() and _since_start >= cooldown
 
 
+## True while the dodge moves Yggnus.
 func is_dodging() -> bool:
 	return _elapsed >= 0.0 and _elapsed < duration
 
 
+## True inside the dodge's invulnerable frames.
 func is_invulnerable() -> bool:
 	return is_dodging() and _elapsed >= invuln_start and _elapsed < invuln_end
 
@@ -63,6 +66,7 @@ func velocity() -> Vector2:
 	return direction * speed if is_dodging() else Vector2.ZERO
 
 
+## Advances the dodge, its cooldown and the press buffer.
 func tick(delta: float) -> void:
 	_buffer = maxf(0.0, _buffer - delta)
 	_since_start += delta

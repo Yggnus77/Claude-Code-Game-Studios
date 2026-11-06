@@ -3,7 +3,9 @@
   "note": "Ligações da Torre Akurame (etapa 6) entre salas, cenas e flags de mundo. Fonte: plano-implementacao.md Etapa 6, cenas t01–t07, mecanicas-e-dificuldade.md §7.",
   "on_enter": {
     "t00_base": "entrar_akurame",
-    "t01_guardas": "examinar_porta_oficina"
+    "t01_guardas": "examinar_porta_oficina",
+    "t07_igris": "iniciar_igris",
+    "v00_oficina": "melhoria_diapasao"
   },
   "room_clear_flags": {
     "t01_guardas": "world.guards_clear"
@@ -26,10 +28,58 @@
   },
   "bells": {
     "room": "t05_sinos",
-    "order": ["t05_sinos.bell_circle", "t05_sinos.bell_gap", "t05_sinos.bell_waves"],
-    "symbols": {"t05_sinos.bell_circle": "circle", "t05_sinos.bell_gap": "gap", "t05_sinos.bell_waves": "waves"},
+    "order": [
+      "t05_sinos.bell_circle",
+      "t05_sinos.bell_gap",
+      "t05_sinos.bell_waves"
+    ],
+    "symbols": {
+      "t05_sinos.bell_circle": "circle",
+      "t05_sinos.bell_gap": "gap",
+      "t05_sinos.bell_waves": "waves"
+    },
     "solved_flag": "world.bells_solved",
     "inscription_trigger": "examinar_inscricao_sinos",
     "hint_trigger": "pedir_dica_sinos"
+  },
+  "scene_chain": {},
+  "igris": {
+    "room": "t07_igris",
+    "boss": "t07_igris.igris",
+    "encounter": "igris",
+    "start_scene": "t08",
+    "end_scene": "t10",
+    "free_anchors_note": "catalogo-atlas: arena com quatro pontos de fixação. O gancho num desses aros puxa Yggnus até ele; durante o puxão nenhum golpe acerta, então serve para escapar de uma onda.",
+    "free_anchors": [
+      "t07_igris.hook_a",
+      "t07_igris.hook_b",
+      "t07_igris.hook_c",
+      "t07_igris.hook_d"
+    ],
+    "note": "Ciclos e janelas vêm de chefes.json (igris). O ciclo 1 usa as três telegrafias de chefes.json em ordem; later_cycle_waves dá, por índice nelas, as ondas dos ciclos seguintes (ciclo 2: lenta, rápida, lenta; mecanicas: ambas ensinadas). Raio, dano, intervalo e sequências: propostos para teste de jogo.",
+    "later_cycle_waves": [
+      [
+        0,
+        2,
+        0
+      ]
+    ],
+    "wave_radius": 26,
+    "wave_damage": 1,
+    "wave_gap": 0.45,
+    "bell_sequences": [
+      [
+        "t07_igris.bell_a",
+        "t07_igris.bell_b"
+      ],
+      [
+        "t07_igris.bell_b",
+        "t07_igris.bell_a",
+        "t07_igris.bell_b"
+      ]
+    ],
+    "bell_show_step": 0.55,
+    "muffler_bark": "igris_primeiro_abafador",
+    "body_radius": 14
   }
 }

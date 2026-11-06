@@ -34,8 +34,17 @@ func _ready() -> void:
 	style.set_border_width_all(1)
 	style.set_content_margin_all(6)
 	_panel.add_theme_stylebox_override("panel", style)
-	_panel.position = Vector2(16, 262)
-	_panel.size = Vector2(608, 80)
+	# Anchored to the bottom edge: long choices grow the box upward, so the
+	# last option and the key hint stay on screen.
+	_panel.anchor_left = 0.0
+	_panel.anchor_right = 1.0
+	_panel.anchor_top = 1.0
+	_panel.anchor_bottom = 1.0
+	_panel.offset_left = 16
+	_panel.offset_right = -16
+	_panel.offset_top = -98
+	_panel.offset_bottom = -18
+	_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	add_child(_panel)
 	var box := VBoxContainer.new()
 	_panel.add_child(box)
@@ -73,6 +82,7 @@ func _ready() -> void:
 ## Shows [param scene_runner] until it finishes.
 func open(scene_runner: DialogueRunner) -> void:
 	runner = scene_runner
+	_selected = 0
 	_opened_at = Time.get_ticks_msec() / 1000.0
 	_history_panel.visible = false
 	_set_open(true)

@@ -91,11 +91,16 @@ func _apply_one(e: Dictionary) -> bool:
 			if receipt.is_empty() or has_receipt(receipt):
 				return not receipt.is_empty()
 			var id := str(e["item_id"])
-			items[id] = item_count(id) + int(e.get("quantity", 1))
+			var qty := int(e.get("quantity", 1))
+			if qty <= 0:
+				return false
+			items[id] = item_count(id) + qty
 			receipts[receipt] = true
 		"grant_bronze_unique":
 			if receipt.is_empty() or has_receipt(receipt):
 				return not receipt.is_empty()
+			if int(e["amount"]) < 0:
+				return false
 			_add_bronze(int(e["amount"]))
 			receipts[receipt] = true
 		"consume_quest_items_once":
@@ -142,8 +147,9 @@ func _apply_one(e: Dictionary) -> bool:
 		"add_item":
 			# Non-unique stackable item (shop goods). Fails above the stack limit.
 			var id := str(e["item_id"])
-			var total := item_count(id) + int(e.get("quantity", 1))
-			if total > int(e.get("stack_limit", 99)):
+			var qty := int(e.get("quantity", 1))
+			var total := item_count(id) + qty
+			if qty <= 0 or total > int(e.get("stack_limit", 99)):
 				return false
 			items[id] = total
 		"use_item":
@@ -165,6 +171,15 @@ func _apply_one(e: Dictionary) -> bool:
 					full_flasks.append(id)
 					return true
 			return false
+		"restore_supplies":
+			# Boss attempt snapshot (mecanicas §9): flasks and bread go back to
+			# what they were when the attempt started.
+			full_flasks = e.get("full_flasks", []).duplicate()
+			var bread := int(e.get("bread", 0))
+			if bread > 0:
+				items["pao_porto"] = bread
+			else:
+				items.erase("pao_porto")
 		"set_checkpoint":
 			checkpoint = {"room": str(e["room"]), "entity_id": str(e["entity_id"])}
 		_:

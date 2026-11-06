@@ -105,6 +105,10 @@ func objective(state: GameState) -> String:
 		return "Atravesse o vão com o gancho e prenda o contrapeso."
 	if not state.has_flag("world.bells_solved"):
 		return "Toque os sinos na ordem da inscrição."
-	if not state.has_flag("seen.t11"):
+	if not state.has_flag("seen.t08"):
 		return "Suba até a câmara de Igris."
+	if not state.has_flag("seen.t11"):
+		return "Liberte Igris: gancho no abafador, sinos, espada no regulador."
+	if not state.has_flag("seen.t12"):
+		return "Volte à oficina de Exódia, em Versalhes."
 	return ""

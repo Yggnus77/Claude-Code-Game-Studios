@@ -43,6 +43,7 @@ func _ready() -> void:
 	add_child(shape)
 
 
+## Radius used by the sword to reach this enemy.
 func body_radius() -> float:
 	return p("body_radius", 7)
 
@@ -56,6 +57,11 @@ func _physics_process(delta: float) -> void:
 	_flash = maxf(0.0, _flash - delta)
 	_block_flash = maxf(0.0, _block_flash - delta)
 	if is_defeated or target == null:
+		return
+	if target.has_method("is_dead") and target.is_dead():
+		# Nothing to fight during the respawn delay: stand still.
+		velocity = Vector2.ZERO
+		queue_redraw()
 		return
 	if _hurt_left > 0.0:
 		_hurt_left -= delta
@@ -106,7 +112,7 @@ func receive_sword_hit(damage: int, attack_id: int, from: Vector2) -> bool:
 		_defeat()
 		return true
 	if _flinches():
-		var stun := p("hitstun", 0.2)
+		var stun := maxf(p("hitstun", 0.2), 0.01)
 		_hurt_left = stun
 		_knockback = (global_position - from).normalized() * (p("knockback", 8) / stun)
 		_on_hurt()
@@ -132,7 +138,7 @@ func to_target() -> Vector2:
 func try_hit_target(hit_center: Vector2, radius: float, damage: int, heavy: bool = false) -> bool:
 	if target == null or not target.has_method("receive_hit"):
 		return false
-	if hit_center.distance_to(target.global_position) > radius + 6.0:
+	if hit_center.distance_to(target.global_position) > radius + Player.FEET_RADIUS:
 		return false
 	target.receive_hit(damage, global_position, heavy)
 	return true

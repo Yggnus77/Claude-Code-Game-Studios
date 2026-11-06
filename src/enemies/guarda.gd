@@ -27,9 +27,10 @@ func is_open() -> bool:
 	return state == State.OPENING
 
 
-## Opens the guard for [param seconds] (used by the hook later).
-func expose(seconds: float) -> void:
-	_enter(State.OPENING, seconds)
+## Opens the guard for [param seconds] (the hook); by default for its own
+## [code]hook_opening[/code] from inimigos.json.
+func expose(seconds: float = -1.0) -> void:
+	_enter(State.OPENING, seconds if seconds > 0.0 else p("hook_opening", 1.2))
 
 
 func _blocks(from: Vector2) -> bool:

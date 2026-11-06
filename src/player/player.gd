@@ -75,7 +75,8 @@ func configure(config: GameConfig) -> void:
 	var foot: Array = p.get("foot_collision", [12, 10])
 	_pending_foot = Vector2(foot[0], foot[1])
 	var buffer := float(p.get("input_buffer", 0.12))
-	combo = SwordCombo.new(config.combo(), config.weapon_damage("espada_oficina"), buffer)
+	combo = SwordCombo.new(config.combo(), config.weapon_damage("espada_oficina"), buffer,
+		float(p.get("combo_chain_reset", 0.38)), float(p.get("finisher_cancel", 0.10)))
 	dodge = Dodge.new(config.dodge(), buffer)
 	guard = Guard.new(config.guard())
 	healing = Healing.new(config.data.get("healing", {}))
@@ -83,6 +84,7 @@ func configure(config: GameConfig) -> void:
 	health = Health.new(config.starting_life(), float(p.get("damage_invulnerability", 0.75)))
 	health.died.connect(_on_died)
 	_hitstun_time = float(p.get("hitstun", 0.18))
+	_knockback_px = float(p.get("knockback", 18))
 
 
 func _ready() -> void:
@@ -115,8 +117,10 @@ func request_dodge() -> void:
 		dodge.request()
 
 
-## Full life, no timers (respawn at a checkpoint).
-func respawn_at(pos: Vector2) -> void:
+## Places Yggnus at [param pos] with every action timer cleared. Life is
+## restored only when [param restore_life] is true (death, new game); a door
+## keeps the life the player walked in with (mecanicas: only marcos heal).
+func respawn_at(pos: Vector2, restore_life: bool = true) -> void:
 	global_position = pos
 	velocity = Vector2.ZERO
 	_hitstun = 0.0
@@ -125,7 +129,10 @@ func respawn_at(pos: Vector2) -> void:
 	guard.reset()
 	healing.reset()
 	hook.reset()
-	health.reset()
+	if restore_life:
+		health.reset()
+	else:
+		health.tick(INF)  # clears hit invulnerability only
 	reset_physics_interpolation()
 
 
@@ -136,14 +143,21 @@ func request_heal() -> bool:
 		return false
 	if combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0:
 		return false
-	return healing.start(int(heal_source.call()))
+	if not healing.start(int(heal_source.call())):
+		return false
+	# Drinking takes both hands: the shield comes down (mecanicas §8).
+	guard.set_held(false)
+	return true
 
 
 ## Throws the hook where Yggnus faces. False while busy or cooling down.
 func fire_hook() -> bool:
 	if hook == null or is_dead() or combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy():
 		return false
-	return hook.fire(motor.facing)
+	if not hook.fire(motor.facing):
+		return false
+	guard.set_held(false)
+	return true
 
 
 ## Pulls Yggnus along the latched cable to [param target] (a safe tile
@@ -158,6 +172,7 @@ func is_busy() -> bool:
 	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
 
 
+## True once life reaches zero, until the respawn.
 func is_dead() -> bool:
 	return health != null and health.is_dead()
 
@@ -209,6 +224,10 @@ func _physics_process(delta: float) -> void:
 	health.tick(delta)
 	dodge.tick(delta)
 	guard.tick(delta)
+	if not combo.is_busy():
+		# Buffer and chain-reset clocks run while hooking, dodging, healing or
+		# stunned, so a press is not kept forever (mecanicas §3).
+		combo.tick_idle(delta)
 	_last_outcome_flash = maxf(0.0, _last_outcome_flash - delta)
 	if is_dead():
 		velocity = Vector2.ZERO
