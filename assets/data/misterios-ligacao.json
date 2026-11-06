@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "note": "Ligação dos mistérios do protótipo (Etapa 8) ao mundo: quem ou o que conduz cada um. O kit fixa pistas, respostas, cenas e recompensas em misterios.json; aqui ficam só o anfitrião, a pergunta e os rótulos das relíquias (propostos).",
+  "mysteries": {
+    "m01": {
+      "start_scene": "x01a",
+      "host": "v01_praca.merchant",
+      "host_is_shop": true,
+      "question": "O que explica a venda a mais no livro?"
+    },
+    "m02": {
+      "start_scene": "x02a",
+      "start_on_enter": "t05_sinos",
+      "host": "t05_sinos.inscription",
+      "host_is_shop": false,
+      "question": "Como responder ao quarto toque?"
+    }
+  },
+  "relic_swap_combat_radius": 160,
+  "relic_labels": {
+    "healing.startup": ["Preparo do frasco", "s"],
+    "healing.recovery": ["Recuperação após beber", "s"],
+    "hook.return_cooldown": ["Recarga do gancho", "s"],
+    "player.knockback_max": ["Recuo recebido", "px"],
+    "player.speed": ["Velocidade de caminhada", "px/s"],
+    "exploration.unique_pickup_sense_radius": ["Pulso de fragmento", "px"],
+    "exploration.read_radius": ["Leitura de vestígios", "px"],
+    "magic.pulso.cost": ["Custo do Pulso", ""],
+    "magic.pulso.cooldown": ["Recarga do Pulso", "s"],
+    "magic.pulso.radius": ["Raio do Pulso", "px"],
+    "guard.perfect_window": ["Janela de defesa precisa", "s"]
+  }
+}

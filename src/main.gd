@@ -87,6 +87,12 @@ var bell_puzzle: BellPuzzle
 var bells: Array[Bell] = []
 ## Igris while his room is loaded and the fight is not won, else null.
 var igris: Igris
+## Optional mysteries wired into this slice (m01, m02), keyed by id.
+var mysteries: Dictionary = {}
+## The relic slot rules (always rebuilt from the base numbers).
+var relics: RelicLoadout
+## Hint to show when a wrong-answer scene ends: {"scene": id, "text": hint}.
+var _pending_hint: Dictionary = {}
 ## Flasks and bread at the start of the Igris attempt (restored on death).
 var _attempt: Dictionary = {}
 ## A new game starts unarmed. Playtests and tests that skip the intro (or
@@ -110,6 +116,9 @@ func _ready() -> void:
 	# Every game starts with one empty flask (auditoria-e-decisoes.md item 2).
 	state.apply([{"op": "grant_unique", "item_id": "frasco_01", "quantity": 1, "receipt_id": "new_game.frasco_01"}])
 	shop = Shop.new(config)
+	mysteries = config.mystery_quests()
+	relics = config.relic_loadout()
+	state.relic_ids = relics.relics.keys()
 	shop_panel = ShopPanel.new()
 	add_child(shop_panel)
 	_apply_state_args()
@@ -131,6 +140,8 @@ func _ready() -> void:
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
 	hud.bind_state(state)
+	hud.inventory_extra = _inventory_lines
+	hud.relic_cycle = cycle_relic
 	state.changed.connect(func() -> void: if room: room.queue_redraw())
 	state.changed.connect(_refresh_story)
 	load_room(_arg("--room=", DEFAULT_ROOM))
@@ -266,6 +277,9 @@ func _on_player_hit(outcome: HitResolver.Outcome) -> void:
 ## Raises the story trigger of the room just entered, if any.
 func _on_room_entered() -> void:
 	state.apply([{"op": "set_flag", "flag": "visited.%s" % room_id, "value": true}])
+	for q: MysteryQuest in mysteries.values():
+		if str(q.wiring.get("start_on_enter", "")) == room_id and q.step(state) == MysteryQuest.Step.START:
+			_request_scene(q.scene("start"))
 	var trigger := prologue.trigger_on_enter(state, room_id)
 	if trigger.is_empty():
 		trigger = str(config.tower.get("on_enter", {}).get(room_id, ""))
@@ -278,6 +292,7 @@ func _refresh_story() -> void:
 	if player:
 		player.has_sword = state.item_count("espada_oficina") > 0
 		player.has_shield = state.item_count("escudo_bronze") > 0
+		player.apply_relic_params(relics.params(state.equipped_relic))
 	if state.item_count("gancho_retorno") > 0 and not _hook_known:
 		_hook_known = true
 		equipped = "gancho"
@@ -652,6 +667,7 @@ func interact() -> String:
 					return "clue_locked"
 			state.apply([{"op": "set_flag", "flag": str(e["sets_flag"]), "value": true}, {"op": "add_receipt", "receipt_id": receipt}])
 			hud.toast("Pista registrada.")
+			_on_clue_noted(str(e["sets_flag"]))
 			return "clue"
 		"checkpoint":
 			state.apply([{"op": "set_checkpoint", "room": room_id, "entity_id": str(e["id"])}])
@@ -663,6 +679,9 @@ func interact() -> String:
 			var w: Dictionary = config.tower.get("weight", {})
 			if str(e.get("id", "")) == str(w.get("lock", "-")):
 				return _use_weight_lock(w)
+			var hosted := _use_mystery_host(str(e.get("id", "")))
+			if not hosted.is_empty():
+				return hosted
 			if trigger == SHOP_TRIGGER and state.has_flag("seen.r05"):
 				# After the first talk the merchant goes straight to the goods.
 				shop_panel.open.call_deferred(shop, state)
@@ -674,6 +693,167 @@ func interact() -> String:
 					return "scene"
 			hud.toast(str(FOLLOW_UP_NOTES.get(trigger, "...")))
 			return "nothing"
+
+
+## Plays scene [param scene_id] through its trigger. False if it cannot play now.
+func _request_scene(scene_id: String) -> bool:
+	var scene: Dictionary = dialogue.db.scenes.get(scene_id, {})
+	return not scene.is_empty() and dialogue.request(str(scene.get("trigger_id", "")))
+
+
+## A clue was noted: if it completes a mystery's set, the comparison plays.
+func _on_clue_noted(flag: String) -> void:
+	for q: MysteryQuest in mysteries.values():
+		if q.clue_flags().has(flag):
+			if q.step(state) == MysteryQuest.Step.COMPARE:
+				_request_scene(q.scene("comparison"))
+			else:
+				hud.toast("Pista registrada (%d/%d)." % [q.clues_found(state), q.clue_flags().size()])
+
+
+## The mystery hosted by entity [param entity_id] takes its next step:
+## first talk, comparison, the question, or the reward. Returns "" when it
+## has nothing to do, so the entity's own use (the shop, the inscription)
+## goes on.
+func _use_mystery_host(entity_id: String) -> String:
+	for q: MysteryQuest in mysteries.values():
+		if str(q.wiring.get("host", "")) != entity_id:
+			continue
+		match q.step(state):
+			MysteryQuest.Step.START:
+				return "scene" if _request_scene(q.scene("start")) else ""
+			MysteryQuest.Step.COMPARE:
+				return "scene" if _request_scene(q.scene("comparison")) else ""
+			MysteryQuest.Step.REWARD:
+				return "scene" if _request_scene(q.scene("reward")) else ""
+			MysteryQuest.Step.ANSWER:
+				_ask_mystery(q)
+				return "question"
+			MysteryQuest.Step.COLLECT:
+				hud.toast("Pistas: %d/%d." % [q.clues_found(state), q.clue_flags().size()])
+				if not bool(q.wiring.get("host_is_shop", false)):
+					# An object host has nothing else to say; keep the count on screen.
+					return "nothing"
+	return ""
+
+
+## Shows the mystery's answers by option id, plus a way out.
+func _ask_mystery(q: MysteryQuest) -> void:
+	var texts: Array[String] = []
+	for o: Dictionary in q.options():
+		texts.append(str(o.get("text", "")))
+	texts.append("Ver as mercadorias." if bool(q.wiring.get("host_is_shop", false)) else "Agora não.")
+	dialogue.ask(str(q.wiring.get("question", "")), texts, func(i: int) -> void: answer_mystery(q.id(), i))
+
+
+## Answers mystery [param mystery_id] with option [param index] (-1 or the
+## last, extra option leave it open). Returns the [enum MysteryQuest.Result],
+## or -1 when nothing was answered.
+func answer_mystery(mystery_id: String, index: int) -> int:
+	var q: MysteryQuest = mysteries.get(mystery_id)
+	if q == null:
+		return -1
+	if index < 0 or index >= q.options().size():
+		if index == q.options().size() and bool(q.wiring.get("host_is_shop", false)):
+			if state.has_flag("seen.%s" % SHOP_SCENE):
+				shop_panel.open.call_deferred(shop, state)
+			else:
+				# First visit: the merchant's own introduction opens the shop.
+				dialogue.request.call_deferred(SHOP_TRIGGER)
+		return -1
+	var result := q.submit(state, str(q.options()[index].get("id", "")))
+	match result:
+		MysteryQuest.Result.CORRECT:
+			_request_scene.call_deferred(q.scene("reward"))
+		MysteryQuest.Result.WRONG:
+			# Nothing is taken away; Ádally or Igris nudge, then the next hint.
+			_pending_hint = {"scene": q.scene("wrong"), "text": "Dica: " + q.hint(state)}
+			if not _request_scene(q.scene("wrong")):
+				hud.toast(str(_pending_hint["text"]), 5.0)
+				_pending_hint = {}
+		MysteryQuest.Result.NOT_READY:
+			hud.toast("Ainda faltam pistas (%d/%d)." % [q.clues_found(state), q.clue_flags().size()])
+	return result
+
+
+## Inventory lines for the relic slot and the mysteries in progress.
+func _inventory_lines() -> PackedStringArray:
+	var lines := PackedStringArray()
+	if state.has_flag(GameState.RELIC_SLOT_FLAG):
+		lines.append("")
+		lines.append("RELÍQUIA (uma por vez): %s" % (config.item_name(state.equipped_relic) if not state.equipped_relic.is_empty() else "nenhuma"))
+		for relic: String in _owned_relics():
+			lines.append("%s %s: %s" % ["»" if relic == state.equipped_relic else "·", config.item_name(relic), _relic_effect_text(relic)])
+	var shown := false
+	for q: MysteryQuest in mysteries.values():
+		var st := q.step(state)
+		if st == MysteryQuest.Step.LOCKED or st == MysteryQuest.Step.START:
+			continue
+		if not shown:
+			lines.append("")
+			lines.append("MISTÉRIOS")
+			shown = true
+		var status := "resolvido" if st == MysteryQuest.Step.DONE or st == MysteryQuest.Step.REWARD else "pistas %d/%d" % [q.clues_found(state), q.clue_flags().size()]
+		lines.append("%s: %s" % [str(q.def.get("title", q.id())), status])
+	return lines
+
+
+## Relics the player owns, in data order.
+func _owned_relics() -> Array[String]:
+	var out: Array[String] = []
+	for relic: String in relics.relics:
+		if state.item_count(relic) > 0:
+			out.append(relic)
+	return out
+
+
+## "Preparo do frasco 0,65 → 0,55 s; ..." for [param relic].
+func _relic_effect_text(relic: String) -> String:
+	var labels: Dictionary = config.mystery_wiring.get("relic_labels", {})
+	var parts := PackedStringArray()
+	for fx: Dictionary in relics.effects(relic):
+		var label: Array = labels.get(fx["key"], [fx["key"], ""])
+		parts.append(("%s %s → %s %s" % [label[0], _num(fx["from"]), _num(fx["to"]), label[1]]).strip_edges())
+	return "; ".join(parts)
+
+
+## A number as the kit writes it ("0,55"); "?" when missing.
+func _num(v: Variant) -> String:
+	if v == null:
+		return "?"
+	var f := float(v)
+	return str(int(f)) if is_equal_approx(f, roundf(f)) else str(snappedf(f, 0.01)).replace(".", ",")
+
+
+## K in the inventory: puts the next owned relic in the slot (then none).
+## Not in combat and never during a boss attempt. Returns a status line.
+func cycle_relic() -> String:
+	if not state.has_flag(GameState.RELIC_SLOT_FLAG):
+		return "Ainda não há espaço de relíquia."
+	if in_combat():
+		return "Não dá para trocar a relíquia em combate."
+	var owned := _owned_relics()
+	var order: Array[String] = [""]
+	order.append_array(owned)
+	var next := order[(order.find(state.equipped_relic) + 1) % order.size()]
+	if not state.apply([{"op": "equip_relic", "relic_id": next}]):
+		return "Não foi possível trocar."
+	return "Relíquia: %s." % (config.item_name(next) if not next.is_empty() else "nenhuma")
+
+
+## True during a boss attempt or with a living enemy near Yggnus
+## (misterios-ligacao.json relic_swap_combat_radius).
+func in_combat() -> bool:
+	if not _attempt.is_empty():
+		return true
+	var radius := float(config.mystery_wiring.get("relic_swap_combat_radius", 160))
+	for enemy in enemies:
+		# Defeated enemies are freed but stay listed: check validity first.
+		if not is_instance_valid(enemy) or not (enemy is EnemyBase):
+			continue
+		if not enemy.is_defeated and enemy.global_position.distance_to(player.global_position) <= radius:
+			return true
+	return false
 
 
 ## The counterweight lock: with the weight raised, Ádally fixes it (t05)
@@ -697,6 +877,13 @@ func _use_weight_lock(w: Dictionary) -> String:
 
 
 func _on_scene_finished(scene_id: String, applied: bool) -> void:
+	if str(_pending_hint.get("scene", "")) == scene_id:
+		hud.toast(str(_pending_hint["text"]), 5.0)
+		_pending_hint = {}
+	for q: MysteryQuest in mysteries.values():
+		if scene_id == q.scene("start"):
+			# Clues found before the first talk: compare right away.
+			_request_scene.call_deferred(q.scene("comparison"))
 	if str(_pending_weight.get("scene", "")) == scene_id:
 		if applied:
 			state.apply([{"op": "set_flag", "flag": str(_pending_weight["flag"]), "value": true}])
