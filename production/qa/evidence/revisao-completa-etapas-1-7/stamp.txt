@@ -1,0 +1,3 @@
+Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/1_escolhas_cabem_na_tela.png 46fc262cd0458da8e61c67b51de06086d38d912d
+Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/2_fala_curta_com_duas_linhas.png 7f9516238ce1d7b6e28116baffa72bd2a1f9a1bc
+Reviewed-Content-Hash: production/qa/evidence/revisao-completa-etapas-1-7/README.md 47a4c68d5a20d91a2e8b8acc6684d3e797af1e74

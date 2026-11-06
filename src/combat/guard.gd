@@ -39,14 +39,17 @@ func set_held(pressed: bool) -> void:
 		_held = false
 
 
+## True while the shield is held and not broken.
 func is_up() -> bool:
 	return _held and not is_broken()
 
 
+## True in the perfect-block window right after raising.
 func is_perfect() -> bool:
 	return is_up() and _held_for < perfect_window
 
 
+## True while a heavy hit keeps the shield down.
 func is_broken() -> bool:
 	return _broken_left > 0.0
 
@@ -65,6 +68,7 @@ func break_guard() -> void:
 	_broken_left = break_time
 
 
+## Advances the hold, retrigger and break timers.
 func tick(delta: float) -> void:
 	_since_press += delta
 	if _held:
@@ -72,6 +76,7 @@ func tick(delta: float) -> void:
 	_broken_left = maxf(0.0, _broken_left - delta)
 
 
+## Lowers the shield and clears every timer.
 func reset() -> void:
 	_held = false
 	_since_press = INF

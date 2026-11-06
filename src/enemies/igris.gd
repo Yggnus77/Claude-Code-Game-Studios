@@ -50,6 +50,7 @@ func _ready() -> void:
 	add_child(shape)
 
 
+## Radius used by the sword and hook to reach Igris.
 func body_radius() -> float:
 	return float(wiring.get("body_radius", 14))
 

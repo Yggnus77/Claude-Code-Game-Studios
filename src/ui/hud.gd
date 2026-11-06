@@ -59,9 +59,11 @@ func _ready() -> void:
 	_item.add_theme_color_override("font_color", Color("cfd6e0"))
 	add_child(_item)
 	_toast = Label.new()
-	_toast.position = Vector2(16, 244)
-	_toast.size = Vector2(608, 20)
+	# Two-line barks grow upward from the same baseline.
+	_toast.position = Vector2(16, 224)
+	_toast.size = Vector2(608, 40)
 	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_toast.add_theme_font_size_override("font_size", 11)
 	_toast.add_theme_color_override("font_outline_color", Color.BLACK)
 	_toast.add_theme_constant_override("outline_size", 4)
@@ -99,6 +101,15 @@ func set_life(current: int, maximum: int) -> void:
 	_maximum = maxi(1, maximum)
 	_label.text = "%d/%d" % [current, maximum]
 	_bar.queue_redraw()
+
+
+## The inventory pauses the game, so the node that opened it (main) stops
+## receiving input; the HUD always runs and closes it with Tab or Esc.
+func _unhandled_input(event: InputEvent) -> void:
+	if is_inventory_open() and (event.is_action_pressed("map") or event.is_action_pressed("pause")):
+		_inventory.visible = false
+		get_tree().paused = false
+		get_viewport().set_input_as_handled()
 
 
 func _process(delta: float) -> void:

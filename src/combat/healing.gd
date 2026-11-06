@@ -47,10 +47,10 @@ func tick(delta: float) -> int:
 	return 0
 
 
-## A hit or a dodge during the use cancels it before anything is consumed.
+## A hit or a dodge cancels the use before anything is consumed; during the
+## recovery (after the effect) it only ends the recovery early.
 func interrupt() -> void:
-	if phase == Phase.USING:
-		phase = Phase.IDLE
+	phase = Phase.IDLE
 
 
 func is_busy() -> bool:

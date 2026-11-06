@@ -69,8 +69,10 @@ var _locked_notice := ""
 var _transitioning := false
 var _fade: ColorRect
 ## Chest whose story scene is playing: its receipt is added when the scene ends.
-var _pending_chest_receipt := ""
-var _pending_weight_flag := ""
+## Receipt to add when the chest's scene ends: {"scene": id, "receipt": id}.
+var _pending_chest: Dictionary = {}
+## Flag to set when the counterweight scene ends: {"scene": id, "flag": id}.
+var _pending_weight: Dictionary = {}
 ## Prologue rules (Etapa 4) and the running Yame Black invasion, if any.
 var prologue: Prologue
 var invasion: YameInvasion
@@ -110,22 +112,13 @@ func _ready() -> void:
 	shop = Shop.new(config)
 	shop_panel = ShopPanel.new()
 	add_child(shop_panel)
-	var give := _arg("--items=", "")
-	if not give.is_empty():
-		for item in give.split(","):
-			state.apply([{"op": "grant_unique", "item_id": item, "quantity": 1, "receipt_id": "playtest.%s" % item}])
-	var preset := _arg("--flags=", "")
-	if not preset.is_empty():
-		var effects := []
-		for f in preset.split(","):
-			effects.append({"op": "set_flag", "flag": f, "value": true})
-		state.apply(effects)
+	_apply_state_args()
 	dialogue_box = DialogueBox.new()
 	add_child(dialogue_box)
 	dialogue = DialogueService.new()
 	add_child(dialogue)
 	dialogue.setup(DialogueDB.load_from(), state, dialogue_box)
-	dialogue.bark.connect(func(text: String) -> void: hud.toast(text, 3.0))
+	dialogue.bark.connect(func(text: String) -> void: hud.toast(text, 3.0 + 1.5 * text.count("\n")))
 	dialogue.scene_finished.connect(_on_scene_finished)
 	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or shop_panel.is_open() or _transitioning
 	_fade = ColorRect.new()
@@ -143,6 +136,28 @@ func _ready() -> void:
 	load_room(_arg("--room=", DEFAULT_ROOM))
 	_refresh_story()
 	dialogue.player_busy = func() -> bool: return player.is_busy() or player.is_dead()
+	_apply_playtest_args()
+	if play_intro and room_id == DEFAULT_ROOM:
+		dialogue.request.call_deferred("nova_partida")
+	_on_room_entered.call_deferred()
+
+
+## Playtest start state: --items= and --flags= (see the header).
+func _apply_state_args() -> void:
+	var give := _arg("--items=", "")
+	if not give.is_empty():
+		for item in give.split(","):
+			state.apply([{"op": "grant_unique", "item_id": item, "quantity": 1, "receipt_id": "playtest.%s" % item}])
+	var preset := _arg("--flags=", "")
+	if not preset.is_empty():
+		var effects := []
+		for f in preset.split(","):
+			effects.append({"op": "set_flag", "flag": f, "value": true})
+		state.apply(effects)
+
+
+## Evidence-run helpers: --autowalk, --spawn, --auto*, --at, --face.
+func _apply_playtest_args() -> void:
 	var walk := _arg("--autowalk=", "")
 	if not walk.is_empty() and player:
 		var parts := walk.split(",")
@@ -165,14 +180,12 @@ func _ready() -> void:
 	if not face.is_empty():
 		var f := face.split(",")
 		player.motor.facing = Vector2(float(f[0]), float(f[1]))
-	if play_intro and room_id == DEFAULT_ROOM:
-		dialogue.request.call_deferred("nova_partida")
-	_on_room_entered.call_deferred()
 
 
-## Builds [param id] and places the player on [param entry] (the room's
-## default entry when omitted), then spawns the room's enemies.
-func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
+## Builds room [param id] with Yggnus on [param entry] (or its default
+## entry), then spawns the room's enemies. [param restore_life] is false for
+## doors and the room reset, so walking out and back in never heals.
+func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: bool = true) -> void:
 	var data := RoomData.load_room(id)
 	if data == null:
 		return
@@ -198,7 +211,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 		if hud:
 			hud.bind(player.health)
 	var tile := entry if entry.x >= 0 else data.entry_default
-	player.respawn_at(data.tile_center(tile))
+	player.respawn_at(data.tile_center(tile), restore_life)
 	player.set_camera_limits(data.pixel_size())
 	_arrival_door = _door_at(player.global_position)
 	clear_enemies()
@@ -390,10 +403,13 @@ func _on_hook_hit(hit: Dictionary) -> void:
 			var enemy: Node = hit["node"]
 			if enemy.has_method("hook_muffler"):
 				if enemy.hook_muffler():
-					dialogue.request(str(config.tower.get("igris", {}).get("muffler_bark", "")))
-					hud.toast("Abafador solto! Agora os sinos, na ordem em que acenderem.")
+					# The bark (t09) speaks first; the plain hint only when it is
+					# on cooldown, so one never hides the other.
+					if not dialogue.request(str(config.tower.get("igris", {}).get("muffler_bark", ""))):
+						hud.toast("Abafador solto! Agora os sinos, na ordem em que acenderem.")
 			elif enemy.has_method("expose"):
-				enemy.expose(float(config.data.get("hook", {}).get("guard_exposure", 1.2)))
+				# The guard's own data (inimigos.json hook_opening) sets how long.
+				enemy.expose()
 				hud.toast("O escudo do guarda ficou aberto!")
 		"weight":
 			var w: Dictionary = config.tower.get("weight", {})
@@ -541,8 +557,10 @@ func _physics_process(delta: float) -> void:
 				b.lit = lit
 				b.queue_redraw()
 	var target := interactable_in_front()
-	room.highlight_id = str(target.get("id", ""))
-	room.queue_redraw()
+	var highlight := str(target.get("id", ""))
+	if highlight != room.highlight_id:
+		room.highlight_id = highlight
+		room.queue_redraw()
 	_pick_up_fragments()
 	_check_doors()
 
@@ -563,7 +581,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		quick_swap()
 	elif event.is_action_pressed("reset_room"):
 		# Playtest helper: brings the room's enemies back and the player to the entry.
-		load_room(room_id)
+		load_room(room_id, Vector2i(-1, -1), false)
 	for i in SPAWN_KEYS.size():
 		if event.is_action_pressed("spawn_%d" % (i + 1)):
 			spawn_near_player(SPAWN_KEYS[i])
@@ -608,10 +626,11 @@ func interact() -> String:
 					var r: Dictionary = config.rewards[trigger]
 					hud.toast("Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"]))))
 				return "chest"
-			_pending_chest_receipt = receipt
+			var chest_scene := dialogue.blocking_scene_id(trigger)
 			if dialogue.request(trigger):
+				if not chest_scene.is_empty():
+					_pending_chest = {"scene": chest_scene, "receipt": receipt}
 				return "scene"
-			_pending_chest_receipt = ""
 			hud.toast("Está trancado por um mecanismo.")
 			return "nothing"
 		"mystery_clue":
@@ -658,23 +677,25 @@ func _use_weight_lock(w: Dictionary) -> String:
 		hud.toast("O peso está embaixo. Puxe-o com o gancho.")
 		return "nothing"
 	var trigger := str(w.get("lock_scene_trigger", ""))
-	_pending_weight_flag = str(w.get("solved_flag", ""))
-	if dialogue.request(trigger):
+	var lock_scene := dialogue.blocking_scene_id(trigger)
+	if not lock_scene.is_empty() and dialogue.request(trigger):
+		_pending_weight = {"scene": lock_scene, "flag": str(w.get("solved_flag", ""))}
 		return "scene"
 	# Scene already seen (or skipped before): lock it directly.
-	state.apply([{"op": "set_flag", "flag": _pending_weight_flag, "value": true}])
-	_pending_weight_flag = ""
+	state.apply([{"op": "set_flag", "flag": str(w.get("solved_flag", "")), "value": true}])
 	hud.toast("A trava ficou no lugar.")
 	return "lock"
 
 
 func _on_scene_finished(scene_id: String, applied: bool) -> void:
-	if not _pending_weight_flag.is_empty():
-		state.apply([{"op": "set_flag", "flag": _pending_weight_flag, "value": true}])
-		_pending_weight_flag = ""
-	if applied and not _pending_chest_receipt.is_empty():
-		state.apply([{"op": "add_receipt", "receipt_id": _pending_chest_receipt}])
-	_pending_chest_receipt = ""
+	if str(_pending_weight.get("scene", "")) == scene_id:
+		if applied:
+			state.apply([{"op": "set_flag", "flag": str(_pending_weight["flag"]), "value": true}])
+		_pending_weight = {}
+	if str(_pending_chest.get("scene", "")) == scene_id:
+		if applied:
+			state.apply([{"op": "add_receipt", "receipt_id": str(_pending_chest["receipt"])}])
+		_pending_chest = {}
 	if scene_id == str(config.tower.get("igris", {}).get("start_scene", "t08")):
 		_start_igris_attempt.call_deferred()
 	var chained := str(config.tower.get("scene_chain", {}).get(scene_id, ""))
@@ -776,7 +797,7 @@ func _go_through(door: Dictionary) -> void:
 	out.tween_property(_fade, "modulate:a", 1.0, FADE_TIME)
 	await out.finished
 	var t: Array = door.get("target_tile", [1, 1])
-	load_room(str(door["target_room"]), Vector2i(int(t[0]), int(t[1])))
+	load_room(str(door["target_room"]), Vector2i(int(t[0]), int(t[1])), false)
 	var back := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	back.tween_property(_fade, "modulate:a", 0.0, FADE_TIME)
 	await back.finished
@@ -813,11 +834,18 @@ func _on_player_died() -> void:
 		return
 	var cp_room := str(state.checkpoint["room"])
 	var data := RoomData.load_room(cp_room)
+	if data == null:
+		load_room(room_id)
+		return
+	var moved := cp_room != room_id
 	var tile := data.entry_default
 	for e in data.entities:
 		if str(e.get("id", "")) == str(state.checkpoint["entity_id"]):
 			tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)
 	load_room(cp_room, tile)
+	if moved:
+		# Arriving somewhere new by respawn counts as entering it.
+		_on_room_entered()
 
 
 func _arg(prefix: String, fallback: String) -> String:

@@ -25,7 +25,10 @@
     ],
     "input_buffer": 0.12,
     "damage_invulnerability": 0.75,
-    "hitstun": 0.18
+    "hitstun": 0.18,
+    "knockback": 18,
+    "combo_chain_reset": 0.38,
+    "finisher_cancel": 0.1
   },
   "combo": [
     {

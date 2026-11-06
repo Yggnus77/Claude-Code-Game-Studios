@@ -82,3 +82,54 @@ func test_death_respawns_with_full_life() -> void:
 	await tree.create_timer(main.RESPAWN_DELAY + 0.2).timeout
 	assert_eq(p.health.current, p.health.maximum, "back with full life")
 	assert_true(not p.is_dead(), "alive again")
+
+
+func test_drinking_lowers_the_shield() -> void:
+	# mecanicas §8: healing can be interrupted; the shield cannot cover it.
+	var p := _setup()
+	main.state.apply([{"op": "refill_flask"}])
+	p.health.take_damage(2)
+	p.health.tick(5.0)
+	p.motor.facing = Vector2.RIGHT
+	p.guard_override = true
+	await _frames(3)
+	assert_true(p.guard.is_up(), "shield up")
+	assert_true(p.request_heal(), "drinks")
+	assert_true(not p.guard.is_up(), "the shield comes down to drink")
+	await _frames(10)
+	p.receive_hit(1, p.global_position + Vector2(20, 0))
+	await _frames(60)
+	assert_eq(main.state.full_flask_count(), 1, "a frontal hit interrupts the drink")
+
+
+func test_dodge_after_drinking_travels_full_distance() -> void:
+	var p := _setup()
+	var full := p.dodge.speed * p.dodge.duration
+	main.state.apply([{"op": "refill_flask"}])
+	p.respawn_at(main.room.data.tile_center(Vector2i(10, 14)))
+	p.health.take_damage(2)
+	p.health.tick(5.0)
+	assert_true(p.request_heal(), "drinks")
+	while p.healing.phase != Healing.Phase.RECOVERY:
+		await tree.physics_frame
+	var start := p.global_position
+	p.input_override = Vector2.RIGHT
+	p.request_dodge()
+	await _frames(20)
+	p.input_override = Vector2.ZERO
+	var moved := p.global_position.x - start.x
+	assert_true(moved > full * 0.8, "the dodge leaves the recovery (moved %.1f of %.1f px)" % [moved, full])
+
+
+func test_attack_pressed_while_hooking_expires() -> void:
+	# mecanicas §3: a buffered press lasts 0.12 s and is used once.
+	var p := _setup()
+	p.hook_probe = func(_pos: Vector2) -> Dictionary: return {}
+	assert_true(p.fire_hook(), "hook thrown")
+	p.request_attack()
+	var swung := false
+	for i in 90:
+		await tree.physics_frame
+		if p.combo.is_busy():
+			swung = true
+	assert_true(not swung, "the old press does not swing after the hook returns")
