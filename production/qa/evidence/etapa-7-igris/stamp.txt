@@ -1,0 +1,4 @@
+Reviewed-Content-Hash: production/qa/evidence/etapa-7-igris/1_onda_anunciada.png ec238b1eb79052eb6ad108cc049d51fc008ff1b9
+Reviewed-Content-Hash: production/qa/evidence/etapa-7-igris/2_abafador_brilha.png 4c97a25d936b96e6599f1c3a806ea3192163f379
+Reviewed-Content-Hash: production/qa/evidence/etapa-7-igris/3_sino_aceso_na_ordem.png 966236a0df303600dee8fd1c33294af8d34b3c01
+Reviewed-Content-Hash: production/qa/evidence/etapa-7-igris/README.md 8952e7c1d32f3c6db5bdf3c81826028160d85db4

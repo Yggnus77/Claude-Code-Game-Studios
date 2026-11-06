@@ -83,6 +83,10 @@ var _hook_known := false
 ## Bell puzzle of the current room, if it has one, and its bells.
 var bell_puzzle: BellPuzzle
 var bells: Array[Bell] = []
+## Igris while his room is loaded and the fight is not won, else null.
+var igris: Igris
+## Flasks and bread at the start of the Igris attempt (restored on death).
+var _attempt: Dictionary = {}
 ## A new game starts unarmed. Playtests and tests that skip the intro (or
 ## start in another room) get the sword and shield, unless this is true.
 var start_unarmed := false
@@ -208,6 +212,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 			if enemy:
 				enemy.set_meta("entity", entity)
 	_build_bells()
+	_build_igris()
 	_sync_invasion()
 
 
@@ -383,7 +388,11 @@ func _on_hook_hit(hit: Dictionary) -> void:
 			player.start_pull(room.data.tile_center(dest))
 		"enemy":
 			var enemy: Node = hit["node"]
-			if enemy.has_method("expose"):
+			if enemy.has_method("hook_muffler"):
+				if enemy.hook_muffler():
+					dialogue.request(str(config.tower.get("igris", {}).get("muffler_bark", "")))
+					hud.toast("Abafador solto! Agora os sinos, na ordem em que acenderem.")
+			elif enemy.has_method("expose"):
 				enemy.expose(float(config.data.get("hook", {}).get("guard_exposure", 1.2)))
 				hud.toast("O escudo do guarda ficou aberto!")
 		"weight":
@@ -394,7 +403,8 @@ func _on_hook_hit(hit: Dictionary) -> void:
 				hud.toast("O peso subiu. Agora, a trava!")
 
 
-## Creates the bells of the current room (torre-akurame.json "bells").
+## Creates the bells of the current room: the gallery puzzle
+## (torre-akurame.json "bells") or the bells of Igris's chamber.
 func _build_bells() -> void:
 	for b in bells:
 		if is_instance_valid(b):
@@ -402,20 +412,75 @@ func _build_bells() -> void:
 	bells.clear()
 	bell_puzzle = null
 	var def: Dictionary = config.tower.get("bells", {})
-	if str(def.get("room", "")) != room_id:
+	var in_igris := str(config.tower.get("igris", {}).get("room", "")) == room_id
+	if str(def.get("room", "")) != room_id and not in_igris:
 		return
-	bell_puzzle = BellPuzzle.new(def.get("order", []), state.has_flag(str(def.get("solved_flag", ""))))
+	if not in_igris:
+		bell_puzzle = BellPuzzle.new(def.get("order", []), state.has_flag(str(def.get("solved_flag", ""))))
 	for e in room.data.entities:
 		if str(e.get("kind", "")) != "bell":
 			continue
 		var b := Bell.new()
 		b.bell_id = str(e["id"])
 		b.symbol = str(def.get("symbols", {}).get(b.bell_id, ""))
-		b.lit = bell_puzzle.solved
+		b.lit = bell_puzzle != null and bell_puzzle.solved
 		b.position = room.data.tile_center(Vector2i(int(e["tile"][0]), int(e["tile"][1])))
-		b.rung.connect(_on_bell_rung)
+		b.rung.connect(_on_igris_bell if in_igris else _on_bell_rung)
 		add_child(b)
 		bells.append(b)
+
+
+## Spawns Igris in his chamber until his control is broken (seen.t10).
+func _build_igris() -> void:
+	if igris and is_instance_valid(igris):
+		igris.queue_free()
+	igris = null
+	# Leaving the chamber ends the attempt: a later death elsewhere must not
+	# roll supplies back to the chamber's snapshot.
+	_attempt = {}
+	var wiring: Dictionary = config.tower.get("igris", {})
+	if str(wiring.get("room", "")) != room_id or state.has_flag("seen.%s" % _igris_end_scene()):
+		return
+	igris = Igris.new()
+	igris.setup(IgrisFight.new(config.encounter(str(wiring.get("encounter", "igris"))), wiring), player, wiring)
+	for e in room.data.entities:
+		if str(e.get("id", "")) == str(wiring.get("boss", "")):
+			igris.position = room.data.tile_center(Vector2i(int(e["tile"][0]), int(e["tile"][1])))
+	igris.muffler_opened.connect(func() -> void: hud.toast("O abafador no peito de Igris brilha: use o gancho!", 2.5))
+	igris.control_broken.connect(_on_igris_freed)
+	add_child(igris)
+	enemies.append(igris)
+	if state.has_flag("seen.%s" % str(wiring.get("start_scene", "t08"))):
+		_start_igris_attempt()
+
+
+## Scene that plays when Igris's control breaks (torre-akurame.json igris.end_scene).
+func _igris_end_scene() -> String:
+	return str(config.tower.get("igris", {}).get("end_scene", "t10"))
+
+
+## The fight starts (after t08, or at once on later attempts): remember
+## the flasks and bread so a death gives them back.
+func _start_igris_attempt() -> void:
+	if igris == null or igris.active:
+		return
+	_attempt = {"full_flasks": state.full_flasks.duplicate(), "bread": state.item_count("pao_porto")}
+	igris.active = true
+
+
+func _on_igris_freed() -> void:
+	_attempt = {}
+	dialogue.request(str(config.encounter("igris").get("success_event", "igris_controle_rompido")))
+
+
+func _on_igris_bell(bell_id: String) -> void:
+	if igris == null or not igris.active:
+		return
+	var before := igris.fight.phase
+	if igris.fight.ring(bell_id):
+		hud.toast("O regulador se abriu: dois golpes!")
+	elif before == IgrisFight.Phase.BELLS and igris.fight.phase == IgrisFight.Phase.BELLS_SHOW:
+		hud.toast("Ordem errada. Observe os sinos de novo.")
 
 
 func _on_bell_rung(bell_id: String) -> void:
@@ -466,6 +531,15 @@ func _physics_process(delta: float) -> void:
 		if _autointeract_timer <= 0.0:
 			_autointeract_timer = 0.8
 			interact()
+	if igris and is_instance_valid(igris) and igris.fight:
+		var seq := igris.fight.sequence()
+		for b in bells:
+			var lit := false
+			if igris.fight.phase == IgrisFight.Phase.BELLS_SHOW and igris.fight.showing >= 0:
+				lit = str(seq[igris.fight.showing]) == b.bell_id
+			if b.lit != lit:
+				b.lit = lit
+				b.queue_redraw()
 	var target := interactable_in_front()
 	room.highlight_id = str(target.get("id", ""))
 	room.queue_redraw()
@@ -601,6 +675,17 @@ func _on_scene_finished(scene_id: String, applied: bool) -> void:
 	if applied and not _pending_chest_receipt.is_empty():
 		state.apply([{"op": "add_receipt", "receipt_id": _pending_chest_receipt}])
 	_pending_chest_receipt = ""
+	if scene_id == str(config.tower.get("igris", {}).get("start_scene", "t08")):
+		_start_igris_attempt.call_deferred()
+	var chained := str(config.tower.get("scene_chain", {}).get(scene_id, ""))
+	if not chained.is_empty():
+		dialogue.request.call_deferred(chained)
+	if scene_id == _igris_end_scene():
+		# Igris chooses to leave (chefes.json story_followup); he is gone for good.
+		var followup := str(config.encounter("igris").get("story_followup", ""))
+		if not followup.is_empty():
+			dialogue.request.call_deferred(followup)
+		_build_igris.call_deferred()
 	if scene_id == SHOP_SCENE:
 		shop_panel.open.call_deferred(shop, state)
 	var next := prologue.trigger_after(scene_id)
@@ -713,6 +798,9 @@ func spawn_near_player(kind: String) -> Node:
 
 
 func _on_player_died() -> void:
+	if not _attempt.is_empty():
+		state.apply([{"op": "restore_supplies", "full_flasks": _attempt["full_flasks"], "bread": _attempt["bread"]}])
+		_attempt = {}
 	if hud:
 		hud.show_banner("Yggnus caiu")
 	await get_tree().create_timer(RESPAWN_DELAY).timeout

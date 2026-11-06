@@ -165,6 +165,15 @@ func _apply_one(e: Dictionary) -> bool:
 					full_flasks.append(id)
 					return true
 			return false
+		"restore_supplies":
+			# Boss attempt snapshot (mecanicas §9): flasks and bread go back to
+			# what they were when the attempt started.
+			full_flasks = e.get("full_flasks", []).duplicate()
+			var bread := int(e.get("bread", 0))
+			if bread > 0:
+				items["pao_porto"] = bread
+			else:
+				items.erase("pao_porto")
 		"set_checkpoint":
 			checkpoint = {"room": str(e["room"]), "entity_id": str(e["entity_id"])}
 		_:

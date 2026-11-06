@@ -44,6 +44,10 @@ func _physics_process(delta: float) -> void:
 func _draw() -> void:
 	var swing := sin(_flash * 40.0) * 2.0 if _flash > 0.0 else 0.0
 	var body := PackedVector2Array([Vector2(-7 + swing, 2), Vector2(7 + swing, 2), Vector2(5 + swing, -10), Vector2(-5 + swing, -10)])
+	if lit:
+		# A lit bell glows, so the order reads from across the room.
+		draw_circle(Vector2(swing, -4), 13.0, Color(1.0, 0.85, 0.4, 0.25))
+		draw_arc(Vector2(swing, -4), 13.0, 0, TAU, 24, Color(1.0, 0.85, 0.4, 0.9), 1.5)
 	draw_colored_polygon(body, COLOR_BRONZE.lightened(0.4) if _flash > 0.0 or lit else COLOR_BRONZE)
 	draw_circle(Vector2(swing, 4), 2.0, COLOR_BRONZE.darkened(0.3))
 	# Plate under the bell with its mark.
