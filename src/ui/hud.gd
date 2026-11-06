@@ -14,6 +14,7 @@ var _bronze: Label
 var _toast: Label
 var _toast_left := 0.0
 var _objective: Label
+var _item: Label
 var _inventory: PanelContainer
 var _inventory_text: Label
 var _current := 0
@@ -52,6 +53,11 @@ func _ready() -> void:
 	_objective.add_theme_color_override("font_outline_color", Color.BLACK)
 	_objective.add_theme_constant_override("outline_size", 4)
 	add_child(_objective)
+	_item = Label.new()
+	_item.position = Vector2(8, 30)
+	_item.add_theme_font_size_override("font_size", 9)
+	_item.add_theme_color_override("font_color", Color("cfd6e0"))
+	add_child(_item)
 	_toast = Label.new()
 	_toast.position = Vector2(16, 244)
 	_toast.size = Vector2(608, 20)
@@ -75,7 +81,7 @@ func _ready() -> void:
 	_inventory.visible = false
 	add_child(_inventory)
 	var hint := Label.new()
-	hint.text = "WASD andar · J espada · K examinar · L frasco/pão · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
+	hint.text = "WASD andar · J espada · K examinar · L item · Q troca · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
 	hint.add_theme_font_size_override("font_size", 9)
 	hint.modulate = Color(1, 1, 1, 0.7)
 	hint.position = Vector2(6, 342)
@@ -156,6 +162,11 @@ func toggle_inventory(state: GameState, config: GameConfig) -> void:
 ## Shows the current goal in the top-right corner; empty hides it.
 func set_objective(text: String) -> void:
 	_objective.text = "► " + text if not text.is_empty() else ""
+
+
+## Shows the item on the item button.
+func set_item(item_name: String, can_swap: bool = false) -> void:
+	_item.text = "Item (L): %s" % item_name + (" · Q troca" if can_swap else "")
 
 
 ## The objective text on screen (for tests).

@@ -14,6 +14,7 @@ const ITEMS_PATH := "res://assets/data/itens.json"
 const REWARDS_PATH := "res://assets/data/recompensas-mundo.json"
 const ENCOUNTERS_PATH := "res://assets/data/chefes.json"
 const MYSTERIES_PATH := "res://assets/data/misterios.json"
+const TOWER_PATH := "res://assets/data/torre-akurame.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -31,6 +32,9 @@ var fragments: Dictionary = {}
 var encounters: Dictionary = {}
 ## Optional mysteries from misterios.json, keyed by id.
 var mysteries: Dictionary = {}
+## Torre Akurame wiring (torre-akurame.json): room triggers, clear flags,
+## hook, counterweight and bell puzzle.
+var tower: Dictionary = {}
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -56,6 +60,7 @@ static func load_all() -> GameConfig:
 		cfg.encounters[str(e["id"])] = e
 	for m in read_json(MYSTERIES_PATH).get("mysteries", []):
 		cfg.mysteries[str(m["id"])] = m
+	cfg.tower = read_json(TOWER_PATH)
 	return cfg
 
 

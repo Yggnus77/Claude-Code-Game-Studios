@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "note": "Ligações da Torre Akurame (etapa 6) entre salas, cenas e flags de mundo. Fonte: plano-implementacao.md Etapa 6, cenas t01–t07, mecanicas-e-dificuldade.md §7.",
+  "on_enter": {
+    "t00_base": "entrar_akurame",
+    "t01_guardas": "examinar_porta_oficina"
+  },
+  "room_clear_flags": {
+    "t01_guardas": "world.guards_clear"
+  },
+  "locked_door_scenes": {
+    "door.t01_guardas.t02_oficina": "examinar_porta_oficina"
+  },
+  "hook": {
+    "anchor_radius": 16,
+    "start_radius": 32,
+    "valid_hook_bark": "primeiro_gancho_valido"
+  },
+  "weight": {
+    "room": "t04_pesos",
+    "block": "t04_pesos.weight",
+    "lock": "t04_pesos.lock",
+    "lock_scene_trigger": "interagir_peso_duplo",
+    "solved_flag": "world.weight_locked",
+    "lift_seconds": 0.4
+  },
+  "bells": {
+    "room": "t05_sinos",
+    "order": ["t05_sinos.bell_circle", "t05_sinos.bell_gap", "t05_sinos.bell_waves"],
+    "symbols": {"t05_sinos.bell_circle": "circle", "t05_sinos.bell_gap": "gap", "t05_sinos.bell_waves": "waves"},
+    "solved_flag": "world.bells_solved",
+    "inscription_trigger": "examinar_inscricao_sinos",
+    "hint_trigger": "pedir_dica_sinos"
+  }
+}

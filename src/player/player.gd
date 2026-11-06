@@ -8,6 +8,10 @@ extends CharacterBody2D
 
 signal hit_taken(outcome: HitResolver.Outcome)
 signal died
+## The hook's tip touched something: {"type": "wall" | "anchor" | "enemy" | ...}.
+signal hook_hit(result: Dictionary)
+## The item button was pressed; the owner decides what the equipped item does.
+signal item_pressed
 
 const COLOR_BODY := Color("e8d9b5")
 const COLOR_CLOAK := Color("3d6fa8")
@@ -28,6 +32,9 @@ var dodge: Dodge
 var guard: Guard
 var health: Health
 var healing: Healing
+var hook: Hook
+## Returns what is at a world position for the hook's tip ({} = nothing).
+var hook_probe: Callable = func(_pos: Vector2) -> Dictionary: return {}
 ## Returns the life the best healing item would restore now (0 = none).
 var heal_source: Callable = func() -> int: return 0
 ## Consumes that item at the effect frame; false if it is gone.
@@ -53,6 +60,7 @@ var _knockback := Vector2.ZERO
 var _swing_facing := Vector2.DOWN
 var _pending_foot := Vector2(12, 10)
 var _last_outcome_flash := 0.0
+var _pull_target := Vector2.ZERO
 
 @onready var camera: Camera2D = $Camera2D
 @onready var feet: CollisionShape2D = $Feet
@@ -71,6 +79,7 @@ func configure(config: GameConfig) -> void:
 	dodge = Dodge.new(config.dodge(), buffer)
 	guard = Guard.new(config.guard())
 	healing = Healing.new(config.data.get("healing", {}))
+	hook = Hook.new(config.data.get("hook", {}))
 	health = Health.new(config.starting_life(), float(p.get("damage_invulnerability", 0.75)))
 	health.died.connect(_on_died)
 	_hitstun_time = float(p.get("hitstun", 0.18))
@@ -115,6 +124,7 @@ func respawn_at(pos: Vector2) -> void:
 	dodge.reset()
 	guard.reset()
 	healing.reset()
+	hook.reset()
 	health.reset()
 	reset_physics_interpolation()
 
@@ -129,9 +139,23 @@ func request_heal() -> bool:
 	return healing.start(int(heal_source.call()))
 
 
-## True while attacking, dodging, healing or stunned: story scenes wait for this to end.
+## Throws the hook where Yggnus faces. False while busy or cooling down.
+func fire_hook() -> bool:
+	if hook == null or is_dead() or combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy():
+		return false
+	return hook.fire(motor.facing)
+
+
+## Pulls Yggnus along the latched cable to [param target] (a safe tile
+## across a gap). Walls and gaps are ignored only during this pull.
+func start_pull(target: Vector2) -> void:
+	_pull_target = target
+	hook.begin_pull()
+
+
+## True while attacking, dodging, healing, hooking or stunned: story scenes wait for this to end.
 func is_busy() -> bool:
-	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or (healing != null and healing.is_busy())
+	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
 
 
 func is_dead() -> bool:
@@ -140,6 +164,9 @@ func is_dead() -> bool:
 
 ## Called by enemies. [param from] is the attacker's position.
 func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: bool = false) -> HitResolver.Outcome:
+	if hook.phase == Hook.Phase.PULL:
+		# Crossing on the cable: nothing interrupts the pull over a gap.
+		return HitResolver.Outcome.IGNORED
 	var outcome := HitResolver.resolve(health, dodge, guard, motor.facing, from - global_position, damage, heavy, unblockable)
 	match outcome:
 		HitResolver.Outcome.HIT:
@@ -155,6 +182,8 @@ func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: b
 func _start_hitstun(from: Vector2, seconds: float) -> void:
 	combo.cancel()
 	healing.interrupt()
+	if hook.phase != Hook.Phase.PULL:
+		hook.cancel()
 	_hitstun = seconds
 	var away := (global_position - from).normalized()
 	if away == Vector2.ZERO:
@@ -169,7 +198,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("attack") and not healing.is_busy():
 		request_attack()
 	elif event.is_action_pressed("item"):
-		request_heal()
+		item_pressed.emit()
 	elif event.is_action_pressed("dodge"):
 		request_dodge()
 
@@ -198,6 +227,25 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 		return
 
+	if hook.phase == Hook.Phase.PULL:
+		var step := hook.tip_speed * delta
+		if global_position.distance_to(_pull_target) <= step:
+			global_position = _pull_target
+			hook.end_pull()
+		else:
+			global_position += (_pull_target - global_position).normalized() * step
+			hook.distance = global_position.distance_to(_pull_target)
+		velocity = Vector2.ZERO
+		queue_redraw()
+		return
+	var hook_result := hook.tick(delta, global_position, hook_probe)
+	if not hook_result.is_empty():
+		hook_hit.emit(hook_result)
+	if hook.is_busy():
+		velocity = motor.step(velocity, input, delta, hook.speed_factor)
+		move_and_slide()
+		queue_redraw()
+		return
 	if healing.is_busy():
 		var restored := healing.tick(delta)
 		if restored > 0 and heal_commit.call():
@@ -277,6 +325,10 @@ func _draw() -> void:
 	draw_circle(Vector2(0, -h * 0.8), w * 0.22, Color(COLOR_BODY, alpha))
 	var f := motor.facing if motor else Vector2.DOWN
 	draw_circle(Vector2(0, -h * 0.4) + f * w * 0.35, 3.0, COLOR_FACING)
+	if hook and hook.distance > 0.0:
+		var tip := hook.tip(Vector2.ZERO) + Vector2(0, -8)
+		draw_line(Vector2(0, -8), tip, Color("c9c2b0"), 1.0)
+		draw_circle(tip, 2.5, Color("f2c14e"))
 	if healing and healing.phase == Healing.Phase.USING:
 		draw_arc(Vector2(0, -h - 4), 4.0, 0, TAU, 10, Color("e05a5a"), 2.0)
 	if guard and guard.is_up():
