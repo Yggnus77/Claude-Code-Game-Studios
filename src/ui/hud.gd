@@ -75,7 +75,7 @@ func _ready() -> void:
 	_inventory.visible = false
 	add_child(_inventory)
 	var hint := Label.new()
-	hint.text = "WASD andar · J espada · K examinar · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
+	hint.text = "WASD andar · J espada · K examinar · L frasco/pão · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
 	hint.add_theme_font_size_override("font_size", 9)
 	hint.modulate = Color(1, 1, 1, 0.7)
 	hint.position = Vector2(6, 342)
@@ -116,6 +116,10 @@ func bind_state(state: GameState) -> void:
 
 func _show_bronze(state: GameState) -> void:
 	_bronze.text = "Bronze %d/%d" % [state.bronze, state.wallet_capacity] + ("  (reserva %d)" % state.bronze_reserve if state.bronze_reserve > 0 else "")
+	if not state.flasks().is_empty():
+		_bronze.text += "   Frascos %d/%d" % [state.full_flask_count(), state.flasks().size()]
+	if state.item_count("pao_porto") > 0:
+		_bronze.text += "   Pão %d" % state.item_count("pao_porto")
 
 
 func is_inventory_open() -> bool:
@@ -137,7 +141,7 @@ func toggle_inventory(state: GameState, config: GameConfig) -> void:
 	lines.append("")
 	lines.append("Bronze %d/%d · reserva %d" % [state.bronze, state.wallet_capacity, state.bronze_reserve])
 	lines.append("Fragmentos de Âncora: %d (%d/4 para a próxima vida)" % [state.fragments.size(), state.fragments.size() % 4])
-	lines.append("Espaços de frasco: %d" % state.flask_capacity)
+	lines.append("Frascos: %d cheios de %d (espaços %d)" % [state.full_flask_count(), state.flasks().size(), state.flask_capacity])
 	var clues := 0
 	for f in state.flags:
 		if str(f).begins_with("clue.") and state.flags[f]:

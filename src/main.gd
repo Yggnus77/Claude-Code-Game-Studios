@@ -23,6 +23,13 @@ const INTERACT_RADIUS := 14.0
 ## Kinds the interact action can use.
 const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint"]
 ## Playtest keys 1–4 spawn these enemies near the player.
+## Triggers tried when an interactable's own scene has already played:
+## the pump hands its reward once both parts are found (r03 → r04).
+const TRIGGER_FOLLOW_UPS := {"iniciar_missao_bomba": ["concluir_missao_bomba"]}
+## The merchant's trigger and scene (r05 opens the shop).
+const SHOP_TRIGGER := "primeira_loja"
+const SHOP_SCENE := "r05"
+
 const SPAWN_KEYS := ["rastejo_tinta", "mariposa_papel", "soldado_corda", "guarda_contrapeso"]
 ## Enemy kinds that have an implementation, by inimigos.json id.
 const ENEMY_SCRIPTS := {
@@ -56,6 +63,9 @@ var _pending_chest_receipt := ""
 ## Prologue rules (Etapa 4) and the running Yame Black invasion, if any.
 var prologue: Prologue
 var invasion: YameInvasion
+## Merchant rules and menu (Etapa 5).
+var shop: Shop
+var shop_panel: ShopPanel
 ## A new game starts unarmed. Playtests and tests that skip the intro (or
 ## start in another room) get the sword and shield, unless this is true.
 var start_unarmed := false
@@ -74,6 +84,11 @@ func _ready() -> void:
 			{"op": "grant_unique", "item_id": "espada_oficina", "quantity": 1, "receipt_id": "scene.p05.espada_oficina"},
 			{"op": "grant_unique", "item_id": "escudo_bronze", "quantity": 1, "receipt_id": "scene.p05.escudo_bronze"},
 		])
+	# Every game starts with one empty flask (auditoria-e-decisoes.md item 2).
+	state.apply([{"op": "grant_unique", "item_id": "frasco_01", "quantity": 1, "receipt_id": "new_game.frasco_01"}])
+	shop = Shop.new(config)
+	shop_panel = ShopPanel.new()
+	add_child(shop_panel)
 	var preset := _arg("--flags=", "")
 	if not preset.is_empty():
 		var effects := []
@@ -87,7 +102,7 @@ func _ready() -> void:
 	dialogue.setup(DialogueDB.load_from(), state, dialogue_box)
 	dialogue.bark.connect(func(text: String) -> void: hud.toast(text, 3.0))
 	dialogue.scene_finished.connect(_on_scene_finished)
-	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or _transitioning
+	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or shop_panel.is_open() or _transitioning
 	_fade = ColorRect.new()
 	_fade.color = Color.BLACK
 	_fade.modulate.a = 0.0
@@ -145,6 +160,8 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 		add_child(player)
 		player.died.connect(_on_player_died)
 		player.hit_taken.connect(_on_player_hit)
+		player.heal_source = _heal_source
+		player.heal_commit = _heal_commit
 		if hud:
 			hud.bind(player.health)
 	var tile := entry if entry.x >= 0 else data.entry_default
@@ -156,7 +173,9 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1)) -> void:
 		var kind := str(entity.get("kind", ""))
 		if ENEMY_SCRIPTS.has(kind):
 			var t: Array = entity.get("tile", [0, 0])
-			spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
+			var enemy := spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
+			if enemy:
+				enemy.set_meta("entity", entity)
 	_sync_invasion()
 
 
@@ -196,6 +215,7 @@ func _on_player_hit(outcome: HitResolver.Outcome) -> void:
 
 ## Raises the story trigger of the room just entered, if any.
 func _on_room_entered() -> void:
+	state.apply([{"op": "set_flag", "flag": "visited.%s" % room_id, "value": true}])
 	var trigger := prologue.trigger_on_enter(state, room_id)
 	if not trigger.is_empty():
 		dialogue.request(trigger)
@@ -217,6 +237,7 @@ func spawn_enemy(kind: String, tile: Vector2i) -> Node:
 	var enemy: Node2D = ENEMY_SCRIPTS[kind].new()
 	enemy.setup(config.enemy(kind), player)
 	enemy.position = room.data.tile_center(tile)
+	enemy.defeated.connect(_on_enemy_defeated)
 	add_child(enemy)
 	enemies.append(enemy)
 	return enemy
@@ -229,6 +250,44 @@ func clear_enemies() -> void:
 	enemies.clear()
 	for paper in get_tree().get_nodes_in_group("projectiles"):
 		paper.queue_free()
+	for coin in get_tree().get_nodes_in_group("pickups"):
+		coin.queue_free()
+
+
+## Common enemies drop their Bronze; a designated one (an entity with a
+## world reward trigger, e.g. the pump's scrap creature) also hands its
+## unique reward the first time only.
+func _on_enemy_defeated(enemy: Node) -> void:
+	var entity: Dictionary = enemy.get_meta("entity", {})
+	var reward := str(entity.get("trigger_id", ""))
+	if not reward.is_empty() and reward != "<null>" and config.rewards.has(reward):
+		var receipt := config.reward_receipt(reward)
+		if not state.has_receipt(receipt) and state.apply(config.reward_effects(reward)):
+			hud.toast("Recebeu %s" % config.item_name(str(config.rewards[reward].get("item", ""))))
+	var amount := Pickup.bronze_amount(str(enemy.params.get("repeatable_drop", "")))
+	if amount > 0:
+		var coin := Pickup.new()
+		coin.amount = amount
+		coin.target = player
+		coin.position = enemy.global_position
+		coin.collected.connect(func(c: Pickup) -> void: state.apply([{"op": "add_bronze", "amount": c.amount}]))
+		add_child.call_deferred(coin)
+
+
+## Life the best healing item would restore now: a full flask, else bread.
+func _heal_source() -> int:
+	if state.full_flask_count() > 0:
+		return int(config.data.get("healing", {}).get("life_restored", 3))
+	if state.item_count("pao_porto") > 0:
+		return int(config.progression.get("recuperacao", {}).get("pao_vida", 1))
+	return 0
+
+
+## Consumes the item [method _heal_source] chose, at the effect frame.
+func _heal_commit() -> bool:
+	if state.full_flask_count() > 0:
+		return state.apply([{"op": "drink_flask"}])
+	return state.apply([{"op": "use_item", "item_id": "pao_porto"}])
 
 
 func _physics_process(delta: float) -> void:
@@ -252,7 +311,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if player == null or player.is_dead() or dialogue.is_open():
+	if player == null or player.is_dead() or dialogue.is_open() or shop_panel.is_open():
 		return
 	if event.is_action_pressed("map"):
 		hud.toggle_inventory(state, config)
@@ -288,9 +347,10 @@ func interactable_in_front() -> Dictionary:
 
 
 ## Uses the entity in front of the player. Returns what happened, for tests:
-## "chest", "chest_empty", "scene", "clue", "checkpoint", "nothing".
+## "chest", "chest_empty", "scene", "clue", "clue_locked", "checkpoint",
+## "shop", "nothing".
 func interact() -> String:
-	if dialogue.is_open() or player.is_busy():
+	if dialogue.is_open() or shop_panel.is_open() or player.is_busy():
 		return "nothing"
 	var e := interactable_in_front()
 	if e.is_empty():
@@ -319,6 +379,10 @@ func interact() -> String:
 			if room.is_spent(e):
 				hud.toast("Você já anotou esta pista.")
 				return "nothing"
+			for need in config.clue_requirements(str(e["sets_flag"])):
+				if not state.has_flag(str(need)):
+					hud.toast("Algo aqui chama atenção, mas ainda não faz sentido.")
+					return "clue_locked"
 			state.apply([{"op": "set_flag", "flag": str(e["sets_flag"]), "value": true}, {"op": "add_receipt", "receipt_id": receipt}])
 			hud.toast("Pista registrada.")
 			return "clue"
@@ -329,9 +393,16 @@ func interact() -> String:
 			dialogue.request("ativar_primeiro_marco")
 			return "checkpoint"
 		_:
+			if trigger == SHOP_TRIGGER and state.has_flag("seen.r05"):
+				# After the first talk the merchant goes straight to the goods.
+				shop_panel.open.call_deferred(shop, state)
+				return "shop"
 			if not trigger.is_empty() and trigger != "<null>" and dialogue.request(trigger):
 				return "scene"
-			hud.toast("...")
+			for later in TRIGGER_FOLLOW_UPS.get(trigger, []):
+				if dialogue.request(later):
+					return "scene"
+			hud.toast("Ainda falta alguma coisa." if TRIGGER_FOLLOW_UPS.has(trigger) else "...")
 			return "nothing"
 
 
@@ -339,6 +410,8 @@ func _on_scene_finished(scene_id: String, applied: bool) -> void:
 	if applied and not _pending_chest_receipt.is_empty():
 		state.apply([{"op": "add_receipt", "receipt_id": _pending_chest_receipt}])
 	_pending_chest_receipt = ""
+	if scene_id == SHOP_SCENE:
+		shop_panel.open.call_deferred(shop, state)
 	var next := prologue.trigger_after(scene_id)
 	if not next.is_empty():
 		dialogue.request.call_deferred(next)

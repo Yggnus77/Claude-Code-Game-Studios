@@ -27,6 +27,11 @@ var skins: Array = ["restaurador"]
 var fragments: Array = []
 ## Last checkpoint: {"room": id, "entity_id": id}.
 var checkpoint: Dictionary = {}
+## Ids of the flasks that hold a Restorative charge. Flasks are items whose
+## id starts with [constant FLASK_PREFIX]; a new one arrives empty.
+var full_flasks: Array = []
+
+const FLASK_PREFIX := "frasco_"
 
 
 func has_flag(flag: String) -> bool:
@@ -39,6 +44,25 @@ func has_receipt(receipt_id: String) -> bool:
 
 func item_count(item_id: String) -> int:
 	return int(items.get(item_id, 0))
+
+
+## Flask ids owned, in order, limited by the flask capacity.
+func flasks() -> Array:
+	var ids := []
+	for id in items.keys():
+		if str(id).begins_with(FLASK_PREFIX) and item_count(id) > 0:
+			ids.append(str(id))
+	ids.sort()
+	return ids.slice(0, flask_capacity)
+
+
+## How many owned flasks are full.
+func full_flask_count() -> int:
+	var n := 0
+	for id in flasks():
+		if full_flasks.has(id):
+			n += 1
+	return n
 
 
 ## Max life from unique fragments: 6 + floor(fragments / 4), capped at 14.
@@ -107,6 +131,40 @@ func _apply_one(e: Dictionary) -> bool:
 			if receipt.is_empty():
 				return false
 			receipts[receipt] = true
+		"add_bronze":
+			# Repeatable pickups (enemy drops); the overflow goes to the reserve.
+			_add_bronze(maxi(0, int(e["amount"])))
+		"spend_bronze":
+			var price := int(e["amount"])
+			if price < 0 or bronze < price:
+				return false
+			bronze -= price
+		"add_item":
+			# Non-unique stackable item (shop goods). Fails above the stack limit.
+			var id := str(e["item_id"])
+			var total := item_count(id) + int(e.get("quantity", 1))
+			if total > int(e.get("stack_limit", 99)):
+				return false
+			items[id] = total
+		"use_item":
+			var id := str(e["item_id"])
+			if item_count(id) <= 0:
+				return false
+			items[id] = item_count(id) - 1
+			if items[id] <= 0:
+				items.erase(id)
+		"drink_flask":
+			for id in flasks():
+				if full_flasks.has(id):
+					full_flasks.erase(id)
+					return true
+			return false
+		"refill_flask":
+			for id in flasks():
+				if not full_flasks.has(id):
+					full_flasks.append(id)
+					return true
+			return false
 		"set_checkpoint":
 			checkpoint = {"room": str(e["room"]), "entity_id": str(e["entity_id"])}
 		_:
@@ -128,6 +186,7 @@ func to_dict() -> Dictionary:
 		"bronze": bronze, "bronze_reserve": bronze_reserve, "wallet_capacity": wallet_capacity,
 		"flask_capacity": flask_capacity, "resonance_max": resonance_max,
 		"skins": skins.duplicate(), "fragments": fragments.duplicate(), "checkpoint": checkpoint.duplicate(),
+		"full_flasks": full_flasks.duplicate(),
 	}
 
 
@@ -149,3 +208,4 @@ func _load(d: Dictionary) -> void:
 	skins = d.get("skins", ["restaurador"]).duplicate()
 	fragments = d.get("fragments", []).duplicate()
 	checkpoint = d.get("checkpoint", {}).duplicate()
+	full_flasks = d.get("full_flasks", []).duplicate()

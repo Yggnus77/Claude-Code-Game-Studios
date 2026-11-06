@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: src/main.gd 21b74e5d68cf629da0f8fe69118e97f564edffcf
+Reviewed-Content-Hash: src/state/game_state.gd d22695bb3104292d7c6cb24b369bbac84eb3b6f3
+Reviewed-Content-Hash: src/state/shop.gd 626717eec17027db672d2495fcfe4f96beac3146
+Reviewed-Content-Hash: src/combat/healing.gd 5750d312ab6b9c8b1e9008846222cfbe5534cc3a
+Reviewed-Content-Hash: src/player/player.gd a437e158525a1a2992e98d20c502589aead8ea99
+Reviewed-Content-Hash: src/ui/shop_panel.gd 66cae7feabc4618b02b58a4b36c6e6fba2e84df7
+Reviewed-Content-Hash: src/ui/hud.gd b758522cc9c96de7aa202559cf574860b5a6e2f6
+Reviewed-Content-Hash: src/ui/dialogue_box.gd df10baf4288b121415fd505e3258467c7b675ded
+Reviewed-Content-Hash: src/world/pickup.gd f64fe0e868c498dc99f35d36bb000e83fe6d4ead
+Reviewed-Content-Hash: src/core/game_config.gd b2244b3588a70d6a7e29f1e2549ce96c38ed6054
+Reviewed-Content-Hash: src/story/prologue.gd 4c7f23e91523335b5928c32a66d3b90b98afcd17

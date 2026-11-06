@@ -58,7 +58,7 @@ func test_key_chest_gives_key_once() -> void:
 
 
 func test_clue_sets_flag_once() -> void:
-	var p := _setup("v01_praca")
+	var p := _setup("v01_praca", ["seen.t11"])
 	_face(p, Vector2i(21, 7))
 	assert_eq(main.interact(), "clue", "clue recorded")
 	assert_true(main.state.has_flag("clue.m01.recibo_mercado"), "flag set")
