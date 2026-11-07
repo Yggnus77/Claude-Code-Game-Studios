@@ -164,3 +164,19 @@ func test_the_sword_on_yame_says_to_cut_the_bindings() -> void:
 	assert_eq(main.prologue.bindings_left(main.state).size(), 3, "Yame takes nothing, bindings untouched")
 	assert_eq(main.playtest.refused.get("espada em Yame Black", 0), 1, "one swing, one notice")
 	assert_true(main.hud._toast.text.contains("amarras"), "the player is told what to hit")
+
+
+## Teste do usuário (2026-11-07): após morrer na invasão e voltar no marco da
+## praça, a linha de objetivo só dizia "corte as amarras" e ele ficou quase
+## 5 min na praça. Fora da oficina ela agora manda voltar.
+func test_objective_in_the_square_during_invasion_says_go_back() -> void:
+	_setup("v00_oficina", ["seen.p00", "seen.p01", "seen.p02", "seen.p05"])
+	await _frames(2)
+	main.load_room("v01_praca")
+	await _frames(2)
+	var line: String = main.hud._objective.text
+	assert_true(line.contains("Volte à oficina"), "square during invasion: go back (got '%s')" % line)
+	main.load_room("v00_oficina")
+	await _frames(2)
+	line = main.hud._objective.text
+	assert_true(line.contains("Corte as amarras"), "workshop: cut the bindings (got '%s')" % line)
