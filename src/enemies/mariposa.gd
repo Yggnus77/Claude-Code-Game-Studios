@@ -73,6 +73,19 @@ func _draw_body() -> void:
 	if flying:
 		# Shadow on the ground shows where it is while it flies.
 		draw_circle(Vector2.ZERO, r * 0.7, Color(0, 0, 0, 0.35))
+	var art := SpriteAtlas.enemies()
+	if art:
+		var frame := "mariposa_fly%d" % (floori(Time.get_ticks_msec() / 110.0) % 2)
+		if state == State.LAND:
+			frame = "mariposa_land"
+		elif state == State.DIVE or state == State.REST:
+			frame = "mariposa_dive"
+		# The sheet draws the body at y 30; the pivot is the feet (y 44).
+		art.draw(self, frame, Vector2(0, lift + 14.0), _flash > 0.0)
+		if state == State.LAND:
+			draw_arc(Vector2(0, lift), r + 6.0, 0, TAU, 16, COLOR_WARN, 1.5)
+			draw_line(Vector2(0, lift), Vector2(0, lift) + dive_direction * (r + 12.0), COLOR_WARN, 2.0)
+		return
 	var flap := 1.0 if state != State.HOVER else 0.6 + 0.4 * absf(sin(Time.get_ticks_msec() / 90.0))
 	var c := COLOR_FLASH if _flash > 0.0 else COLOR_PAPER
 	var body := Vector2(0, lift)

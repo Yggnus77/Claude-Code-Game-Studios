@@ -143,6 +143,10 @@ func _draw() -> void:
 			draw_line(to_local(b.global_position), to_local(_door_center), COLOR_THREAD, 1.0)
 		if is_instance_valid(b):
 			draw_line(to_local(b.global_position), Vector2(0, 6), Color(COLOR_THREAD, 0.5), 1.0)
+	var art := SpriteAtlas.enemies()
+	if art:
+		art.draw(self, "yame_telegraph" if _telegraph_left > 0.0 else "yame_idle", Vector2(0, 14))
+		return
 	# Body: a dark mass of pages with one eye that brightens before a throw.
 	draw_circle(Vector2.ZERO, 12.0, COLOR_YAME)
 	for i in 6:

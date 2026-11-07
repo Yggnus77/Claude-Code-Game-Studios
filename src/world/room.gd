@@ -37,6 +37,30 @@ var highlight_id := ""
 ## Raised state of push blocks pulled by the hook (by entity id).
 var raised: Dictionary = {}
 
+const TILES_PATH := "res://assets/art/cenario/tiles.png"
+const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
+const ART_META := "res://assets/art/cenario/cenario.json"
+## Sheets drawn by tools/art/gerar_cenario.py; null keeps the flat colours.
+var _tiles: Texture2D
+var _objects: Texture2D
+var _art: Dictionary = {}
+var _theme_row := 0
+## Tall things (people, marcos) are child nodes so they sort by height on
+## screen with Yggnus and the enemies (main and room use y-sort).
+const PROP_KINDS := ["npc", "checkpoint"]
+var _props: Array[Node2D] = []
+
+
+func _ready() -> void:
+	y_sort_enabled = true
+	if ResourceLoader.exists(TILES_PATH) and ResourceLoader.exists(OBJECTS_PATH):
+		var f := FileAccess.open(ART_META, FileAccess.READ)
+		var json := JSON.new()
+		if f and json.parse(f.get_as_text()) == OK and json.data is Dictionary:
+			_art = json.data
+			_tiles = load(TILES_PATH)
+			_objects = load(OBJECTS_PATH)
+
 
 ## Replaces the current content with [param room_data].
 func build(room_data: RoomData) -> void:
@@ -44,6 +68,18 @@ func build(room_data: RoomData) -> void:
 	for child in get_children():
 		child.queue_free()
 	name = "Room_%s" % data.id
+	_theme_row = theme_row(data.id)
+	_props.clear()
+	if _tiles:
+		for e in data.entities:
+			if PROP_KINDS.has(str(e.get("kind", ""))):
+				var t: Array = e.get("tile", [0, 0])
+				var prop := Prop.new()
+				prop.room = self
+				prop.entity = e
+				prop.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))
+				add_child(prop)
+				_props.append(prop)
 	var body := StaticBody2D.new()
 	body.name = "Walls"
 	body.collision_layer = WORLD_LAYER
@@ -68,8 +104,58 @@ func is_spent(e: Dictionary) -> bool:
 	return not receipt.is_empty() and receipt != "<null>" and state.has_receipt(receipt)
 
 
+## Row of the tile sheet for room [param id]: the longest matching prefix in
+## cenario.json "theme_by_room_prefix" wins (v00 workshop, other v… square).
+func theme_row(id: String) -> int:
+	var by_prefix: Dictionary = _art.get("theme_by_room_prefix", {})
+	var best := ""
+	for prefix: String in by_prefix:
+		if id.begins_with(prefix) and prefix.length() > best.length():
+			best = prefix
+	var themes: Array = _art.get("themes", [])
+	return maxi(themes.find(by_prefix.get(best, "")), 0)
+
+
+## Which tile picture cell [param at] uses: walls show their front face
+## above walkable ground, gaps show a ledge under walkable ground.
+func tile_kind(at: Vector2i) -> String:
+	var c := data.cell(at)
+	if c == RoomData.WALL:
+		var below := at + Vector2i.DOWN
+		return "wall_front" if below.y < data.height and data.cell(below) != RoomData.WALL else "wall_top"
+	if c == RoomData.GAP:
+		var above := at + Vector2i.UP
+		return "gap_edge" if above.y >= 0 and data.cell(above) != RoomData.GAP and data.cell(above) != RoomData.WALL else "gap"
+	var h := absi((at.x * 73856093) ^ (at.y * 19349663)) % 25
+	return "floor_a" if h < 15 else ("floor_b" if h < 24 else "floor_c")
+
+
+func _draw_tile(at: Vector2i, kind: String) -> void:
+	var ts := data.tile_size
+	var col: int = (_art.get("tile_cols", []) as Array).find(kind)
+	var src := Rect2(Vector2(col * ts, _theme_row * ts), Vector2(ts, ts))
+	draw_texture_rect_region(_tiles, Rect2(Vector2(at) * ts, Vector2(ts, ts)), src)
+
+
+func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO, item: CanvasItem = null) -> void:
+	if item == null:
+		item = self
+	var col: int = (_art.get("object_cols", []) as Array).find(kind)
+	if col < 0:
+		return
+	var size: Array = _art.get("object_size", [16, 32])
+	var pivot: Array = _art.get("object_pivot", [8, 24])
+	var w := float(size[0])
+	var h := float(size[1])
+	var src := Rect2(Vector2(col * w, 0), Vector2(w, h))
+	item.draw_texture_rect_region(_objects, Rect2(center + lift - Vector2(float(pivot[0]), float(pivot[1])), Vector2(w, h)), src)
+
+
 func _draw() -> void:
 	if data == null:
+		return
+	if _tiles:
+		_draw_art()
 		return
 	var ts := data.tile_size
 	for y in data.height:
@@ -129,3 +215,61 @@ func _draw() -> void:
 				draw_circle(c, 3.0, COLOR_OTHER)
 		if str(e.get("id", "")) == highlight_id:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
+
+
+## The painted version of [method _draw]: same entities, same rules.
+func _draw_art() -> void:
+	for prop in _props:
+		prop.queue_redraw()
+	for y in data.height:
+		for x in data.width:
+			_draw_tile(Vector2i(x, y), tile_kind(Vector2i(x, y)))
+	for door in data.doors:
+		var t: Array = door.get("tile", [0, 0])
+		var center := data.tile_center(Vector2i(int(t[0]), int(t[1])))
+		_draw_object(center, "door_open" if bool(door_open.call(door)) else "door_closed")
+	for e in data.entities:
+		var kind := str(e.get("kind", ""))
+		if not DRAWN_KINDS.has(kind):
+			continue
+		var t: Array = e.get("tile", [0, 0])
+		var c := data.tile_center(Vector2i(int(t[0]), int(t[1])))
+		var spent := is_spent(e)
+		match kind:
+			"chest":
+				_draw_object(c, "chest_open" if spent else "chest")
+			"mystery_clue":
+				if not spent:
+					_draw_object(c, "clue")
+			"npc", "checkpoint":
+				pass  # drawn by their Prop node
+			"interact", "anchor", "push_block":
+				var lift := Vector2.ZERO
+				if kind == "push_block" and raised.get(str(e.get("id", "")), false):
+					lift = Vector2(0, -10)
+					draw_rect(Rect2(c - Vector2(7, 2), Vector2(14, 6)), Color(0, 0, 0, 0.55))
+				_draw_object(c, kind, lift)
+			"unique_fragment":
+				if not spent:
+					_draw_object(c, "fragment")
+		if str(e.get("id", "")) == highlight_id:
+			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
+
+
+## Draws a tall entity on its own node (see [constant PROP_KINDS]).
+func draw_prop(prop: Node2D, e: Dictionary) -> void:
+	var kind := str(e.get("kind", ""))
+	if kind == "checkpoint":
+		var active := state != null and str(state.checkpoint.get("entity_id", "")) == str(e.get("id", ""))
+		_draw_object(Vector2.ZERO, "marco_active" if active else "marco", Vector2.ZERO, prop)
+	else:
+		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, prop)
+
+
+class Prop extends Node2D:
+	var room: Room
+	var entity: Dictionary = {}
+
+	func _draw() -> void:
+		if room and is_instance_valid(room):
+			room.draw_prop(self, entity)

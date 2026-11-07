@@ -1,0 +1,44 @@
+{
+ "frame_size": [
+  32,
+  48
+ ],
+ "pivot": [
+  16,
+  44
+ ],
+ "frames": [
+  "rastejo_idle0",
+  "rastejo_idle1",
+  "rastejo_telegraph",
+  "rastejo_charge",
+  "mariposa_fly0",
+  "mariposa_fly1",
+  "mariposa_dive",
+  "mariposa_land",
+  "soldado_idle",
+  "soldado_windup",
+  "soldado_strike",
+  "guarda_idle",
+  "guarda_raise",
+  "guarda_open",
+  "yame_idle",
+  "yame_telegraph"
+ ],
+ "igris": {
+  "frame_size": [
+   48,
+   64
+  ],
+  "pivot": [
+   24,
+   60
+  ],
+  "frames": [
+   "idle",
+   "muffler",
+   "regulator",
+   "free"
+  ]
+ }
+}

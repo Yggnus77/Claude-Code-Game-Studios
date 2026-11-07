@@ -116,12 +116,40 @@ func _draw() -> void:
 		draw_arc(c, r * (1.0 + 2.0 * left), 0, TAU, 40, Color(COLOR_WAVE, 0.6), 1.5)
 	if _wave_flash > 0.0:
 		draw_circle(to_local(_wave_center), float(wiring.get("wave_radius", 26)), Color(COLOR_WAVE, 0.5))
-	var body := COLOR_BODY.lightened(0.5) if _flash > 0.0 else COLOR_BODY
-	draw_rect(Rect2(Vector2(-12, -30), Vector2(24, 32)), body)
-	# Bell-shaped head.
-	draw_colored_polygon(PackedVector2Array([Vector2(-10, -30), Vector2(10, -30), Vector2(7, -44), Vector2(-7, -44)]), COLOR_HEAD)
+	var art := SpriteAtlas.igris()
+	if art:
+		var frame := "idle"
+		if fight:
+			match fight.phase:
+				IgrisFight.Phase.MUFFLER:
+					frame = "muffler"
+				IgrisFight.Phase.REGULATOR:
+					frame = "regulator"
+				IgrisFight.Phase.DONE:
+					frame = "free"
+		# Chest (sheet 24,29) sits where the muffler and regulator are hit (0,-18).
+		art.draw(self, frame, Vector2(0, 13), _flash > 0.0)
+		if fight and fight.phase == IgrisFight.Phase.MUFFLER and int(Time.get_ticks_msec() / 120.0) % 2 == 0:
+			draw_rect(Rect2(Vector2(-6, -22), Vector2(12, 8)), Color("f2c14e"), false, 1.0)
+	else:
+		var body := COLOR_BODY.lightened(0.5) if _flash > 0.0 else COLOR_BODY
+		draw_rect(Rect2(Vector2(-12, -30), Vector2(24, 32)), body)
+		# Bell-shaped head.
+		draw_colored_polygon(PackedVector2Array([Vector2(-10, -30), Vector2(10, -30), Vector2(7, -44), Vector2(-7, -44)]), COLOR_HEAD)
 	if fight == null:
 		return
+	if art == null:
+		_draw_phase_shapes()
+	if _clang > 0.0:
+		draw_arc(Vector2(0, -18), 14.0, -0.6, 0.6, 6, Color.WHITE, 2.0)
+	# Cycles left, as small marks over the head.
+	for i in fight.cycles:
+		var done := i < fight.cycle
+		draw_circle(Vector2(-6 + i * 12, -50), 2.5, Color("7ee0ff") if done else Color("555b66"))
+
+
+## The placeholder look of each fight phase (used when the sheet is missing).
+func _draw_phase_shapes() -> void:
 	match fight.phase:
 		IgrisFight.Phase.WAVES:
 			draw_rect(Rect2(Vector2(-8, -24), Vector2(16, 12)), COLOR_MUFFLER)
@@ -133,9 +161,3 @@ func _draw() -> void:
 			draw_circle(Vector2(0, -18), 6.0, COLOR_REGULATOR)
 		IgrisFight.Phase.DONE:
 			draw_circle(Vector2(0, -18), 4.0, Color("f2e6c4"))
-	if _clang > 0.0:
-		draw_arc(Vector2(0, -18), 14.0, -0.6, 0.6, 6, Color.WHITE, 2.0)
-	# Cycles left, as small marks over the head.
-	for i in fight.cycles:
-		var done := i < fight.cycle
-		draw_circle(Vector2(-6 + i * 12, -50), 2.5, Color("7ee0ff") if done else Color("555b66"))

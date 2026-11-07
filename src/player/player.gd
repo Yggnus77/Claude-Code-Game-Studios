@@ -27,6 +27,8 @@ const SWORD_HALF_WIDTH := 12.0
 const SWORD_OFFSET := 2.0
 ## Radius of the feet used when enemies check contact.
 const FEET_RADIUS := 6.0
+const SHEET_PATH := "res://assets/art/personagens/yggnus.png"
+const SHEET_META := "res://assets/art/personagens/yggnus.json"
 
 var motor: PlayerMotor
 var combo: SwordCombo
@@ -63,6 +65,11 @@ var _swing_facing := Vector2.DOWN
 var _pending_foot := Vector2(12, 10)
 var _last_outcome_flash := 0.0
 var _pull_target := Vector2.ZERO
+## Sheet drawn by tools/art/gerar_yggnus.py; null keeps the shape placeholder.
+var _sheet: Texture2D
+var _picker: SpritePicker
+var _anim := "idle"
+var _anim_t := 0.0
 
 @onready var camera: Camera2D = $Camera2D
 @onready var feet: CollisionShape2D = $Feet
@@ -100,6 +107,9 @@ func _ready() -> void:
 	rect.size = _pending_foot
 	feet.shape = rect
 	feet.position = Vector2.ZERO
+	if ResourceLoader.exists(SHEET_PATH):
+		_sheet = load(SHEET_PATH)
+		_picker = SpritePicker.load_meta(SHEET_META)
 	queue_redraw()
 
 
@@ -243,6 +253,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if motor == null:
 		return
+	_advance_anim(delta)
 	health.tick(delta)
 	dodge.tick(delta)
 	guard.tick(delta)
@@ -355,18 +366,57 @@ func _on_died() -> void:
 	died.emit()
 
 
+## The animation that shows what Yggnus is doing now (sheet column names).
+func current_anim() -> String:
+	if is_dead():
+		return "fall"
+	if dodge and dodge.is_dodging():
+		return "dodge"
+	if _hitstun > 0.0:
+		return "hurt"
+	if combo and combo.is_busy():
+		return ["slash1", "slash2", "slash3"][clampi(combo.stage, 0, 2)]
+	if guard and guard.is_up():
+		return "guard"
+	if hook and hook.is_busy():
+		return "tool"
+	if velocity.length() > 4.0:
+		return "walk"
+	return "idle"
+
+
+## Frame picked by the swing phase, so the pose matches the hit window.
+func _swing_index() -> int:
+	if combo.phase == SwordCombo.Phase.STARTUP:
+		return 0
+	if combo.stage >= 2 and combo.phase == SwordCombo.Phase.RECOVERY:
+		return 2
+	return 1
+
+
+func _advance_anim(delta: float) -> void:
+	var a := current_anim()
+	if a != _anim:
+		_anim = a
+		_anim_t = 0.0
+	else:
+		_anim_t += delta
+
+
 func _draw() -> void:
 	var w := sprite_frame.x
 	var h := sprite_frame.y
 	var invisible_blink := health != null and health.is_invulnerable() and int(Time.get_ticks_msec() / 60) % 2 == 0
 	var alpha := 0.35 if invisible_blink or (dodge and dodge.is_dodging()) else 1.0
-	if is_dead():
-		draw_rect(Rect2(Vector2(-w * 0.4, -6), Vector2(w * 0.8, 8)), Color(COLOR_CLOAK, 0.8))
-		return
-	draw_rect(Rect2(Vector2(-w * 0.3, -h * 0.75), Vector2(w * 0.6, h * 0.7)), Color(COLOR_CLOAK, alpha))
-	draw_circle(Vector2(0, -h * 0.8), w * 0.22, Color(COLOR_BODY, alpha))
 	var f := motor.facing if motor else Vector2.DOWN
-	draw_circle(Vector2(0, -h * 0.4) + f * w * 0.35, 3.0, COLOR_FACING)
+	if combo and combo.is_busy():
+		f = _swing_facing
+	if _sheet and _picker:
+		_draw_sheet(f, alpha)
+	else:
+		_draw_shapes(f, alpha, w, h)
+	if is_dead():
+		return
 	if hook and hook.distance > 0.0:
 		var tip := hook.tip(Vector2.ZERO) + Vector2(0, -8)
 		draw_line(Vector2(0, -8), tip, Color("c9c2b0"), 1.0)
@@ -374,14 +424,40 @@ func _draw() -> void:
 	if healing and healing.phase == Healing.Phase.USING:
 		draw_arc(Vector2(0, -h - 4), 4.0, 0, TAU, 10, Color("e05a5a"), 2.0)
 	if guard and guard.is_up():
-		var c := COLOR_PERFECT if guard.is_perfect() or _last_outcome_flash > 0.0 else COLOR_SHIELD
+		# The covered side, also when the shield itself is hidden (facing up).
+		var perfect := guard.is_perfect() or _last_outcome_flash > 0.0
 		var center := f * 10.0 + Vector2(0, -8)
-		draw_arc(center, 10.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, c, 3.0)
-	if combo and combo.is_busy():
+		draw_arc(center, 12.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, COLOR_PERFECT if perfect else Color(COLOR_SHIELD, 0.7), 2.0)
+	if combo and combo.is_active():
+		# The swing's trail covers the real hit box (sword_rect).
 		var box := sword_rect()
 		box.position -= global_position
-		var col := COLOR_SWORD if combo.is_active() else Color(COLOR_SWORD, 0.3)
-		if combo.is_active():
-			draw_rect(box, col)
-		else:
-			draw_rect(box, col, false, 1.0)
+		var c := box.get_center()
+		var r := maxf(box.size.x, box.size.y) * 0.5
+		var a := f.angle()
+		draw_arc(c - f * r * 0.5, r, a - 1.2, a + 1.2, 14, Color(COLOR_SWORD, 0.85), 3.0)
+		draw_arc(c - f * r * 0.5, r - 3.0, a - 1.0, a + 1.0, 12, Color(COLOR_SWORD, 0.35), 2.0)
+
+
+func _draw_sheet(f: Vector2, alpha: float) -> void:
+	var index := _swing_index() if combo and combo.is_busy() else -1
+	var reg := _picker.region(_anim, _anim_t, f, index)
+	var size := Vector2(_picker.frame_size)
+	var at := -Vector2(_picker.pivot)
+	if reg["flip"]:
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(-1, 1))
+	draw_texture_rect_region(_sheet, Rect2(at, size), reg["rect"], Color(1, 1, 1, alpha))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## The coloured shapes used before the art existed (and if the sheet is missing).
+func _draw_shapes(f: Vector2, alpha: float, w: float, h: float) -> void:
+	if is_dead():
+		draw_rect(Rect2(Vector2(-w * 0.4, -6), Vector2(w * 0.8, 8)), Color(COLOR_CLOAK, 0.8))
+		return
+	draw_rect(Rect2(Vector2(-w * 0.3, -h * 0.75), Vector2(w * 0.6, h * 0.7)), Color(COLOR_CLOAK, alpha))
+	draw_circle(Vector2(0, -h * 0.8), w * 0.22, Color(COLOR_BODY, alpha))
+	draw_circle(Vector2(0, -h * 0.4) + f * w * 0.35, 3.0, COLOR_FACING)
+	if guard and guard.is_up():
+		var center := f * 10.0 + Vector2(0, -8)
+		draw_arc(center, 10.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, COLOR_SHIELD, 3.0)

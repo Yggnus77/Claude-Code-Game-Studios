@@ -63,12 +63,24 @@ func _on_hurt() -> void:
 func _draw_body() -> void:
 	var r := body_radius()
 	var squash := 1.0
-	if state == State.TELEGRAPH:
+	var telegraph := state == State.TELEGRAPH
+	if telegraph:
 		# Inflates while preparing the charge: shape changes, not only colour.
 		var t := 1.0 - clampf(_timer / p("telegraph", 0.65), 0.0, 1.0)
 		squash = 1.0 + 0.45 * t
+	var art := SpriteAtlas.enemies()
+	if art:
+		var frame := "rastejo_idle%d" % (floori(Time.get_ticks_msec() / 300.0) % 2)
+		if telegraph:
+			frame = "rastejo_telegraph"
+		elif state == State.CHARGE:
+			frame = "rastejo_charge"
+		art.draw(self, frame, Vector2(0, 2), _flash > 0.0, charge_direction.x < 0.0, 1.0, Vector2(squash, squash))
+	else:
+		var color := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
+		draw_circle(Vector2(0, -r * 0.4), r * squash, color)
+		draw_circle(Vector2(0, -r * 0.4), r * squash * 0.55, COLOR_INK if _flash <= 0.0 else COLOR_FLASH)
+	if telegraph:
+		# Drawn over the body so the ring and the charge line stay readable.
 		draw_arc(Vector2.ZERO, r * squash + 3.0, 0, TAU, 20, COLOR_WARN, 1.5)
-		draw_line(Vector2.ZERO, charge_direction * (r + 10.0), COLOR_WARN, 2.0)
-	var color := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
-	draw_circle(Vector2(0, -r * 0.4), r * squash, color)
-	draw_circle(Vector2(0, -r * 0.4), r * squash * 0.55, COLOR_INK if _flash <= 0.0 else COLOR_FLASH)
+		draw_line(Vector2.ZERO, charge_direction * (r * squash + 14.0), COLOR_WARN, 2.0)
