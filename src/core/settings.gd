@@ -9,6 +9,8 @@ const PATH := "user://settings.cfg"
 var last_slot := 1
 ## Losing window focus pauses the game (integracao-e-salvamento.md §8).
 var pause_on_focus_loss := true
+## Writes the playtest record (Etapa 10) to user://playtest/.
+var playtest_log := true
 
 var _path: String
 
@@ -30,6 +32,9 @@ func load_file() -> Settings:
 	var focus: Variant = cfg.get_value("game", "pause_on_focus_loss", pause_on_focus_loss)
 	if focus is bool:
 		pause_on_focus_loss = focus
+	var log_on: Variant = cfg.get_value("game", "playtest_log", playtest_log)
+	if log_on is bool:
+		playtest_log = log_on
 	return self
 
 
@@ -37,4 +42,5 @@ func save_file() -> Error:
 	var cfg := ConfigFile.new()
 	cfg.set_value("game", "last_slot", last_slot)
 	cfg.set_value("game", "pause_on_focus_loss", pause_on_focus_loss)
+	cfg.set_value("game", "playtest_log", playtest_log)
 	return cfg.save(_path)

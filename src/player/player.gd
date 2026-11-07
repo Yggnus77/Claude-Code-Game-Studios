@@ -12,6 +12,8 @@ signal died
 signal hook_hit(result: Dictionary)
 ## The item button was pressed; the owner decides what the equipped item does.
 signal item_pressed
+## A sword swing hit something that took the hit.
+signal sword_landed
 
 const COLOR_BODY := Color("e8d9b5")
 const COLOR_CLOAK := Color("3d6fa8")
@@ -64,6 +66,12 @@ var _pull_target := Vector2.ZERO
 
 @onready var camera: Camera2D = $Camera2D
 @onready var feet: CollisionShape2D = $Feet
+
+
+## Where the last attack on Yggnus came from, and what it was (names a
+## death's cause in the playtest record).
+var last_hit_from := Vector2.ZERO
+var last_hit_by := ""
 
 
 ## Applies every tunable from [param config]. Call before adding to the tree.
@@ -190,7 +198,9 @@ func is_dead() -> bool:
 
 
 ## Called by enemies. [param from] is the attacker's position.
-func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: bool = false) -> HitResolver.Outcome:
+func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: bool = false, source: String = "") -> HitResolver.Outcome:
+	last_hit_from = from
+	last_hit_by = source
 	if hook.phase == Hook.Phase.PULL:
 		# Crossing on the cable: nothing interrupts the pull over a gap.
 		return HitResolver.Outcome.IGNORED
@@ -336,7 +346,8 @@ func _apply_sword_hits() -> void:
 		var r: float = enemy.body_radius() if enemy.has_method("body_radius") else 6.0
 		var closest := Vector2(clampf(enemy.global_position.x, box.position.x, box.end.x), clampf(enemy.global_position.y, box.position.y, box.end.y))
 		if closest.distance_to(enemy.global_position) <= r:
-			enemy.receive_sword_hit(combo.damage(), combo.attack_id, global_position)
+			if enemy.receive_sword_hit(combo.damage(), combo.attack_id, global_position):
+				sword_landed.emit()
 
 
 func _on_died() -> void:

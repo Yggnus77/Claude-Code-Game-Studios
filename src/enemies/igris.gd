@@ -96,7 +96,7 @@ func _physics_process(delta: float) -> void:
 					_wave_flash = 0.15
 					if target.global_position.distance_to(_wave_center) <= float(wiring.get("wave_radius", 26)):
 						# Ground wave: the shield does not stop it; a dodge does.
-						target.receive_hit(int(wiring.get("wave_damage", 1)), _wave_center, false, true)
+						target.receive_hit(int(wiring.get("wave_damage", 1)), _wave_center, false, true, "onda de Igris")
 				"muffler_open":
 					if not _muffler_told:
 						_muffler_told = true

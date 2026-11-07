@@ -207,6 +207,40 @@ func test_pause_menu_continues_and_offers_leaving() -> void:
 	main.pause_overlay.on_title = main.quit_to_title
 	main.pause_overlay.set_paused(true)
 	assert_true(tree.paused, "paused")
-	assert_eq(main.pause_overlay.menu.options.size(), 3, "continue, title, quit")
+	assert_eq(main.pause_overlay.menu.options.size(), 4, "continue, title, quit, playtest folder")
 	main.pause_overlay.menu.confirm()
 	assert_true(not tree.paused, "Continuar resumes")
+
+
+func test_the_playtest_record_follows_the_session() -> void:
+	main = _new_main()
+	main.playtest_dir = _dir.path_join("playtest")
+	_flags(main, TOWER + ["seen.t08"])
+	main.load_room("t07_igris", Vector2i(2, 14), false)
+	main._on_room_entered()
+	assert_eq(main.playtest.igris_attempts.size(), 0, "attempt running, not ended")
+	main.load_room("t07_igris", Vector2i(2, 14), false)  # R mid-fight
+	assert_eq(main.playtest.igris_attempts.size(), 1, "the reset ends the first attempt")
+	assert_eq(main.playtest.igris_attempts[0]["result"], "reiniciou", "as a reset")
+	main.player.receive_hit(99, main.igris.global_position, false, true, "onda de Igris")
+	await tree.process_frame
+	assert_eq(main.playtest.igris_attempts.size(), 2, "the death ends the second")
+	assert_eq(main.playtest.igris_attempts[1]["result"], "morte", "as a death")
+	assert_eq(main.playtest.deaths.get("Câmara de Igris", {}).get("onda de Igris", 0), 1, "named by what hit")
+	main.write_playtest()
+	var files := DirAccess.get_files_at(main.playtest_dir)
+	assert_eq(files.size(), 2, "summary and data written: %s" % [files])
+	for f in files:
+		DirAccess.remove_absolute(main.playtest_dir.path_join(f))
+	DirAccess.remove_absolute(main.playtest_dir)
+
+
+func test_continuing_a_finished_save_is_not_a_new_finish() -> void:
+	main = _new_main()
+	_flags(main, TOWER + ["seen.t08", "seen.t10", "seen.t11", "seen.t12"])
+	main.load_room("v00_oficina")
+	main.save_now()
+	await _close(main)
+	main = _new_main()
+	main.continue_from(main.saves.read(1)["data"])
+	assert_eq(main.playtest.finished_at, -1.0, "no finish recorded on load")

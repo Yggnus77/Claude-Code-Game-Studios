@@ -151,9 +151,10 @@ class Binding extends Node2D:
 	func body_radius() -> float:
 		return radius
 
-	func receive_sword_hit(_damage: int, attack_id: int, _from: Vector2) -> void:
+	## True when this swing counted toward cutting the binding.
+	func receive_sword_hit(_damage: int, attack_id: int, _from: Vector2) -> bool:
 		if _seen_attacks.has(attack_id) or _hits >= hits_needed:
-			return
+			return false
 		_seen_attacks[attack_id] = true
 		_hits += 1
 		_flash = 0.1
@@ -162,6 +163,7 @@ class Binding extends Node2D:
 			remove_from_group("enemies")
 			cut.emit(self)
 			queue_free()
+		return true
 
 	func _physics_process(delta: float) -> void:
 		if _flash > 0.0:
@@ -198,7 +200,7 @@ class Paper extends Node2D:
 			return
 		if global_position.distance_to(target.global_position) > radius + Player.FEET_RADIUS:
 			return
-		var outcome: int = target.receive_hit(damage, global_position)
+		var outcome: int = target.receive_hit(damage, global_position, false, false, "papel de Yame Black")
 		if outcome != HitResolver.Outcome.DODGED and outcome != HitResolver.Outcome.IGNORED:
 			queue_free()
 

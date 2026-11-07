@@ -41,6 +41,8 @@ const FOLLOW_UP_NOTES := {
 ## The merchant's trigger and scene (r05 opens the shop).
 const SHOP_TRIGGER := "primeira_loja"
 const SHOP_SCENE := "r05"
+## Seen when the slice ends back in Exódia's workshop (scene t12).
+const SLICE_END_FLAG := "seen.t12"
 
 const SPAWN_KEYS := ["rastejo_tinta", "mariposa_papel", "soldado_corda", "guarda_contrapeso"]
 ## Enemy kinds that have an implementation, by inimigos.json id.
@@ -121,6 +123,13 @@ var last_save_error: Error = OK
 ## puts Yggnus back there.
 var _entry_tile := Vector2i(-1, -1)
 var _save_queued := false
+## Playtest record of this session (Etapa 10), written next to the saves.
+var playtest: PlaytestLog
+## Folder of the playtest records ("" writes nothing).
+var playtest_dir := "user://playtest"
+var _session_ms := 0
+var _playtest_file := ""
+var _slice_was_done := false
 
 @onready var hud: Hud = $Hud
 @onready var pause_overlay: PauseOverlay = $PauseOverlay
@@ -142,6 +151,8 @@ func _ready() -> void:
 	mysteries = config.mystery_quests()
 	relics = config.relic_loadout()
 	state.relic_ids = relics.relics.keys()
+	_session_ms = Time.get_ticks_msec()
+	playtest = PlaytestLog.new(Time.get_datetime_string_from_system(false, true))
 	saves = SaveStore.new(save_dir, SaveGame.new(config.room_ids, config.items.keys(), config.fragments.keys()).validate)
 	settings = Settings.new(settings_path).load_file()
 	shop_panel = ShopPanel.new()
@@ -156,6 +167,7 @@ func _ready() -> void:
 	dialogue.scene_finished.connect(_on_scene_finished)
 	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or shop_panel.is_open() or _transitioning or title != null
 	pause_overlay.on_quit = quit_game
+	pause_overlay.on_open_logs = open_playtest_folder
 	pause_overlay.pause_on_focus_loss = settings.pause_on_focus_loss
 	_fade = ColorRect.new()
 	_fade.color = Color.BLACK
@@ -172,6 +184,7 @@ func _ready() -> void:
 	state.changed.connect(func() -> void: if room: room.queue_redraw())
 	state.changed.connect(_refresh_story)
 	state.changed.connect(_queue_save)
+	state.changed.connect(_note_slice_end)
 	load_room(_arg("--room=", DEFAULT_ROOM))
 	_refresh_story()
 	dialogue.player_busy = func() -> bool: return player.is_busy() or player.is_dead()
@@ -212,6 +225,8 @@ func _on_title_start(slot: int, doc: Dictionary) -> void:
 	settings.save_file()
 	var recovered := int(saves.read(slot)["status"]) == SaveStore.Status.RECOVERED
 	save_slot = slot
+	# The playtest clock starts when play starts, not on the title screen.
+	_session_ms = Time.get_ticks_msec()
 	pause_overlay.on_title = quit_to_title
 	if doc.is_empty():
 		saves.start_over(slot)
@@ -237,6 +252,7 @@ func continue_from(doc: Dictionary) -> void:
 	_hook_known = loaded.item_count("gancho_retorno") > 0
 	equipped = str(r["tool"]) if _hook_known else "frasco"
 	playtime = float(r["playtime"])
+	_slice_was_done = loaded.has_flag(SLICE_END_FLAG)
 	state.replace_with(loaded)
 	player.health.maximum = state.life_max()
 	load_room(str(r["room"]), r["entry"])
@@ -292,6 +308,52 @@ func save_now() -> Error:
 	return last_save_error
 
 
+## Records the end of the slice once, when it happens in this session (a
+## loaded save that had already finished does not count).
+func _note_slice_end() -> void:
+	var done := state.has_flag(SLICE_END_FLAG)
+	if done and not _slice_was_done:
+		playtest.finish(session_time())
+	_slice_was_done = done
+
+
+## Seconds since the game started (the playtest clock: real time, as the
+## observer measures it).
+func session_time() -> float:
+	return (Time.get_ticks_msec() - _session_ms) / 1000.0
+
+
+## What dealt the last hit before a death (the attacker names itself when
+## it hits), or "causa não vista".
+func death_cause() -> String:
+	return player.last_hit_by if not player.last_hit_by.is_empty() else "causa não vista"
+
+
+## Writes the playtest record (summary .txt and data .json) for this
+## session. Only a game played in a slot writes, and only with
+## Settings.playtest_log on.
+func write_playtest() -> void:
+	if save_slot <= 0 or playtest_dir.is_empty() or not settings.playtest_log:
+		return
+	if DirAccess.make_dir_recursive_absolute(playtest_dir) != OK:
+		return
+	if _playtest_file.is_empty():
+		_playtest_file = playtest_dir.path_join("sessao-%s-espaco%d" % [playtest.started_at.replace(":", "-").replace(" ", "_"), save_slot])
+	var t := session_time()
+	for pair in [[".txt", playtest.summary(t)], [".json", JSON.stringify(playtest.to_dict(), "\t")]]:
+		var f := FileAccess.open(_playtest_file + pair[0], FileAccess.WRITE)
+		if f:
+			f.store_string(pair[1])
+			f.close()
+
+
+## Pause menu: opens the folder with the playtest records.
+func open_playtest_folder() -> void:
+	write_playtest()
+	DirAccess.make_dir_recursive_absolute(playtest_dir)
+	OS.shell_open(ProjectSettings.globalize_path(playtest_dir))
+
+
 ## Pause menu: save, then show the title screen again.
 func quit_to_title() -> void:
 	if not _saved_before_leaving():
@@ -311,6 +373,9 @@ func quit_game() -> void:
 ## menu with the error, so progress is never dropped silently. (Nothing to
 ## save, or Yggnus mid-respawn, leaves with the last save as it is.)
 func _saved_before_leaving() -> bool:
+	if not _attempt.is_empty():
+		playtest.igris_end(session_time(), "saiu")
+	write_playtest()
 	var err := save_now()
 	if err == OK or err == ERR_UNAVAILABLE:
 		return true
@@ -321,6 +386,9 @@ func _saved_before_leaving() -> bool:
 func _notification(what: int) -> void:
 	# Closing the window also saves (the last safe entry, as always).
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and save_slot > 0:
+		if not _attempt.is_empty():
+			playtest.igris_end(session_time(), "saiu")
+		write_playtest()
 		save_now()
 
 
@@ -389,6 +457,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 		player.heal_commit = _heal_commit
 		player.hook_probe = _hook_probe
 		player.hook_hit.connect(_on_hook_hit)
+		player.sword_landed.connect(func() -> void: playtest.first(session_time(), "espada"))
 		player.item_pressed.connect(use_item)
 		if hud:
 			hud.bind(player.health)
@@ -443,12 +512,20 @@ func _on_invasion_cleared() -> void:
 
 
 func _on_player_hit(outcome: HitResolver.Outcome) -> void:
+	if outcome == HitResolver.Outcome.HIT and not player.is_dead():
+		playtest.hit(session_time(), death_cause())
+	if outcome == HitResolver.Outcome.BLOCKED or outcome == HitResolver.Outcome.PERFECT_BLOCK:
+		playtest.first(session_time(), "defesa")
+	if outcome == HitResolver.Outcome.PERFECT_BLOCK:
+		playtest.first(session_time(), "defesa_precisa")
 	if outcome == HitResolver.Outcome.HIT and invasion != null:
 		dialogue.request(str(invasion.def.get("hint_bark", "")))
 
 
 ## Raises the story trigger of the room just entered, if any.
 func _on_room_entered() -> void:
+	playtest.room(session_time(), room.data.display_name)
+	write_playtest()
 	state.apply([{"op": "set_flag", "flag": "visited.%s" % room_id, "value": true}])
 	for q: MysteryQuest in mysteries.values():
 		if str(q.wiring.get("start_on_enter", "")) == room_id and q.step(state) == MysteryQuest.Step.START:
@@ -542,9 +619,11 @@ func use_item() -> void:
 		player.fire_hook()
 		return
 	if player.health.current >= player.health.maximum:
+		playtest.refuse(session_time(), "curar com a vida cheia")
 		return
 	if not player.request_heal() and _heal_source() == 0:
 		hud.toast("Nenhum frasco cheio nem pão.")
+		playtest.refuse(session_time(), "curar sem frasco cheio nem pão")
 
 
 ## Quick swap: cycles the item button between flask and hook.
@@ -588,9 +667,11 @@ func _on_hook_hit(hit: Dictionary) -> void:
 				dest = hit["tile"]
 			if dest.x < 0:
 				hud.toast("Daqui o aro não leva a um lugar seguro.")
+				playtest.refuse(session_time(), "gancho num aro sem lugar seguro")
 				return
 			dialogue.request(str(tower_hook.get("valid_hook_bark", "")))
 			player.start_pull(room.data.tile_center(dest))
+			playtest.first(session_time(), "gancho")
 		"enemy":
 			var enemy: Node = hit["node"]
 			if enemy.has_method("hook_muffler"):
@@ -640,6 +721,9 @@ func _build_bells() -> void:
 
 ## Spawns Igris in his chamber until his control is broken (seen.t10).
 func _build_igris() -> void:
+	if not _attempt.is_empty():
+		# Left or reset the room mid-fight: that attempt ends here.
+		playtest.igris_end(session_time(), "reiniciou" if room_id == str(config.tower.get("igris", {}).get("room", "")) else "saiu da câmara")
 	if igris and is_instance_valid(igris):
 		igris.queue_free()
 	igris = null
@@ -679,10 +763,12 @@ func _start_igris_attempt() -> void:
 	if igris == null or igris.active:
 		return
 	_attempt = {"full_flasks": state.full_flasks.duplicate(), "bread": state.item_count("pao_porto"), "life": player.health.current}
+	playtest.igris_start(session_time())
 	igris.active = true
 
 
 func _on_igris_freed() -> void:
+	playtest.igris_end(session_time(), "vitória")
 	# The attempt stays open until the victory scene commits it: a save made
 	# while that scene plays (closing the window) still holds the fight's
 	# start, so the victory and the supplies spent are saved together
@@ -776,12 +862,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if hud.is_inventory_open() or _transitioning:
 		return
+	if event.is_action_pressed("attack") and not player.has_sword:
+		playtest.refuse(session_time(), "espada antes de tê-la")
 	if event.is_action_pressed("interact"):
-		interact()
+		if interact() == "nothing" and interactable_in_front().is_empty():
+			playtest.refuse(session_time(), "examinar sem nada à frente")
 	elif event.is_action_pressed("quick_swap"):
 		quick_swap()
 	elif event.is_action_pressed("reset_room"):
 		# Playtest helper: brings the room's enemies back and the player to the entry.
+		playtest.reset(session_time(), room.data.display_name)
 		load_room(room_id, Vector2i(-1, -1), false)
 	for i in SPAWN_KEYS.size():
 		if event.is_action_pressed("spawn_%d" % (i + 1)):
@@ -1010,6 +1100,7 @@ func cycle_relic() -> String:
 	if not state.has_flag(GameState.RELIC_SLOT_FLAG):
 		return "Ainda não há espaço de relíquia."
 	if in_combat():
+		playtest.refuse(session_time(), "trocar a relíquia em combate")
 		return "Não dá para trocar a relíquia em combate."
 	var owned := _owned_relics()
 	var order: Array[String] = [""]
@@ -1156,6 +1247,7 @@ func _check_doors() -> void:
 				if not scene.is_empty() and dialogue.request(scene):
 					return
 				hud.toast("As amarras de Yame prendem a porta." if prologue.blocks_door(state, room_id, here) else "A passagem está fechada.")
+				playtest.refuse(session_time(), "porta fechada (%s)" % here)
 			return
 		_go_through(door)
 
@@ -1196,7 +1288,9 @@ func spawn_near_player(kind: String) -> Node:
 
 
 func _on_player_died() -> void:
+	playtest.death(session_time(), room.data.display_name, death_cause())
 	if not _attempt.is_empty():
+		playtest.igris_end(session_time(), "morte")
 		state.apply([{"op": "restore_supplies", "full_flasks": _attempt["full_flasks"], "bread": _attempt["bread"]}])
 		_attempt = {}
 	if hud:
