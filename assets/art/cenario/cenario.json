@@ -1,0 +1,48 @@
+{
+ "tile_size": 16,
+ "themes": [
+  "oficina",
+  "praca",
+  "estrada",
+  "torre"
+ ],
+ "tile_cols": [
+  "floor_a",
+  "floor_b",
+  "floor_c",
+  "wall_top",
+  "wall_front",
+  "gap",
+  "gap_edge"
+ ],
+ "theme_by_room_prefix": {
+  "v00": "oficina",
+  "v": "praca",
+  "r": "estrada",
+  "t": "torre"
+ },
+ "object_size": [
+  16,
+  32
+ ],
+ "object_pivot": [
+  8,
+  24
+ ],
+ "object_cols": [
+  "door_open",
+  "door_closed",
+  "chest",
+  "chest_open",
+  "clue",
+  "npc",
+  "interact",
+  "marco",
+  "marco_active",
+  "anchor",
+  "push_block",
+  "fragment",
+  "bell",
+  "bell_lit"
+ ]
+}

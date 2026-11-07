@@ -17,8 +17,17 @@ var _flash := 0.0
 var lit := false
 
 
+## Bell pictures in the world objects sheet (tools/art/gerar_cenario.py).
+const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
+const BELL_COL := 12
+const BELL_LIT_COL := 13
+var _sheet: Texture2D
+
+
 func _ready() -> void:
 	add_to_group("enemies")
+	if ResourceLoader.exists(OBJECTS_PATH):
+		_sheet = load(OBJECTS_PATH)
 
 
 func body_radius() -> float:
@@ -48,8 +57,12 @@ func _draw() -> void:
 		# A lit bell glows, so the order reads from across the room.
 		draw_circle(Vector2(swing, -4), 13.0, Color(1.0, 0.85, 0.4, 0.25))
 		draw_arc(Vector2(swing, -4), 13.0, 0, TAU, 24, Color(1.0, 0.85, 0.4, 0.9), 1.5)
-	draw_colored_polygon(body, COLOR_BRONZE.lightened(0.4) if _flash > 0.0 or lit else COLOR_BRONZE)
-	draw_circle(Vector2(swing, 4), 2.0, COLOR_BRONZE.darkened(0.3))
+	if _sheet:
+		var col := BELL_LIT_COL if _flash > 0.0 or lit else BELL_COL
+		draw_texture_rect_region(_sheet, Rect2(Vector2(-8 + swing, -16), Vector2(16, 32)), Rect2(col * 16, 0, 16, 32))
+	else:
+		draw_colored_polygon(body, COLOR_BRONZE.lightened(0.4) if _flash > 0.0 or lit else COLOR_BRONZE)
+		draw_circle(Vector2(swing, 4), 2.0, COLOR_BRONZE.darkened(0.3))
 	# Plate under the bell with its mark.
 	var plate := Vector2(0, 14)
 	draw_rect(Rect2(plate - Vector2(6, 4), Vector2(12, 8)), Color("4a3a24"))

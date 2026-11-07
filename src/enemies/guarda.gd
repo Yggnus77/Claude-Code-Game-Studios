@@ -97,8 +97,13 @@ func _enter(next: State, seconds: float) -> void:
 
 func _draw_body() -> void:
 	var r := body_radius()
-	var c := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
-	draw_rect(Rect2(Vector2(-r, -r * 2.6), Vector2(r * 2.0, r * 2.6)), c)
+	var art := SpriteAtlas.enemies()
+	if art:
+		var frame := "guarda_open" if is_open() else ("guarda_raise" if state == State.WINDUP else "guarda_idle")
+		art.draw(self, frame, Vector2(0, 2), _flash > 0.0, facing.x > 0.0)
+	else:
+		var c := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
+		draw_rect(Rect2(Vector2(-r, -r * 2.6), Vector2(r * 2.0, r * 2.6)), c)
 	var shield_c := COLOR_SHIELD if not is_open() else Color(COLOR_SHIELD, 0.35)
 	var half := deg_to_rad(p("shield_angle_degrees", 100) * 0.5)
 	draw_arc(Vector2(0, -r) + facing * (r * 0.4), r + 3.0, facing.angle() - half, facing.angle() + half, 12, shield_c, 4.0)

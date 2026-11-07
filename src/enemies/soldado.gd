@@ -72,6 +72,16 @@ func _on_hurt() -> void:
 
 func _draw_body() -> void:
 	var r := body_radius()
+	var art := SpriteAtlas.enemies()
+	if art:
+		var frame := "soldado_idle"
+		if state == State.WINDUP:
+			frame = "soldado_windup"
+			draw_arc(strike_center() - global_position, p("strike_half_width", 12), 0, TAU, 16, COLOR_WARN, 1.5)
+		elif state == State.STRIKE:
+			frame = "soldado_strike"
+		art.draw(self, frame, Vector2(0, 2), _flash > 0.0, facing.x < 0.0)
+		return
 	var c := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
 	draw_rect(Rect2(Vector2(-r, -r * 3.0), Vector2(r * 2.0, r * 3.0)), c)
 	draw_line(Vector2(-r, -r * 2.0), Vector2(r, -r * 1.2), COLOR_ROPE, 2.0)

@@ -69,6 +69,15 @@ func _draw_body() -> void:
 		squash = 1.0 + 0.45 * t
 		draw_arc(Vector2.ZERO, r * squash + 3.0, 0, TAU, 20, COLOR_WARN, 1.5)
 		draw_line(Vector2.ZERO, charge_direction * (r + 10.0), COLOR_WARN, 2.0)
+	var art := SpriteAtlas.enemies()
+	if art:
+		var frame := "rastejo_idle%d" % (int(Time.get_ticks_msec() / 300) % 2)
+		if state == State.TELEGRAPH:
+			frame = "rastejo_telegraph"
+		elif state == State.CHARGE:
+			frame = "rastejo_charge"
+		art.draw(self, frame, Vector2(0, 2), _flash > 0.0, charge_direction.x < 0.0)
+		return
 	var color := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
 	draw_circle(Vector2(0, -r * 0.4), r * squash, color)
 	draw_circle(Vector2(0, -r * 0.4), r * squash * 0.55, COLOR_INK if _flash <= 0.0 else COLOR_FLASH)
