@@ -497,9 +497,16 @@ func _sync_invasion() -> void:
 		invasion.setup(config.encounter("yame_oficina"), state, prologue, room.data, player)
 		invasion.thrown.connect(func(_paper: Node2D) -> void: dialogue.request(str(invasion.def.get("hint_bark", ""))))
 		invasion.binding_cut.connect(_on_binding_cut)
+		invasion.sword_deflected.connect(_on_yame_deflected)
 		invasion.cleared.connect(_on_invasion_cleared)
 		add_child(invasion)
 		move_child(invasion, 1)
+
+
+## The sword reached Yame: say what to hit instead.
+func _on_yame_deflected() -> void:
+	hud.toast("A espada não fere Yame Black. Corte as amarras que prendem a porta!", 3.0)
+	playtest.refuse(session_time(), "espada em Yame Black")
 
 
 func _on_binding_cut(_binding_id: String, left: int) -> void:

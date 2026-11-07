@@ -13,6 +13,8 @@ signal thrown(paper: Node2D)
 signal binding_cut(binding_id: String, left: int)
 ## Every binding is cut: the invasion is over.
 signal cleared
+## A sword swing reached Yame, who cannot be hurt (once per swing).
+signal sword_deflected
 
 const COLOR_YAME := Color("1b1530")
 const COLOR_PAGE := Color("efe6cf")
@@ -32,6 +34,7 @@ var _thrown_any := false
 var _fleeing := 0.0
 var _door_center := Vector2.ZERO
 var _bindings: Array[Node2D] = []
+var _deflected_attacks: Dictionary = {}
 
 
 ## Configure before adding to the tree.
@@ -44,6 +47,8 @@ func setup(encounter: Dictionary, game_state: GameState, rules: Prologue, data: 
 
 
 func _ready() -> void:
+	# In the group only so the sword finds Yame and can say it does nothing.
+	add_to_group("enemies")
 	var yt: Array = def.get("yame_tile", [12, 2])
 	position = room_data.tile_center(Vector2i(int(yt[0]), int(yt[1])))
 	for door in room_data.doors:
@@ -105,6 +110,21 @@ func _throw() -> void:
 	if not _thrown_any:
 		_thrown_any = true
 		thrown.emit(paper)
+
+
+## Size of Yame's body for the sword.
+func body_radius() -> float:
+	return 12.0
+
+
+## Yame cannot be hurt (roteiro: "Não é possível matar a criatura"). The
+## swing is answered with [signal sword_deflected] so the player is told
+## to cut the bindings instead. Always false: nothing took damage.
+func receive_sword_hit(_damage: int, attack_id: int, _from: Vector2) -> bool:
+	if not _deflected_attacks.has(attack_id):
+		_deflected_attacks[attack_id] = true
+		sword_deflected.emit()
+	return false
 
 
 func _on_binding_cut(b: Node2D) -> void:

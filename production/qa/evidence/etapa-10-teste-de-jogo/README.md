@@ -39,6 +39,8 @@ fatia) só se fecham com as sessões reais.
 - `1_pausa_com_registros_de_teste.png`: menu de pausa com a nova opção.
 - `2_exemplo_de_registro.txt`: resumo gravado por uma sessão curta roteirizada (salas, golpe de guarda,
   ondas reais de Igris). Os tempos são de segundos porque a sessão foi automática.
+- `3_espada_em_yame.png`: a espada chega em Yame Black e o jogo avisa que ela não fere Yame e que é
+  preciso cortar as amarras da porta (resposta ao teste do usuário, em que a espada "não deu dano").
 
 ## Revisão (Game Studios)
 
