@@ -62,6 +62,15 @@ func test_cut_bindings_are_receipts() -> void:
 	assert_true(r.all_bindings_cut(s), "all cut")
 
 
+func test_objective_away_from_the_workshop_says_to_go_back() -> void:
+	var r := _rules()
+	var s := _state(["seen.p00", "seen.p01", "seen.p02", "seen.p05"])
+	var away := r.objective(s, "v01_praca")
+	assert_true(away.contains("Volte à oficina") and away.contains("amarras"), "away from the workshop: go back (got '%s')" % away)
+	var inside := r.objective(s, Prologue.WORKSHOP)
+	assert_true(inside.begins_with("Corte as amarras"), "in the workshop: cut the bindings (got '%s')" % inside)
+
+
 func test_objective_always_says_what_to_do() -> void:
 	var r := _rules()
 	var steps := [

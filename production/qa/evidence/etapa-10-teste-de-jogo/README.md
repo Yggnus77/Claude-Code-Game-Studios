@@ -42,6 +42,10 @@ fatia) só se fecham com as sessões reais.
 - `3_espada_em_yame.png`: a espada chega em Yame Black e o jogo avisa que ela não fere Yame e que é
   preciso cortar as amarras da porta (resposta ao teste do usuário, em que a espada "não deu dano").
 
+- `4_objetivo_na_praca_durante_invasao.png`: depois de morrer na invasão e voltar no marco da praça, a
+  linha de objetivo manda voltar à oficina. No teste do usuário (sessão 2026-11-06 23:43) ela só dizia
+  "Corte as amarras da porta" e ele passou 4 min 43 s na praça sem saber para onde ir.
+
 ## Revisão (Game Studios)
 
 `/code-review` com `godot-gdscript-specialist` e `qa-tester`. Todos os achados verificados foram corrigidos:
