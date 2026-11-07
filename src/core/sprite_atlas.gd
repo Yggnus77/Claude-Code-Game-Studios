@@ -50,16 +50,14 @@ func has_frame(frame_name: String) -> bool:
 
 
 ## Draws [param frame_name] on [param item] with the frame's pivot at
-## [param at]. [param flash] whitens it (a hit), [param flip] mirrors it.
-func draw(item: CanvasItem, frame_name: String, at: Vector2 = Vector2.ZERO, flash: bool = false, flip: bool = false, alpha: float = 1.0) -> void:
+## [param at]. [param flash] whitens it (a hit), [param flip] mirrors it,
+## [param scale] grows it around the pivot (e.g. a telegraph inflating).
+func draw(item: CanvasItem, frame_name: String, at: Vector2 = Vector2.ZERO, flash: bool = false, flip: bool = false, alpha: float = 1.0, scale: Vector2 = Vector2.ONE) -> void:
 	var col := frames.find(frame_name)
 	if col < 0:
 		return
 	var src := Rect2(Vector2(col * frame_size.x, 0), frame_size)
 	var tint := Color(2.6, 2.6, 2.6, alpha) if flash else Color(1, 1, 1, alpha)
-	if flip:
-		item.draw_set_transform(at, 0.0, Vector2(-1, 1))
-		item.draw_texture_rect_region(texture, Rect2(-pivot, frame_size), src, tint)
-		item.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	else:
-		item.draw_texture_rect_region(texture, Rect2(at - pivot, frame_size), src, tint)
+	item.draw_set_transform(at, 0.0, Vector2(-scale.x if flip else scale.x, scale.y))
+	item.draw_texture_rect_region(texture, Rect2(-pivot, frame_size), src, tint)
+	item.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

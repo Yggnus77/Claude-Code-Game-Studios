@@ -75,7 +75,11 @@ func _draw_body() -> void:
 		draw_circle(Vector2.ZERO, r * 0.7, Color(0, 0, 0, 0.35))
 	var art := SpriteAtlas.enemies()
 	if art:
-		var frame := "mariposa_dive" if state == State.DIVE or state == State.LAND else "mariposa_fly%d" % (int(Time.get_ticks_msec() / 110) % 2)
+		var frame := "mariposa_fly%d" % (floori(Time.get_ticks_msec() / 110.0) % 2)
+		if state == State.LAND:
+			frame = "mariposa_land"
+		elif state == State.DIVE or state == State.REST:
+			frame = "mariposa_dive"
 		# The sheet draws the body at y 30; the pivot is the feet (y 44).
 		art.draw(self, frame, Vector2(0, lift + 14.0), _flash > 0.0)
 		if state == State.LAND:

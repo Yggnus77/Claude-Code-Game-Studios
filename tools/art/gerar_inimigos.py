@@ -69,6 +69,8 @@ def rastejo(pose):
 def mariposa(pose):
     c = Canvas(W, H)
     cy = 30
+    if pose == "land":
+        return mariposa_land()
     up = {"fly0": -4, "fly1": 1, "dive": 3}[pose]
     for side in (-1, 1):
         # asa superior
@@ -90,6 +92,24 @@ def mariposa(pose):
     c.put(16, cy - 5, "eye")
     c.line(15, cy - 7, 12, cy - 11, "red")
     c.line(16, cy - 7, 19, cy - 11, "red")
+    c.outline()
+    return c
+
+
+def mariposa_land():
+    """Pousada, asas erguidas e juntas: vai mergulhar."""
+    c = Canvas(W, H)
+    cy = 36
+    for side in (-1, 1):
+        for i in range(12):
+            w = 1 + (i if i < 6 else 11 - i) // 2
+            c.hline(16 + side, 16 + side * w, cy - 2 - i, "cloth")
+        c.put(16 + side * 3, cy - 8, "red")
+    c.rect(15, cy - 4, 2, 7, "toy")
+    c.put(15, cy - 5, "eye")
+    c.put(16, cy - 5, "eye")
+    for x in (13, 18):
+        c.vline(x, cy + 2, cy + 5, "toy_lo")
     c.outline()
     return c
 
@@ -230,7 +250,7 @@ FRAMES = [
     ("rastejo_idle0", rastejo, "idle0"), ("rastejo_idle1", rastejo, "idle1"),
     ("rastejo_telegraph", rastejo, "telegraph"), ("rastejo_charge", rastejo, "charge"),
     ("mariposa_fly0", mariposa, "fly0"), ("mariposa_fly1", mariposa, "fly1"),
-    ("mariposa_dive", mariposa, "dive"),
+    ("mariposa_dive", mariposa, "dive"), ("mariposa_land", mariposa, "land"),
     ("soldado_idle", soldado, "idle"), ("soldado_windup", soldado, "windup"),
     ("soldado_strike", soldado, "strike"),
     ("guarda_idle", guarda, "idle"), ("guarda_raise", guarda, "raise"), ("guarda_open", guarda, "open"),

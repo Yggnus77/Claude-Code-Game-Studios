@@ -155,6 +155,8 @@ func _ready() -> void:
 	playtest = PlaytestLog.new(Time.get_datetime_string_from_system(false, true))
 	saves = SaveStore.new(save_dir, SaveGame.new(config.room_ids, config.items.keys(), config.fragments.keys()).validate)
 	settings = Settings.new(settings_path).load_file()
+	# Height on screen decides who is drawn in front (Yggnus, enemies, props).
+	y_sort_enabled = true
 	shop_panel = ShopPanel.new()
 	add_child(shop_panel)
 	_apply_state_args()

@@ -77,10 +77,18 @@ func _draw_body() -> void:
 		var frame := "soldado_idle"
 		if state == State.WINDUP:
 			frame = "soldado_windup"
-			draw_arc(strike_center() - global_position, p("strike_half_width", 12), 0, TAU, 16, COLOR_WARN, 1.5)
 		elif state == State.STRIKE:
 			frame = "soldado_strike"
+		var sideways := absf(facing.x) >= absf(facing.y)
+		if state == State.STRIKE and not sideways:
+			frame = "soldado_idle"  # the sheet's strike points sideways
 		art.draw(self, frame, Vector2(0, 2), _flash > 0.0, facing.x < 0.0)
+		# Markers over the body, so they stay readable when it faces up.
+		if state == State.WINDUP:
+			draw_arc(strike_center() - global_position, p("strike_half_width", 12), 0, TAU, 16, COLOR_WARN, 1.5)
+		elif state == State.STRIKE and not sideways:
+			var hand := Vector2(0, -r * 1.5) + facing * r
+			draw_line(hand, hand + facing * p("strike_reach", 26), Color("d4a849"), 3.0)
 		return
 	var c := COLOR_FLASH if _flash > 0.0 else COLOR_BODY
 	draw_rect(Rect2(Vector2(-r, -r * 3.0), Vector2(r * 2.0, r * 3.0)), c)

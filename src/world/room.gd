@@ -45,9 +45,14 @@ var _tiles: Texture2D
 var _objects: Texture2D
 var _art: Dictionary = {}
 var _theme_row := 0
+## Tall things (people, marcos) are child nodes so they sort by height on
+## screen with Yggnus and the enemies (main and room use y-sort).
+const PROP_KINDS := ["npc", "checkpoint"]
+var _props: Array[Node2D] = []
 
 
 func _ready() -> void:
+	y_sort_enabled = true
 	if ResourceLoader.exists(TILES_PATH) and ResourceLoader.exists(OBJECTS_PATH):
 		var f := FileAccess.open(ART_META, FileAccess.READ)
 		var json := JSON.new()
@@ -64,6 +69,17 @@ func build(room_data: RoomData) -> void:
 		child.queue_free()
 	name = "Room_%s" % data.id
 	_theme_row = theme_row(data.id)
+	_props.clear()
+	if _tiles:
+		for e in data.entities:
+			if PROP_KINDS.has(str(e.get("kind", ""))):
+				var t: Array = e.get("tile", [0, 0])
+				var prop := Prop.new()
+				prop.room = self
+				prop.entity = e
+				prop.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))
+				add_child(prop)
+				_props.append(prop)
 	var body := StaticBody2D.new()
 	body.name = "Walls"
 	body.collision_layer = WORLD_LAYER
@@ -121,7 +137,9 @@ func _draw_tile(at: Vector2i, kind: String) -> void:
 	draw_texture_rect_region(_tiles, Rect2(Vector2(at) * ts, Vector2(ts, ts)), src)
 
 
-func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO) -> void:
+func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO, item: CanvasItem = null) -> void:
+	if item == null:
+		item = self
 	var col: int = (_art.get("object_cols", []) as Array).find(kind)
 	if col < 0:
 		return
@@ -130,7 +148,7 @@ func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO) -> void:
 	var w := float(size[0])
 	var h := float(size[1])
 	var src := Rect2(Vector2(col * w, 0), Vector2(w, h))
-	draw_texture_rect_region(_objects, Rect2(center + lift - Vector2(float(pivot[0]), float(pivot[1])), Vector2(w, h)), src)
+	item.draw_texture_rect_region(_objects, Rect2(center + lift - Vector2(float(pivot[0]), float(pivot[1])), Vector2(w, h)), src)
 
 
 func _draw() -> void:
@@ -201,6 +219,8 @@ func _draw() -> void:
 
 ## The painted version of [method _draw]: same entities, same rules.
 func _draw_art() -> void:
+	for prop in _props:
+		prop.queue_redraw()
 	for y in data.height:
 		for x in data.width:
 			_draw_tile(Vector2i(x, y), tile_kind(Vector2i(x, y)))
@@ -221,17 +241,35 @@ func _draw_art() -> void:
 			"mystery_clue":
 				if not spent:
 					_draw_object(c, "clue")
-			"npc", "interact", "anchor", "push_block":
+			"npc", "checkpoint":
+				pass  # drawn by their Prop node
+			"interact", "anchor", "push_block":
 				var lift := Vector2.ZERO
 				if kind == "push_block" and raised.get(str(e.get("id", "")), false):
 					lift = Vector2(0, -10)
-					draw_rect(Rect2(c - Vector2(7, 2), Vector2(14, 6)), Color(0, 0, 0, 0.4))
+					draw_rect(Rect2(c - Vector2(7, 2), Vector2(14, 6)), Color(0, 0, 0, 0.55))
 				_draw_object(c, kind, lift)
-			"checkpoint":
-				var active := state != null and str(state.checkpoint.get("entity_id", "")) == str(e.get("id", ""))
-				_draw_object(c, "marco_active" if active else "marco")
 			"unique_fragment":
 				if not spent:
 					_draw_object(c, "fragment")
 		if str(e.get("id", "")) == highlight_id:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
+
+
+## Draws a tall entity on its own node (see [constant PROP_KINDS]).
+func draw_prop(prop: Node2D, e: Dictionary) -> void:
+	var kind := str(e.get("kind", ""))
+	if kind == "checkpoint":
+		var active := state != null and str(state.checkpoint.get("entity_id", "")) == str(e.get("id", ""))
+		_draw_object(Vector2.ZERO, "marco_active" if active else "marco", Vector2.ZERO, prop)
+	else:
+		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, prop)
+
+
+class Prop extends Node2D:
+	var room: Room
+	var entity: Dictionary = {}
+
+	func _draw() -> void:
+		if room and is_instance_valid(room):
+			room.draw_prop(self, entity)

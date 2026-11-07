@@ -189,8 +189,9 @@ def obj(name):
         c.hline(5, 10, py - 1, "cloth_lo")
         c.hline(5, 9, py + 1, "cloth_lo")
         c.put(11, py - 3, "cloth_lo")
-        c.rect(7, py - 8, 2, 3, "lamp_hi")             # brilho de pista
-        c.put(8, py - 10, "lamp_hi")
+        # "?" dourado sobre o papel: pista de mistério
+        for x, y in ((6, py - 14), (7, py - 15), (8, py - 15), (9, py - 14), (9, py - 13), (8, py - 12), (7, py - 11), (7, py - 9)):
+            c.put(x, y, "lamp_hi")
     elif name == "npc":
         c.rect(4, py - 10, 8, 13, "robe")
         c.vline(4, py - 10, py + 2, "robe_hi")
@@ -201,20 +202,21 @@ def obj(name):
         c.rect(5, py + 3, 2, 2, "boot")
         c.rect(9, py + 3, 2, 2, "boot")
     elif name == "interact":
-        # válvula/alavanca de latão
-        c.vline(7, py - 8, py + 3, "brass_lo")
-        c.vline(8, py - 8, py + 3, "brass")
-        c.ellipse(7, py - 9, 4, 4, "brass")
-        c.ellipse(7, py - 9, 2, 2, "brass_lo")
-        c.put(7, py - 9, "brass_hi")
-        c.rect(4, py + 3, 8, 2, "stone_lo")
+        # placa de pedra clara com losango azul: "examine aqui"
+        c.rect(3, py - 9, 10, 13, "cobble_hi")
+        c.vline(12, py - 9, py + 3, "cobble_lo")
+        c.hline(3, 12, py + 3, "cobble_lo")
+        for i in range(4):
+            c.hline(8 - i, 7 + i, py - 7 + i, "safe")
+            c.hline(8 - i, 7 + i, py - 0 - i, "safe")
+        c.put(7, py - 5, "white")
     elif name.startswith("marco"):
-        # Marco de Memória: pilar de pedra com cristal
-        c.rect(4, py - 14, 8, 18, "stone")
-        c.vline(4, py - 14, py + 3, "stone_hi")
-        c.vline(11, py - 14, py + 3, "stone_lo")
-        c.rect(2, py + 2, 12, 3, "stone_lo")
-        c.hline(4, 11, py - 14, "stone_hi")
+        # Marco de Memória: pilar de pedra clara com cristal
+        c.rect(4, py - 14, 8, 18, "cobble_hi")
+        c.vline(4, py - 14, py + 3, "white")
+        c.vline(11, py - 14, py + 3, "cobble_lo")
+        c.rect(2, py + 2, 12, 3, "cobble_lo")
+        c.hline(4, 11, py - 14, "white")
         lit = name == "marco_active"
         c.rect(6, py - 10, 4, 6, "crystal" if lit else "stone_dk")
         c.rect(7, py - 9, 1, 3, "crystal_hi" if lit else "stone_lo")
@@ -230,10 +232,12 @@ def obj(name):
         c.ellipse(7, py - 5, 1, 1, "brass_hi")
         c.put(7, py - 10, "brass_hi")
     elif name == "push_block":
-        c.rect(1, py - 9, 14, 14, "stone")
-        c.hline(1, 14, py - 9, "stone_hi")
-        c.rect(1, py + 1, 14, 4, "stone_lo")
-        c.vline(7, py - 8, py, "stone_dk")
+        # bloco de granito claro com cintas de latão (contrasta com todo piso)
+        c.rect(1, py - 9, 14, 14, "cobble_hi")
+        c.hline(1, 14, py - 9, "white")
+        c.rect(1, py + 1, 14, 4, "cobble_lo")
+        c.hline(1, 14, py - 4, "brass")
+        c.vline(7, py - 8, py, "cobble")
         c.ellipse(7, py - 12, 2, 2, "brass")           # argola de puxar
         c.put(7, py - 12, "#00000000")
     elif name == "fragment":

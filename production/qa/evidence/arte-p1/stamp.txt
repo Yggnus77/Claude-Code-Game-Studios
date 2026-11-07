@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: README.md 9fb88108d882dd3904654a4d1a659f2ff5e51858
+Reviewed-Content-Hash: 1_yggnus_no_jogo.png 98ec589ac013e5edc09df65b1c564237c68b23da
+Reviewed-Content-Hash: 2_salas.png 03ad18a73c41dc68f3b8948d250f3072eba42986
+Reviewed-Content-Hash: 3_inimigos_yame_igris.png 0f7c01d761e735f4a1c68fddf9b6e9562bd07867
+Reviewed-Content-Hash: 4_correcoes_da_revisao.png 9a1b1722d217cc35af6c534a1a54b20275144cd5
+Reviewed-Content-Hash: 5_folha_yggnus_4x.png b717e55d085dd43b4f303be5382be37a2d23d11f
+Reviewed-Content-Hash: 6_folha_inimigos_4x.png a70863543ddfd4d961946f7cd1c2ef21ce21ce1f
+Reviewed-Content-Hash: 7_folha_igris_4x.png a7639e38adb0aee36b38a67bfbf058fd8ac71ad7
+Reviewed-Content-Hash: 8_folha_cenario_4x.png b22cc7d5679428f0c1a1da520c313773a926d3da
+Reviewed-Content-Hash: 9_folha_objetos_4x.png 0148fc7f2b53c94b0bcb76ebfb43dd3372a3ad9d

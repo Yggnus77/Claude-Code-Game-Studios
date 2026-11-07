@@ -110,10 +110,18 @@ func _draw_body() -> void:
 	match state:
 		State.WINDUP:
 			# Counterweight lifted overhead and the slam area marked on the floor.
-			draw_rect(Rect2(Vector2(-r * 0.7, -r * 4.4), Vector2(r * 1.4, r * 1.2)), COLOR_WEIGHT)
+			draw_rect(Rect2(Vector2(-r * 0.7, -r * 4.4), Vector2(r * 1.4, r * 1.2)), _weight_color(art))
 			draw_arc(slam_center() - global_position, p("slam_radius", 22), 0, TAU, 24, COLOR_WARN, 1.5)
 		State.SLAM:
 			draw_circle(slam_center() - global_position, p("slam_radius", 22), Color(COLOR_WARN, 0.35))
 		State.OPENING:
-			draw_rect(Rect2(facing * p("slam_offset", 16) - Vector2(r * 0.7, r * 0.6), Vector2(r * 1.4, r * 1.2)), COLOR_WEIGHT)
-			draw_string(ThemeDB.fallback_font, Vector2(-3, -r * 3.0), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, COLOR_WARN)
+			draw_rect(Rect2(facing * p("slam_offset", 16) - Vector2(r * 0.7, r * 0.6), Vector2(r * 1.4, r * 1.2)), _weight_color(art))
+			# The punish window: above the head, outlined, never on the sprite.
+			var mark := Vector2(-3, -50) if art else Vector2(-3, -r * 3.0)
+			draw_string_outline(ThemeDB.fallback_font, mark, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, 4, Color("1b1420"))
+			draw_string(ThemeDB.fallback_font, mark, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, COLOR_WARN)
+
+
+## The counterweight block: brass beside the painted guard, grey otherwise.
+func _weight_color(art: SpriteAtlas) -> Color:
+	return Color("b8873a") if art else COLOR_WEIGHT

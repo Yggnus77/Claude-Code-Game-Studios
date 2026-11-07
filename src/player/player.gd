@@ -423,9 +423,11 @@ func _draw() -> void:
 		draw_circle(tip, 2.5, Color("f2c14e"))
 	if healing and healing.phase == Healing.Phase.USING:
 		draw_arc(Vector2(0, -h - 4), 4.0, 0, TAU, 10, Color("e05a5a"), 2.0)
-	if guard and guard.is_up() and (guard.is_perfect() or _last_outcome_flash > 0.0):
+	if guard and guard.is_up():
+		# The covered side, also when the shield itself is hidden (facing up).
+		var perfect := guard.is_perfect() or _last_outcome_flash > 0.0
 		var center := f * 10.0 + Vector2(0, -8)
-		draw_arc(center, 12.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, COLOR_PERFECT, 2.0)
+		draw_arc(center, 12.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, COLOR_PERFECT if perfect else Color(COLOR_SHIELD, 0.7), 2.0)
 	if combo and combo.is_active():
 		# The swing's trail covers the real hit box (sword_rect).
 		var box := sword_rect()
