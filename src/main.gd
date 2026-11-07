@@ -9,7 +9,11 @@ extends Node2D
 ##   --spawn=<enemy>@<col>,<row>  add an enemy on that tile;
 ##   --autoattack             press attack every 0.4 s (for recorded evidence runs);
 ##   --at=<col>,<row>         start on that tile, facing up (evidence runs);
-##   --autointeract           press interact every 0.8 s (evidence runs).
+##   --autointeract           press interact every 0.8 s (evidence runs);
+##   --slot=<1-3>             play in that save slot: continue it, or start a
+##                            new game there when it is empty (evidence runs).
+## With no user args, the title screen opens first and the game saves to the
+## chosen slot (design/kit/integracao-e-salvamento.md §7).
 
 const PLAYER_SCENE := preload("res://src/scenes/player.tscn")
 const DEFAULT_ROOM := "v00_oficina"
@@ -98,6 +102,25 @@ var _attempt: Dictionary = {}
 ## A new game starts unarmed. Playtests and tests that skip the intro (or
 ## start in another room) get the sword and shield, unless this is true.
 var start_unarmed := false
+## Shows the title screen on a normal launch (no user args). Tests turn it off.
+var show_title := true
+## Save slot in use (1–3), or 0 when this run does not save (tests, and
+## evidence runs without --slot).
+var save_slot := 0
+## Folder of the save slots and path of the settings file (tests use others).
+var save_dir := "user://saves"
+var settings_path := Settings.PATH
+var saves: SaveStore
+var settings: Settings
+var title: TitleScreen
+## Seconds played in this slot (counted while the game runs, not paused).
+var playtime := 0.0
+## Result of the last save write (OK when it worked).
+var last_save_error: Error = OK
+## Tile the player last entered the room on (door, respawn, marco): a load
+## puts Yggnus back there.
+var _entry_tile := Vector2i(-1, -1)
+var _save_queued := false
 
 @onready var hud: Hud = $Hud
 @onready var pause_overlay: PauseOverlay = $PauseOverlay
@@ -119,6 +142,8 @@ func _ready() -> void:
 	mysteries = config.mystery_quests()
 	relics = config.relic_loadout()
 	state.relic_ids = relics.relics.keys()
+	saves = SaveStore.new(save_dir, SaveGame.new(config.room_ids, config.items.keys(), config.fragments.keys()).validate)
+	settings = Settings.new(settings_path).load_file()
 	shop_panel = ShopPanel.new()
 	add_child(shop_panel)
 	_apply_state_args()
@@ -129,7 +154,9 @@ func _ready() -> void:
 	dialogue.setup(DialogueDB.load_from(), state, dialogue_box)
 	dialogue.bark.connect(func(text: String) -> void: hud.toast(text, 3.0 + 1.5 * text.count("\n")))
 	dialogue.scene_finished.connect(_on_scene_finished)
-	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or shop_panel.is_open() or _transitioning
+	pause_overlay.is_blocked = func() -> bool: return dialogue.is_open() or hud.is_inventory_open() or shop_panel.is_open() or _transitioning or title != null
+	pause_overlay.on_quit = quit_game
+	pause_overlay.pause_on_focus_loss = settings.pause_on_focus_loss
 	_fade = ColorRect.new()
 	_fade.color = Color.BLACK
 	_fade.modulate.a = 0.0
@@ -144,13 +171,157 @@ func _ready() -> void:
 	hud.relic_cycle = cycle_relic
 	state.changed.connect(func() -> void: if room: room.queue_redraw())
 	state.changed.connect(_refresh_story)
+	state.changed.connect(_queue_save)
 	load_room(_arg("--room=", DEFAULT_ROOM))
 	_refresh_story()
 	dialogue.player_busy = func() -> bool: return player.is_busy() or player.is_dead()
 	_apply_playtest_args()
+	if show_title and play_intro and OS.get_cmdline_user_args().is_empty():
+		_show_title()
+		return
+	var slot := int(_arg("--slot=", "0"))
+	if slot >= 1 and slot <= SaveStore.SLOT_COUNT:
+		var r := saves.read(slot)
+		var status := int(r["status"])
+		if status == SaveStore.Status.DAMAGED or status == SaveStore.Status.FUTURE:
+			# Only the title screen may start over a slot that cannot be read.
+			push_warning("--slot=%d cannot be read (%s); this run does not save." % [slot, r["problems"]])
+			_begin_new_game.call_deferred()
+		else:
+			_on_title_start.call_deferred(slot, r["data"])
+	else:
+		_begin_new_game.call_deferred()
+
+
+func _show_title() -> void:
+	get_tree().paused = true
+	title = TitleScreen.new(saves, settings.last_slot)
+	title.describe = describe_save
+	title.start.connect(_on_title_start)
+	add_child(title)
+
+
+## The player picked [param slot]: continue [param doc], or start a new
+## game there when it is empty.
+func _on_title_start(slot: int, doc: Dictionary) -> void:
+	if title:
+		title.queue_free()
+		title = null
+	get_tree().paused = false
+	settings.last_slot = slot
+	settings.save_file()
+	var recovered := int(saves.read(slot)["status"]) == SaveStore.Status.RECOVERED
+	save_slot = slot
+	pause_overlay.on_title = quit_to_title
+	if doc.is_empty():
+		saves.start_over(slot)
+		_begin_new_game()
+		return
+	continue_from(doc)
+	if recovered:
+		hud.toast("O último salvamento ficou incompleto ou danificado. O jogo voltou da cópia válida anterior.", 5.0)
+
+
+func _begin_new_game() -> void:
 	if play_intro and room_id == DEFAULT_ROOM:
-		dialogue.request.call_deferred("nova_partida")
-	_on_room_entered.call_deferred()
+		dialogue.request("nova_partida")
+	_on_room_entered()
+	_queue_save()
+
+
+## Loads the progress in [param doc] (a save that passed validation) and
+## puts Yggnus on its safe entry tile.
+func continue_from(doc: Dictionary) -> void:
+	var r := SaveGame.restore(doc)
+	var loaded: GameState = r["state"]
+	_hook_known = loaded.item_count("gancho_retorno") > 0
+	equipped = str(r["tool"]) if _hook_known else "frasco"
+	playtime = float(r["playtime"])
+	state.replace_with(loaded)
+	player.health.maximum = state.life_max()
+	load_room(str(r["room"]), r["entry"])
+	player.health.set_current(int(r["life"]))
+	if not _attempt.is_empty():
+		# The attempt began on load, before the saved life was put back.
+		_attempt["life"] = player.health.current
+	_refresh_story()
+	_on_room_entered()
+
+
+## "Praça de Versalhes · 12 min" for the title screen.
+func describe_save(doc: Dictionary) -> String:
+	var data := RoomData.load_room(str(doc.get("current_room", "")))
+	var minutes := floori(float(doc.get("playtime_seconds", 0)) / 60.0)
+	var time := ("%d min" % minutes) if minutes < 60 else ("%d h %02d min" % [floori(minutes / 60.0), minutes % 60])
+	return "%s · %s" % [data.display_name if data else "?", time]
+
+
+func _process(delta: float) -> void:
+	if save_slot > 0:
+		playtime += delta
+
+
+## Saves at the end of this frame, once, after every change made in it
+## (inventory transactions finish first; integracao-e-salvamento.md §7).
+func _queue_save() -> void:
+	if save_slot <= 0 or _save_queued:
+		return
+	_save_queued = true
+	save_now.call_deferred()
+
+
+## Writes the slot now. During the Igris attempt the save is the attempt's
+## start: flasks, bread and life as they were, on the chamber's entry
+## (mecanicas-e-dificuldade.md §9).
+func save_now() -> Error:
+	_save_queued = false
+	if save_slot <= 0 or player == null or player.is_dead() or room_id.is_empty():
+		return ERR_UNAVAILABLE
+	var snap := state
+	var life := player.health.current
+	if not _attempt.is_empty():
+		snap = GameState.from_dict(state.to_dict())
+		snap.apply([{"op": "restore_supplies", "full_flasks": _attempt["full_flasks"], "bread": _attempt["bread"]}])
+		life = int(_attempt.get("life", life))
+	var doc := SaveGame.capture(snap, {"room": room_id, "entry": _entry_tile, "life": life, "tool": equipped, "playtime": int(playtime), "slot": save_slot})
+	last_save_error = saves.write(save_slot, doc)
+	if last_save_error != OK:
+		hud.toast("Não foi possível salvar o jogo (erro %d)." % last_save_error, 4.0)
+	else:
+		hud.flash_saved()
+	return last_save_error
+
+
+## Pause menu: save, then show the title screen again.
+func quit_to_title() -> void:
+	if not _saved_before_leaving():
+		return
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+
+## Pause menu: save, then close the game.
+func quit_game() -> void:
+	if not _saved_before_leaving():
+		return
+	get_tree().quit()
+
+
+## Saves before leaving. A failed write keeps the game open on the pause
+## menu with the error, so progress is never dropped silently. (Nothing to
+## save, or Yggnus mid-respawn, leaves with the last save as it is.)
+func _saved_before_leaving() -> bool:
+	var err := save_now()
+	if err == OK or err == ERR_UNAVAILABLE:
+		return true
+	pause_overlay.set_paused(true, "Não foi possível salvar (erro %d). Tente de novo." % err)
+	return false
+
+
+func _notification(what: int) -> void:
+	# Closing the window also saves (the last safe entry, as always).
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and save_slot > 0:
+		save_now()
 
 
 ## Playtest start state: --items= and --flags= (see the header).
@@ -223,6 +394,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 			hud.bind(player.health)
 	var tile := entry if entry.x >= 0 else data.entry_default
 	player.respawn_at(data.tile_center(tile), restore_life)
+	_entry_tile = tile
 	player.set_camera_limits(data.pixel_size())
 	_arrival_door = _door_at(player.global_position)
 	clear_enemies()
@@ -238,6 +410,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	_build_bells()
 	_build_igris()
 	_sync_invasion()
+	_queue_save()
 
 
 ## Starts or removes the Yame Black invasion to match the story state.
@@ -380,6 +553,7 @@ func quick_swap() -> void:
 		return
 	equipped = "frasco" if equipped == "gancho" else "gancho"
 	_refresh_story()
+	_queue_save()
 
 
 ## What the hook's tip touches at [param pos].
@@ -504,12 +678,15 @@ func _igris_end_scene() -> String:
 func _start_igris_attempt() -> void:
 	if igris == null or igris.active:
 		return
-	_attempt = {"full_flasks": state.full_flasks.duplicate(), "bread": state.item_count("pao_porto")}
+	_attempt = {"full_flasks": state.full_flasks.duplicate(), "bread": state.item_count("pao_porto"), "life": player.health.current}
 	igris.active = true
 
 
 func _on_igris_freed() -> void:
-	_attempt = {}
+	# The attempt stays open until the victory scene commits it: a save made
+	# while that scene plays (closing the window) still holds the fight's
+	# start, so the victory and the supplies spent are saved together
+	# (mecanicas-e-dificuldade.md §9).
 	dialogue.request(str(config.encounter("igris").get("success_event", "igris_controle_rompido")))
 
 
@@ -670,6 +847,8 @@ func interact() -> String:
 			_on_clue_noted(str(e["sets_flag"]))
 			return "clue"
 		"checkpoint":
+			# The marco becomes the safe entry: a load starts beside it.
+			_entry_tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)
 			state.apply([{"op": "set_checkpoint", "room": room_id, "entity_id": str(e["id"])}])
 			player.health.reset()
 			hud.toast("Marco ativado. Vida restaurada.")
@@ -898,6 +1077,8 @@ func _on_scene_finished(scene_id: String, applied: bool) -> void:
 	if not chained.is_empty():
 		dialogue.request.call_deferred(chained)
 	if scene_id == _igris_end_scene():
+		# Victory committed in this same update: the spent supplies stay spent.
+		_attempt = {}
 		# Igris chooses to leave (chefes.json story_followup); he is gone for good.
 		var followup := str(config.encounter("igris").get("story_followup", ""))
 		if not followup.is_empty():

@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: README.md 50e92d0635089099e6d1e351240c40aa3e40f720
+Reviewed-Content-Hash: 1_titulo_tres_espacos.png e8c9e24dcb03f8464ffda885cc4e2ecbc6eb204a
+Reviewed-Content-Hash: 2_espaco_com_copia_recuperada.png 9c81ae322c6f7f2e5aa9c84137b0a91cbe68f56e
+Reviewed-Content-Hash: 3_menu_de_pausa.png d168a7f87a2f7d68c4f36d37ada378dbb2f4d8aa
+Reviewed-Content-Hash: 4_continuar_na_entrada_de_igris.png 6d3a5cd32fa0c2524f5745e318f1c6d5031d95c3

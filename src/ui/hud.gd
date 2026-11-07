@@ -13,6 +13,8 @@ var _banner: Label
 var _bronze: Label
 var _toast: Label
 var _toast_left := 0.0
+var _saved: Label
+var _saved_left := 0.0
 var _objective: Label
 var _item: Label
 var _inventory: PanelContainer
@@ -75,6 +77,15 @@ func _ready() -> void:
 	_toast.add_theme_color_override("font_outline_color", Color.BLACK)
 	_toast.add_theme_constant_override("outline_size", 4)
 	add_child(_toast)
+	_saved = Label.new()
+	_saved.text = "Jogo salvo"
+	_saved.position = Vector2(532, 18)
+	_saved.size = Vector2(100, 12)
+	_saved.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_saved.add_theme_font_size_override("font_size", 8)
+	_saved.add_theme_color_override("font_color", Color("cfd6e0"))
+	_saved.modulate.a = 0.0
+	add_child(_saved)
 	_inventory = PanelContainer.new()
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.06, 0.07, 0.09, 0.94)
@@ -129,6 +140,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if _saved_left > 0.0:
+		_saved_left -= delta
+		_saved.modulate.a = clampf(_saved_left / 0.4, 0.0, 0.8)
 	if _toast_left > 0.0:
 		_toast_left -= delta
 		_toast.modulate.a = clampf(_toast_left / 0.4, 0.0, 1.0)
@@ -139,6 +153,12 @@ func toast(text: String, seconds: float = 2.5) -> void:
 	_toast.text = text
 	_toast_left = seconds
 	_toast.modulate.a = 1.0
+
+
+## A quiet "Jogo salvo" note in the corner; never blocks input.
+func flash_saved() -> void:
+	_saved_left = 1.2
+	_saved.modulate.a = 0.8
 
 
 ## Follows Bronze and reserve from [param state].
