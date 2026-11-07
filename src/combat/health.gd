@@ -56,6 +56,12 @@ func heal(amount: int) -> void:
 	changed.emit(current, maximum)
 
 
+## Sets life to [param value] (a loaded save), between 1 and [member maximum].
+func set_current(value: int) -> void:
+	current = clampi(value, 1, maximum)
+	changed.emit(current, maximum)
+
+
 ## Back to full life with no invulnerability (respawn at a checkpoint).
 func reset() -> void:
 	current = maximum

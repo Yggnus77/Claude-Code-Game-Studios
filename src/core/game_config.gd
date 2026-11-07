@@ -17,6 +17,7 @@ const MYSTERIES_PATH := "res://assets/data/misterios.json"
 const TOWER_PATH := "res://assets/data/torre-akurame.json"
 const RELIC_BASE_PATH := "res://assets/data/base-modificadores-reliquias.json"
 const MYSTERY_WIRING_PATH := "res://assets/data/misterios-ligacao.json"
+const MAPS_PATH := "res://assets/data/mapas-prototipo.json"
 
 ## The parsed combat document (combate.json).
 var data: Dictionary
@@ -41,6 +42,9 @@ var tower: Dictionary = {}
 var relic_base: Dictionary = {}
 ## Where each mystery lives in the world (misterios-ligacao.json).
 var mystery_wiring: Dictionary = {}
+## Room ids of the slice (mapas-prototipo.json "rooms"): the only rooms a
+## save may name.
+var room_ids: Array = []
 
 
 func _init(source: Dictionary = {}, enemy_list: Array = [], progression_data: Dictionary = {}) -> void:
@@ -69,6 +73,7 @@ static func load_all() -> GameConfig:
 	cfg.tower = read_json(TOWER_PATH)
 	cfg.relic_base = read_json(RELIC_BASE_PATH)
 	cfg.mystery_wiring = read_json(MYSTERY_WIRING_PATH)
+	cfg.room_ids = read_json(MAPS_PATH).get("rooms", [])
 	return cfg
 
 

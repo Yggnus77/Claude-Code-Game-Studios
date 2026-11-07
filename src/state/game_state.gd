@@ -212,6 +212,13 @@ func _add_bronze(amount: int) -> void:
 	bronze_reserve += amount - take
 
 
+## Takes every saved value from [param other] (a loaded save) in place, so
+## the systems already holding this object see the loaded progress.
+func replace_with(other: GameState) -> void:
+	_load(other.to_dict())
+	changed.emit()
+
+
 func to_dict() -> Dictionary:
 	return {
 		"flags": flags.duplicate(true), "items": items.duplicate(true), "receipts": receipts.duplicate(true),
