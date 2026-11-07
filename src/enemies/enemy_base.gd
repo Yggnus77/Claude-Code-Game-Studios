@@ -140,7 +140,7 @@ func try_hit_target(hit_center: Vector2, radius: float, damage: int, heavy: bool
 		return false
 	if hit_center.distance_to(target.global_position) > radius + Player.FEET_RADIUS:
 		return false
-	target.receive_hit(damage, global_position, heavy)
+	target.receive_hit(damage, global_position, heavy, false, str(params.get("name", "inimigo")))
 	return true
 
 

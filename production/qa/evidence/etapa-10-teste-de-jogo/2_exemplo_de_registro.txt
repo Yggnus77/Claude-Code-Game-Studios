@@ -1,0 +1,29 @@
+SESSÃO DE TESTE — 2026-11-07 02:16:54
+Duração: 0 min 18 s
+Fatia concluída: não
+
+APRENDIZADO (tempo desde o início)
+- Primeiro golpe de espada que acertou: não aconteceu
+- Primeira defesa (escudo segurou um golpe): não aconteceu
+- Primeira defesa precisa: não aconteceu
+- Primeira travessia com o gancho: não aconteceu
+
+MORTES: 1
+- Sala dos guardas: Guarda de Contrapeso ×1
+
+GOLPES RECEBIDOS (sem morrer)
+- Guarda de Contrapeso: 1
+- onda de Igris: 3
+
+IGRIS: 0 tentativa(s)
+- 1: em andamento há 0 min 06 s
+
+COMANDOS SEM EFEITO
+- porta fechada (door.t00_base.t01_guardas): 1 vez(es)
+
+SALAS (chegada e tempo em cada uma)
+- 0 min 00 s Oficina: 0 min 00 s
+- 0 min 00 s Oficina: 0 min 02 s
+- 0 min 02 s Praça de Versalhes: 0 min 03 s
+- 0 min 05 s Sala dos guardas: 0 min 07 s
+- 0 min 12 s Câmara de Igris: 0 min 05 s

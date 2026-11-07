@@ -149,3 +149,18 @@ func test_shield_stops_paper_from_the_front() -> void:
 	main.invasion._throw_left = 0.0
 	await _frames(90)
 	assert_true(p.health.current < p.health.maximum, "unguarded: the paper hurts")
+
+
+func test_the_sword_on_yame_says_to_cut_the_bindings() -> void:
+	_setup("v00_oficina", ["seen.p05"])
+	main.state.apply([{"op": "grant_unique", "item_id": "espada_oficina", "quantity": 1, "receipt_id": "scene.p05.espada_oficina"}])
+	await _frames(2)
+	var p: Player = main.player
+	p.has_sword = true
+	p.respawn_at(main.invasion.global_position + Vector2(0, 16))
+	p.motor.facing = Vector2.UP
+	p.request_attack()
+	await _frames(20)
+	assert_eq(main.prologue.bindings_left(main.state).size(), 3, "Yame takes nothing, bindings untouched")
+	assert_eq(main.playtest.refused.get("espada em Yame Black", 0), 1, "one swing, one notice")
+	assert_true(main.hud._toast.text.contains("amarras"), "the player is told what to hit")

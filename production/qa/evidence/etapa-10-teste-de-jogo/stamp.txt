@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: README.md 5d17252d9a2ae3e9e9d2c641b5fb7356f309b147
+Reviewed-Content-Hash: 1_pausa_com_registros_de_teste.png a8462ae2d4d0c4850c08d0c89ee5e4442f772a18
+Reviewed-Content-Hash: 3_espada_em_yame.png b131f91e58838f705a49a96961ed7f235b894a1c
+Reviewed-Content-Hash: 2_exemplo_de_registro.txt 276663b16fee6ed5072accc02772cde1783e8314
+Reviewed-Content-Hash: stamp.txt 8548a5e477d79ed092a4f6b6eb15a1acaf9e8818

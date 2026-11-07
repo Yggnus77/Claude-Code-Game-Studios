@@ -11,6 +11,8 @@ var is_blocked: Callable = func() -> bool: return false
 var on_title: Callable = Callable()
 ## Saves and closes the game.
 var on_quit: Callable = func() -> void: get_tree().quit()
+## Opens the folder of the playtest records; unset hides that option.
+var on_open_logs: Callable = Callable()
 ## Whether losing window focus pauses (Settings.pause_on_focus_loss).
 var pause_on_focus_loss := true
 var menu: MenuPanel
@@ -60,6 +62,9 @@ func set_paused(value: bool, reason: String = "Pausado") -> void:
 			_actions.append(on_title)
 		labels.append("Salvar e sair do jogo")
 		_actions.append(on_quit)
+		if on_open_logs.is_valid():
+			labels.append("Abrir a pasta dos registros de teste")
+			_actions.append(on_open_logs)
 		menu.show_menu(reason, "", labels, 0, "continua")
 	_set_visible(value)
 
