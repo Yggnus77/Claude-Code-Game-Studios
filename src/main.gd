@@ -440,6 +440,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	if data == null:
 		return
 	room_id = id
+	_refresh_story()  # the objective line depends on the room too
 	if room == null:
 		room = Room.new()
 		room.state = state
@@ -556,7 +557,7 @@ func _refresh_story() -> void:
 		if hud:
 			hud.toast("Gancho equipado: L lança, Q troca para o frasco.", 4.0)
 	if hud:
-		hud.set_objective(prologue.objective(state))
+		hud.set_objective(prologue.objective(state, room_id))
 		hud.set_item("Gancho" if equipped == "gancho" else "Frasco", state.item_count("gancho_retorno") > 0)
 
 

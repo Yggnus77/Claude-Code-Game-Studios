@@ -80,7 +80,9 @@ func throw_interval(state: GameState) -> float:
 
 
 ## Short objective for the HUD, so the goal reads without narration.
-func objective(state: GameState) -> String:
+## [param room_id] is where Yggnus stands: away from the workshop during the
+## invasion (after a death sends him to the marco) the line says to go back.
+func objective(state: GameState, room_id: String = "") -> String:
 	if not state.has_flag("seen.p00"):
 		return ""
 	if not state.has_flag("seen.p01"):
@@ -91,6 +93,9 @@ func objective(state: GameState) -> String:
 		return "Volte à oficina."
 	if not state.has_flag("seen.p07"):
 		var total: int = encounter.get("bindings", []).size()
+		var done := total - bindings_left(state).size()
+		if not room_id.is_empty() and room_id != WORKSHOP:
+			return "Volte à oficina e corte as amarras da porta (%d/%d)." % [done, total]
 		return "Corte as amarras da porta (%d/%d). Defenda os papéis com o escudo." % [total - bindings_left(state).size(), total]
 	if not state.has_flag("seen.p08"):
 		return "Ative o Marco de Memória na praça."
