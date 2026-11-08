@@ -467,7 +467,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	var tile := entry if entry.x >= 0 else data.entry_default
 	player.respawn_at(data.tile_center(tile), restore_life)
 	_entry_tile = tile
-	player.set_camera_limits(data.pixel_size())
+	player.set_camera_limits(data.pixel_size(), room.top_extent())
 	_arrival_door = _door_at(player.global_position)
 	clear_enemies()
 	room.raised = {}

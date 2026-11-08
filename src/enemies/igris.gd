@@ -66,11 +66,13 @@ func hook_muffler() -> bool:
 
 
 ## Sword hit: counts on the open regulator; otherwise it only clangs.
-func receive_sword_hit(_damage: int, attack_id: int, _from: Vector2) -> bool:
+func receive_sword_hit(_damage: int, attack_id: int, from: Vector2) -> bool:
 	if not active or _hit_ids.has(attack_id):
 		return false
 	_hit_ids[attack_id] = true
-	if fight.hit_regulator():
+	var landed := fight.hit_regulator()
+	Fx.hit_sparks(get_parent(), global_position, from, not landed)
+	if landed:
 		_flash = 0.15
 		if fight.is_done():
 			active = false

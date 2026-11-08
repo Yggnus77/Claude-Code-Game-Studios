@@ -125,3 +125,7 @@ func _draw_body() -> void:
 ## The counterweight block: brass beside the painted guard, grey otherwise.
 func _weight_color(art: SpriteAtlas) -> Color:
 	return Color("b8873a") if art else COLOR_WEIGHT
+
+
+func _defeat_color() -> Color:
+	return Color("b8873a")

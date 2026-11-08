@@ -438,3 +438,132 @@ def tiles_oficina():
     return [wall_upper(), wall_mid(), wall_lower(), floor(0), floor(1), floor(2), floor(3), wall_top(), wall_front(""), wall_front("window"),
             wall_front("shelf"), wall_front("clock"), wall_front("tools"), wall_front("lamp"),
             bench_top(0), bench_top(1), bench_top(2), bench_top(3), bench_front(), gap(False), gap(True)]
+
+
+# ------------------------------------------------------------ peças comuns
+# Colunas da folha detalhada (uma linha por tema). Decalques ficam por cima
+# do piso (fundo transparente); o tapete é montado em 9 peças pelo jogo.
+
+HD_COLS = ["wall_upper", "wall_mid", "wall_lower", "floor_a", "floor_b", "floor_c", "floor_d", "wall_top",
+           "furn_top_a", "furn_top_b", "furn_top_c", "furn_top_d", "furn_front", "gap", "gap_edge",
+           "decal_a", "decal_b", "decal_c", "decal_d",
+           "rug_tl", "rug_t", "rug_tr", "rug_l", "rug_c", "rug_r", "rug_bl", "rug_b", "rug_br"]
+RUG_PARTS = ["tl", "t", "tr", "l", "c", "r", "bl", "b", "br"]
+
+
+class P:
+    """Canvas com paleta própria: chaves da paleta ou cores #rrggbb."""
+
+    def __init__(self, pal, w=T, h=T):
+        self.c = Canvas(w, h)
+        self.pal = pal
+        self.w, self.h = w, h
+
+    def p(self, x, y, k):
+        if k is None:
+            return
+        self.c.put(x, y, self.pal.get(k, k))
+
+    def r(self, x, y, w, h, k):
+        for j in range(y, y + h):
+            for i in range(x, x + w):
+                self.p(i, j, k)
+
+    def hl(self, x0, x1, y, k):
+        for i in range(min(x0, x1), max(x0, x1) + 1):
+            self.p(i, y, k)
+
+    def vl(self, x, y0, y1, k):
+        for j in range(min(y0, y1), max(y0, y1) + 1):
+            self.p(x, j, k)
+
+    def disc(self, cx, cy, rad, k, ry=None):
+        ry = rad if ry is None else ry
+        for j in range(-ry, ry + 1):
+            for i in range(-rad, rad + 1):
+                if (i * i) / max(rad * rad, 0.3) + (j * j) / max(ry * ry, 0.3) <= 1.0:
+                    self.p(cx + i, cy + j, k)
+
+    def line(self, x0, y0, x1, y1, k):
+        dx, dy = abs(x1 - x0), -abs(y1 - y0)
+        sx, sy = (1 if x0 < x1 else -1), (1 if y0 < y1 else -1)
+        err = dx + dy
+        while True:
+            self.p(x0, y0, k)
+            if x0 == x1 and y0 == y1:
+                return
+            e2 = 2 * err
+            if e2 >= dy:
+                err += dy
+                x0 += sx
+            if e2 <= dx:
+                err += dx
+                y0 += sy
+
+    def get(self, x, y):
+        return self.c.get(x, y)
+
+
+def rug_piece(part, pal, border, inner, trim, motif):
+    """Uma das 9 peças de um tapete/caminho: borda nos lados de fora."""
+    t = P(pal)
+    t.r(0, 0, T, T, inner)
+    top, bot = part.startswith("t"), part.startswith("b")
+    left, right = part.endswith("l"), part.endswith("r")
+    if top:
+        t.r(0, 0, T, 3, border)
+        t.hl(0, 15, 3, trim)
+        for x in range(0, T, 3):
+            t.p(x, 0, "fringe")
+    if bot:
+        t.r(0, 13, T, 3, border)
+        t.hl(0, 15, 12, trim)
+        for x in range(1, T, 3):
+            t.p(x, 15, "fringe")
+    if left:
+        t.r(0, 0, 3, T, border)
+        t.vl(3, 3 if top else 0, 12 if bot else 15, trim)
+    if right:
+        t.r(13, 0, 3, T, border)
+        t.vl(12, 3 if top else 0, 12 if bot else 15, trim)
+    if motif and not (top or bot or left or right):
+        for dx, dy in ((0, -2), (-2, 0), (2, 0), (0, 2), (0, 0)):
+            t.p(8 + dx, 8 + dy, motif)
+        t.p(8, 8, trim)
+    elif motif and (top or bot) and not (left or right):
+        t.p(8, 7 if top else 8, motif)
+    return t.c
+
+
+def tiles_oficina_hd():
+    pal = dict(O)
+    pal["fringe"] = O["cream"]
+    by = dict(zip(COLS, tiles_oficina()))
+    out = [by[k] for k in HD_COLS[:15]]
+    # decalques: aparas de madeira, parafusos, papel amassado, mancha de óleo
+    d = P(pal)
+    for x, y in ((4, 9), (5, 8), (6, 8), (7, 9), (10, 11), (11, 10)):
+        d.p(x, y, "plank_hi")
+    d.p(6, 9, "cream_lo")
+    out.append(d.c)
+    d = P(pal)
+    for x, y in ((5, 6), (9, 10), (12, 5)):
+        d.p(x, y, "brass")
+        d.p(x + 1, y, "brass_lo")
+    out.append(d.c)
+    d = P(pal)
+    d.disc(8, 8, 3, "paper_w", 2)
+    d.p(7, 7, "cream_lo")
+    d.p(9, 9, "cream_lo")
+    d.hl(6, 10, 10, "plank_gap")
+    out.append(d.c)
+    d = P(pal)
+    d.disc(8, 9, 4, "#00000038", 2)
+    d.disc(7, 9, 2, "#1b142040", 1)
+    out.append(d.c)
+    for part in RUG_PARTS:
+        out.append(rug_piece(part, pal, "#5e2226", "#8a3434", "#c8963e", "#d9ad4f"))
+    return out
+
+
+OFICINA_DECOR = ["window", "lamp", "shelf", "clock", "tools", "picture"]

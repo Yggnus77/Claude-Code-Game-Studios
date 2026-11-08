@@ -120,9 +120,10 @@ func body_radius() -> float:
 ## Yame cannot be hurt (roteiro: "Não é possível matar a criatura"). The
 ## swing is answered with [signal sword_deflected] so the player is told
 ## to cut the bindings instead. Always false: nothing took damage.
-func receive_sword_hit(_damage: int, attack_id: int, _from: Vector2) -> bool:
+func receive_sword_hit(_damage: int, attack_id: int, from: Vector2) -> bool:
 	if not _deflected_attacks.has(attack_id):
 		_deflected_attacks[attack_id] = true
+		Fx.hit_sparks(get_parent(), global_position, from, true)
 		sword_deflected.emit()
 	return false
 

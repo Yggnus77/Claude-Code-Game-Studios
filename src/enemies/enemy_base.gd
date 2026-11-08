@@ -97,6 +97,11 @@ func _on_hurt() -> void:
 	pass
 
 
+## Colour of the splash left when beaten (ink here; paper, brass... in kinds).
+func _defeat_color() -> Color:
+	return Color("4a46a0")
+
+
 ## Called by the player's sword. Returns true if damage was applied.
 ## The same [param attack_id] never counts twice, blocked or not.
 func receive_sword_hit(damage: int, attack_id: int, from: Vector2) -> bool:
@@ -105,9 +110,11 @@ func receive_sword_hit(damage: int, attack_id: int, from: Vector2) -> bool:
 	_hit_ids[attack_id] = true
 	if _blocks(from):
 		_block_flash = 0.12
+		Fx.hit_sparks(get_parent(), global_position, from, true)
 		return false
 	health.take_damage(damage)
 	_flash = 0.08
+	Fx.hit_sparks(get_parent(), global_position, from)
 	if health.is_dead():
 		_defeat()
 		return true
@@ -124,6 +131,7 @@ func _defeat() -> void:
 	velocity = Vector2.ZERO
 	collision_layer = 0
 	defeated.emit(self)
+	Fx.defeat_puff(get_parent(), global_position, _defeat_color())
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.25)
 	tween.tween_callback(queue_free)

@@ -1,9 +1,10 @@
 class_name Room
 extends Node2D
-## Builds a playable placeholder room from a [RoomData]: draws flat tiles,
-## adds wall and gap collision, and draws doors and entities, reflecting the
-## [GameState] (open chests, collected fragments, read clues).
-## Placeholder art only — real tiles come later (design/kit/arte-e-audio-pendentes.md).
+## Builds a playable room from a [RoomData]: draws the theme's tiles (a wall
+## three tiles tall along the top, wall decoration, rugs, floor details and
+## soft shadows), adds wall and gap collision, lights the room, and draws
+## doors and entities, reflecting the [GameState] (open chests, collected
+## fragments, read clues). Flat colours stand in when the art is missing.
 
 ## Physics layer used by walls and gaps (layer 1).
 const WORLD_LAYER := 1
@@ -39,10 +40,22 @@ var raised: Dictionary = {}
 
 const TILES_PATH := "res://assets/art/cenario/tiles.png"
 const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
+const DECOR_PATH := "res://assets/art/cenario/decor.png"
 const ART_META := "res://assets/art/cenario/cenario.json"
 ## Sheets drawn by tools/art/gerar_cenario.py; null keeps the flat colours.
 var _tiles: Texture2D
 var _objects: Texture2D
+var _decor_tex: Texture2D
+var _theme := ""
+## Decoration hung on the tall top wall: [{"tile": Vector2i, "kind": String}].
+var decor: Array = []
+## Rug cells (Vector2i -> true), from the map's "art": {"rugs": [[x, y, w, h]]}.
+var rug_cells: Dictionary = {}
+## Lights placed by [method build]: [{"pos", "color", "energy", "radius"}].
+var light_specs: Array = []
+var _lights: Array[PointLight2D] = []
+var _flicker_time := 0.0
+static var _light_texture: GradientTexture2D
 var _art: Dictionary = {}
 var _theme_row := 0
 ## Tall things (people, marcos) are child nodes so they sort by height on
@@ -60,6 +73,8 @@ func _ready() -> void:
 			_art = json.data
 			_tiles = load(TILES_PATH)
 			_objects = load(OBJECTS_PATH)
+			if ResourceLoader.exists(DECOR_PATH):
+				_decor_tex = load(DECOR_PATH)
 
 
 ## Replaces the current content with [param room_data].
@@ -69,7 +84,11 @@ func build(room_data: RoomData) -> void:
 		child.queue_free()
 	name = "Room_%s" % data.id
 	_theme_row = theme_row(data.id)
+	var themes: Array = _art.get("themes", [])
+	_theme = str(themes[_theme_row]) if _theme_row < themes.size() else ""
 	_props.clear()
+	_lights.clear()
+	_plan_art()
 	if _tiles:
 		for e in data.entities:
 			if PROP_KINDS.has(str(e.get("kind", ""))):
@@ -93,7 +112,145 @@ func build(room_data: RoomData) -> void:
 			shape.shape = rect
 			shape.position = Vector2(r.position * data.tile_size) + rect.size * 0.5
 			body.add_child(shape)
+	if _tiles:
+		_add_lights()
 	queue_redraw()
+
+
+func _process(delta: float) -> void:
+	if _lights.is_empty():
+		return
+	# Flames breathe a little; each light has its own phase.
+	_flicker_time += delta
+	for i in _lights.size():
+		var base: float = light_specs[i]["energy"]
+		if light_specs[i].get("flicker", false):
+			_lights[i].energy = base * (0.93 + 0.05 * sin(_flicker_time * 7.0 + i * 1.7) + 0.02 * sin(_flicker_time * 13.0 + i))
+
+
+## How many pixels the tall top wall rises above row 0 (the camera shows it).
+func top_extent() -> int:
+	if data == null or _tiles == null:
+		return 0
+	return (int(_art.get("wall_rows", 1)) - 1) * data.tile_size
+
+
+## Whether the wall at [param at] is the base of the tall wall: walkable
+## ground below it and nothing but wall above it, up to the map's edge.
+func is_tall_wall(at: Vector2i) -> bool:
+	if data.cell(at) != RoomData.WALL:
+		return false
+	var below := at + Vector2i.DOWN
+	if below.y >= data.height or data.cell(below) == RoomData.WALL:
+		return false
+	for y in at.y:
+		if data.cell(Vector2i(at.x, y)) != RoomData.WALL:
+			return false
+	return true
+
+
+## Whether the wall at [param at] is furniture (a block inside the room).
+func is_furniture(at: Vector2i) -> bool:
+	return data.cell(at) == RoomData.WALL and at.x > 0 and at.y > 0 and at.x < data.width - 1 and at.y < data.height - 1
+
+
+static func _hash(at: Vector2i, salt: int = 0) -> int:
+	return absi(hash([at.x, at.y, salt]))
+
+
+func _theme_light(key: String) -> Variant:
+	var lighting: Dictionary = _art.get("lighting", {})
+	return (lighting.get(_theme, {}) as Dictionary).get(key, null)
+
+
+## Picks the wall decoration, the rug cells and the lights for this room.
+func _plan_art() -> void:
+	decor.clear()
+	rug_cells.clear()
+	light_specs.clear()
+	if data == null:
+		return
+	for r: Array in (data.art.get("rugs", []) as Array):
+		for y in range(int(r[1]), int(r[1]) + int(r[3])):
+			for x in range(int(r[0]), int(r[0]) + int(r[2])):
+				if data.is_walkable(Vector2i(x, y)):
+					rug_cells[Vector2i(x, y)] = true
+	var names: Array = (_art.get("decor", {}) as Dictionary).get(_theme, [])
+	var lit_kinds: Dictionary = _theme_light("decor_lights") if _theme_light("decor_lights") != null else {}
+	var lit: Array = names.filter(func(n: String) -> bool: return lit_kinds.has(n))
+	var unlit: Array = names.filter(func(n: String) -> bool: return not lit_kinds.has(n))
+	var seed := data.id.hash()
+	var ts := data.tile_size
+	var count := 0
+	for x in range(2, data.width - 2):
+		var at := Vector2i(x, 0)
+		while at.y < data.height and not is_tall_wall(at) and data.cell(at) == RoomData.WALL:
+			at.y += 1
+		if not is_tall_wall(at) or (x + absi(seed)) % 3 != 0:
+			continue
+		var pool: Array = lit if (count % 2 == 0 and not lit.is_empty()) or unlit.is_empty() else unlit
+		if pool.is_empty():
+			continue
+		var kind: String = pool[_hash(at, seed) % pool.size()]
+		decor.append({"tile": at, "kind": kind})
+		count += 1
+		if lit_kinds.has(kind):
+			var l: Array = lit_kinds[kind]
+			var top := float((at.y - (int(_art.get("wall_rows", 1)) - 1)) * ts)
+			light_specs.append({"pos": Vector2(at.x * ts + ts * 0.5, top + float(l[3])), "color": Color(str(l[0])),
+				"energy": float(l[1]), "radius": float(l[2]), "flicker": kind != "window" and kind != "slit"})
+	var furn: Variant = _theme_light("furn_light")
+	for y in data.height:
+		for x in data.width:
+			var at := Vector2i(x, y)
+			if furn != null and tile_kind(at) == "furn_top_d":
+				light_specs.append({"pos": data.tile_center(at), "color": Color(str(furn[0])), "energy": float(furn[1]),
+					"radius": float(furn[2]), "flicker": true})
+	for e in data.entities:
+		var kind := str(e.get("kind", ""))
+		if (kind == "unique_fragment" and not is_spent(e)) or kind == "checkpoint":
+			var t: Array = e.get("tile", [0, 0])
+			light_specs.append({"pos": data.tile_center(Vector2i(int(t[0]), int(t[1]))),
+				"color": Color("6fe0e0") if kind == "unique_fragment" else Color("f2c14e"), "energy": 0.6, "radius": 40.0,
+				"entity": e})
+
+
+## A soft round light texture shared by every room light.
+static func light_texture() -> GradientTexture2D:
+	if _light_texture == null:
+		var g := Gradient.new()
+		g.set_color(0, Color(1, 1, 1, 1))
+		g.set_color(1, Color(1, 1, 1, 0))
+		g.add_point(0.45, Color(1, 1, 1, 0.45))
+		_light_texture = GradientTexture2D.new()
+		_light_texture.gradient = g
+		_light_texture.fill = GradientTexture2D.FILL_RADIAL
+		_light_texture.fill_from = Vector2(0.5, 0.5)
+		_light_texture.fill_to = Vector2(1.0, 0.5)
+		_light_texture.width = 128
+		_light_texture.height = 128
+	return _light_texture
+
+
+func _add_lights() -> void:
+	var ambient: Variant = _theme_light("ambient")
+	if ambient != null:
+		var mod := CanvasModulate.new()
+		mod.name = "Ambient"
+		mod.color = Color(str(ambient))
+		add_child(mod)
+	var motes: Variant = _theme_light("motes")
+	if motes != null:
+		add_child(Fx.motes(Vector2(data.pixel_size()), Color(str(motes[0])), int(motes[1]), float(top_extent())))
+	for spec: Dictionary in light_specs:
+		var light := PointLight2D.new()
+		light.texture = light_texture()
+		light.position = spec["pos"]
+		light.color = spec["color"]
+		light.energy = spec["energy"]
+		light.texture_scale = float(spec["radius"]) * 2.0 / 128.0
+		add_child(light)
+		_lights.append(light)
 
 
 ## Whether entity [param e] is already used up (open chest, read clue, picked fragment).
@@ -116,23 +273,43 @@ func theme_row(id: String) -> int:
 	return maxi(themes.find(by_prefix.get(best, "")), 0)
 
 
-## Which tile picture cell [param at] uses: walls show their front face
-## above walkable ground, gaps show a ledge under walkable ground.
+## Which tile picture cell [param at] uses: the tall top wall shows its
+## base (its upper rows are drawn above it), blocks inside the room are
+## furniture, other walls show their top, gaps show a ledge under ground.
 func tile_kind(at: Vector2i) -> String:
 	var c := data.cell(at)
+	var h := _hash(at)
 	if c == RoomData.WALL:
-		var below := at + Vector2i.DOWN
-		return "wall_front" if below.y < data.height and data.cell(below) != RoomData.WALL else "wall_top"
+		if is_furniture(at):
+			var below := at + Vector2i.DOWN
+			if data.cell(below) != RoomData.WALL:
+				return "furn_front"
+			return "furn_top_d" if h % 5 == 0 else "furn_top_" + "abc"[h % 3]
+		return "wall_lower" if is_tall_wall(at) else "wall_top"
 	if c == RoomData.GAP:
 		var above := at + Vector2i.UP
 		return "gap_edge" if above.y >= 0 and data.cell(above) != RoomData.GAP and data.cell(above) != RoomData.WALL else "gap"
-	var h := absi((at.x * 73856093) ^ (at.y * 19349663)) % 25
-	return "floor_a" if h < 15 else ("floor_b" if h < 24 else "floor_c")
+	if _hash(at, 11) % 53 == 0:
+		return "floor_d"  # the rare one (a drain, a rune)
+	var f := h % 40
+	return "floor_a" if f < 26 else ("floor_b" if f < 35 else "floor_c")
+
+
+## Which of the nine rug pieces cell [param at] uses ("" when no rug).
+func rug_piece(at: Vector2i) -> String:
+	if not rug_cells.has(at):
+		return ""
+	var v := "t" if not rug_cells.has(at + Vector2i.UP) else ("b" if not rug_cells.has(at + Vector2i.DOWN) else "")
+	var hz := "l" if not rug_cells.has(at + Vector2i.LEFT) else ("r" if not rug_cells.has(at + Vector2i.RIGHT) else "")
+	var part := v + hz
+	return "rug_" + (part if not part.is_empty() else "c")
 
 
 func _draw_tile(at: Vector2i, kind: String) -> void:
 	var ts := data.tile_size
 	var col: int = (_art.get("tile_cols", []) as Array).find(kind)
+	if col < 0:
+		return
 	var src := Rect2(Vector2(col * ts, _theme_row * ts), Vector2(ts, ts))
 	draw_texture_rect_region(_tiles, Rect2(Vector2(at) * ts, Vector2(ts, ts)), src)
 
@@ -221,9 +398,29 @@ func _draw() -> void:
 func _draw_art() -> void:
 	for prop in _props:
 		prop.queue_redraw()
+	for i in mini(_lights.size(), light_specs.size()):
+		var e: Variant = light_specs[i].get("entity", null)
+		if e is Dictionary and str(e.get("kind", "")) == "unique_fragment":
+			_lights[i].visible = not is_spent(e)
+	var rows := int(_art.get("wall_rows", 1))
+	for y in range(-(rows - 1), 0):    # the map's edge continues above row 0
+		for x in data.width:
+			_draw_tile(Vector2i(x, y), "wall_top")
 	for y in data.height:
 		for x in data.width:
 			_draw_tile(Vector2i(x, y), tile_kind(Vector2i(x, y)))
+	for y in data.height:
+		for x in data.width:
+			var at := Vector2i(x, y)
+			if rows >= 3 and is_tall_wall(at):
+				_draw_tile(at + Vector2i.UP, "wall_mid")
+				_draw_tile(at + Vector2i.UP * 2, "wall_upper")
+			elif rug_cells.has(at):
+				_draw_tile(at, rug_piece(at))
+			elif data.is_walkable(at) and _hash(at, 7) % 29 == 0 and not _is_occupied(at):
+				_draw_tile(at, "decal_" + "abcd"[_hash(at, 3) % 4])
+	_draw_decor(rows)
+	_draw_shadows()
 	for door in data.doors:
 		var t: Array = door.get("tile", [0, 0])
 		var center := data.tile_center(Vector2i(int(t[0]), int(t[1])))
@@ -254,6 +451,46 @@ func _draw_art() -> void:
 					_draw_object(c, "fragment")
 		if str(e.get("id", "")) == highlight_id:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
+
+
+func _is_occupied(at: Vector2i) -> bool:
+	for list: Array in [data.doors, data.entities]:
+		for e: Dictionary in list:
+			var t: Array = e.get("tile", [-1, -1])
+			if int(t[0]) == at.x and int(t[1]) == at.y:
+				return true
+	return false
+
+
+func _draw_decor(rows: int) -> void:
+	if _decor_tex == null:
+		return
+	var names: Array = (_art.get("decor", {}) as Dictionary).get(_theme, [])
+	var size: Array = _art.get("decor_size", [16, 32])
+	var w := float(size[0])
+	var h := float(size[1])
+	for d: Dictionary in decor:
+		var col := names.find(d["kind"])
+		var at: Vector2i = d["tile"]
+		var src := Rect2(Vector2(col * w, _theme_row * h), Vector2(w, h))
+		draw_texture_rect_region(_decor_tex, Rect2(Vector2(at.x, at.y - (rows - 1)) * data.tile_size, Vector2(w, h)), src)
+
+
+## Soft shade on the ground under walls and furniture, and to their right.
+func _draw_shadows() -> void:
+	var ts := float(data.tile_size)
+	for y in data.height:
+		for x in data.width:
+			var at := Vector2i(x, y)
+			if data.cell(at) == RoomData.WALL:
+				continue
+			var o := Vector2(at) * ts
+			if y > 0 and data.cell(at + Vector2i.UP) == RoomData.WALL:
+				for i in 6:
+					draw_rect(Rect2(o + Vector2(0, i), Vector2(ts, 1)), Color(0.06, 0.03, 0.05, 0.42 * (1.0 - i / 6.0)))
+			if x > 0 and data.cell(at + Vector2i.LEFT) == RoomData.WALL:
+				for i in 4:
+					draw_rect(Rect2(o + Vector2(i, 0), Vector2(1, ts)), Color(0.06, 0.03, 0.05, 0.3 * (1.0 - i / 4.0)))
 
 
 ## Draws a tall entity on its own node (see [constant PROP_KINDS]).

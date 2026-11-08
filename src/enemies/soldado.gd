@@ -103,3 +103,7 @@ func _draw_body() -> void:
 			draw_line(hand, hand + facing * p("strike_reach", 26), COLOR_BLADE, 4.0)
 		_:
 			draw_line(hand, hand + facing * r * 1.4, COLOR_BLADE, 2.0)
+
+
+func _defeat_color() -> Color:
+	return Color("a8343a")

@@ -70,6 +70,7 @@ var _sheet: Texture2D
 var _picker: SpritePicker
 var _anim := "idle"
 var _anim_t := 0.0
+var _last_step := -1
 
 @onready var camera: Camera2D = $Camera2D
 @onready var feet: CollisionShape2D = $Feet
@@ -110,13 +111,23 @@ func _ready() -> void:
 	if ResourceLoader.exists(SHEET_PATH):
 		_sheet = load(SHEET_PATH)
 		_picker = SpritePicker.load_meta(SHEET_META)
+		# A soft light around Yggnus, so he reads even in the darkest corner.
+		var glow := PointLight2D.new()
+		glow.name = "Glow"
+		glow.texture = Room.light_texture()
+		glow.position = Vector2(0, -14)
+		glow.color = Color(1.0, 0.92, 0.8)
+		glow.energy = 0.45
+		glow.texture_scale = 72.0 * 2.0 / 128.0
+		add_child(glow)
 	queue_redraw()
 
 
-## Clamps the camera to the room so it never shows outside the map.
-func set_camera_limits(size_px: Vector2i) -> void:
+## Clamps the camera to the room so it never shows outside the map;
+## [param top] lets it rise above row 0 to show the tall top wall.
+func set_camera_limits(size_px: Vector2i, top: int = 0) -> void:
 	camera.limit_left = 0
-	camera.limit_top = 0
+	camera.limit_top = -top
 	camera.limit_right = size_px.x
 	camera.limit_bottom = size_px.y
 	camera.reset_smoothing()
@@ -397,10 +408,21 @@ func _swing_index() -> int:
 func _advance_anim(delta: float) -> void:
 	var a := current_anim()
 	if a != _anim:
+		if a == "dodge" and _sheet:
+			Fx.dust(get_parent(), global_position)
 		_anim = a
 		_anim_t = 0.0
 	else:
 		_anim_t += delta
+	# A little dust at every other step (the walk cycle has 4 frames).
+	if _anim == "walk" and _sheet:
+		var step := int(_anim_t * 4.0)
+		if step != _last_step:
+			_last_step = step
+			if step % 2 == 0:
+				Fx.dust(get_parent(), global_position + Vector2(0, 1))
+	else:
+		_last_step = -1
 
 
 func _draw() -> void:
@@ -435,8 +457,13 @@ func _draw() -> void:
 		var c := box.get_center()
 		var r := maxf(box.size.x, box.size.y) * 0.5
 		var a := f.angle()
-		draw_arc(c - f * r * 0.5, r, a - 1.2, a + 1.2, 14, Color(COLOR_SWORD, 0.85), 3.0)
-		draw_arc(c - f * r * 0.5, r - 3.0, a - 1.0, a + 1.0, 12, Color(COLOR_SWORD, 0.35), 2.0)
+		# Drawn at chest height (the hit box itself sits at the feet).
+		var o := c - f * r * 0.5 + Vector2(0, -10)
+		# A crescent: wide faint glow, the bright edge, a white core.
+		draw_arc(o, r - 1.5, a - 1.25, a + 1.25, 16, Color(0.7, 0.85, 1.0, 0.22), 6.0)
+		draw_arc(o, r, a - 1.2, a + 1.2, 16, Color(COLOR_SWORD, 0.85), 3.0)
+		draw_arc(o, r, a - 0.8, a + 0.8, 12, Color(1, 1, 1, 0.95), 1.0)
+		draw_arc(o, r - 4.0, a - 0.9, a + 0.9, 12, Color(COLOR_SWORD, 0.3), 2.0)
 
 
 func _draw_sheet(f: Vector2, alpha: float) -> void:
