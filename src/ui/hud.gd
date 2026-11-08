@@ -19,6 +19,7 @@ var _objective: Label
 var _item: Label
 var _inventory: PanelContainer
 var _inventory_text: Label
+var _hint: Label
 var _inventory_status := ""
 var _inv_state: GameState
 var _inv_config: GameConfig
@@ -102,12 +103,30 @@ func _ready() -> void:
 	_inventory.add_child(_inventory_text)
 	_inventory.visible = false
 	add_child(_inventory)
-	var hint := Label.new()
-	hint.text = "WASD andar · J espada · K examinar · L item · Q troca · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
-	hint.add_theme_font_size_override("font_size", 9)
-	hint.modulate = Color(1, 1, 1, 0.7)
-	hint.position = Vector2(6, 342)
-	add_child(hint)
+	_hint = Label.new()
+	_hint.add_theme_font_size_override("font_size", 9)
+	_hint.modulate = Color(1, 1, 1, 0.7)
+	_hint.position = Vector2(6, 342)
+	add_child(_hint)
+	refresh_hint()
+
+
+## Rewrites the key hint at the bottom from the current bindings.
+func refresh_hint() -> void:
+	if _hint == null:
+		return
+	var k := func(action: String) -> String: return Controls.key_label(Controls.key_of(action))
+	var walk := "/".join([k.call("move_up"), k.call("move_left"), k.call("move_down"), k.call("move_right")])
+	if walk == "W/A/S/D":
+		walk = "WASD"
+	_hint.text = "%s andar · %s espada · %s examinar · %s item · %s troca · %s esquiva · %s defesa · %s inventário · 1-4 inimigo · %s reinicia" % [
+		walk, k.call("attack"), k.call("interact"), k.call("item"), k.call("quick_swap"), k.call("dodge"),
+		k.call("guard"), k.call("map"), k.call("reset_room")]
+	# Long key names must not push the hint off the screen.
+	for size in [9, 8, 7]:
+		_hint.add_theme_font_size_override("font_size", size)
+		if _hint.get_minimum_size().x <= 628.0:
+			break
 
 
 ## Follows [param health]'s changes.

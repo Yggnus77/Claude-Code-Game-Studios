@@ -207,7 +207,7 @@ func test_pause_menu_continues_and_offers_leaving() -> void:
 	main.pause_overlay.on_title = main.quit_to_title
 	main.pause_overlay.set_paused(true)
 	assert_true(tree.paused, "paused")
-	assert_eq(main.pause_overlay.menu.options.size(), 4, "continue, title, quit, playtest folder")
+	assert_eq(main.pause_overlay.menu.options.size(), 5, "continue, settings, title, quit, playtest folder")
 	main.pause_overlay.menu.confirm()
 	assert_true(not tree.paused, "Continuar resumes")
 

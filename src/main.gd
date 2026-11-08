@@ -155,6 +155,8 @@ func _ready() -> void:
 	playtest = PlaytestLog.new(Time.get_datetime_string_from_system(false, true))
 	saves = SaveStore.new(save_dir, SaveGame.new(config.room_ids, config.items.keys(), config.fragments.keys()).validate)
 	settings = Settings.new(settings_path).load_file()
+	# Saved key and button choices and the window mode.
+	settings.apply()
 	# Height on screen decides who is drawn in front (Yggnus, enemies, props).
 	y_sort_enabled = true
 	shop_panel = ShopPanel.new()
@@ -171,6 +173,10 @@ func _ready() -> void:
 	pause_overlay.on_quit = quit_game
 	pause_overlay.on_open_logs = open_playtest_folder
 	pause_overlay.pause_on_focus_loss = settings.pause_on_focus_loss
+	pause_overlay.settings = settings
+	pause_overlay.settings_screen_changed.connect(hud.refresh_hint)
+	# The HUD was built before the saved controls were applied.
+	hud.refresh_hint()
 	_fade = ColorRect.new()
 	_fade.color = Color.BLACK
 	_fade.modulate.a = 0.0
@@ -213,6 +219,8 @@ func _show_title() -> void:
 	title = TitleScreen.new(saves, settings.last_slot)
 	title.describe = describe_save
 	title.start.connect(_on_title_start)
+	title.settings = settings
+	title.settings_changed.connect(hud.refresh_hint)
 	add_child(title)
 
 

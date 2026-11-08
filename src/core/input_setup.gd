@@ -69,10 +69,13 @@ static func register_defaults() -> void:
 			InputMap.action_add_event(action, ev)
 		for button in BUTTONS.get(action, []):
 			var jb := InputEventJoypadButton.new()
+			# Any controller, not only the first one connected.
+			jb.device = -1
 			jb.button_index = button
 			InputMap.action_add_event(action, jb)
 		if AXES.has(action):
 			var jm := InputEventJoypadMotion.new()
+			jm.device = -1
 			jm.axis = AXES[action][0]
 			jm.axis_value = AXES[action][1]
 			InputMap.action_add_event(action, jm)

@@ -7,10 +7,15 @@ extends CanvasLayer
 
 ## [param doc] is the save to continue, or empty for a new game.
 signal start(slot: int, doc: Dictionary)
+## The settings menu changed something (already saved).
+signal settings_changed
 
 var store: SaveStore
 ## One line about a save document (room and play time), from the game.
 var describe: Callable = func(_doc: Dictionary) -> String: return ""
+## Player settings; set, the slot list ends with "Configurações".
+var settings: Settings
+var settings_screen: SettingsScreen
 var menu: MenuPanel
 ## Slot shown in the per-slot menu, or 0 on the slot list.
 var _slot := 0
@@ -53,7 +58,22 @@ func show_slots(highlight: int = 1) -> void:
 	for slot in range(1, SaveStore.SLOT_COUNT + 1):
 		_reads[slot] = store.read(slot)
 		rows.append("Espaço %d · %s" % [slot, _row_text(_reads[slot])])
+	if settings != null:
+		rows.append("Configurações")
 	menu.show_menu("Escolha um espaço", "", rows, highlight - 1)
+
+
+## Opens the settings menu over the slot list.
+func open_settings() -> void:
+	if settings == null:
+		return
+	if settings_screen == null:
+		settings_screen = SettingsScreen.new(settings)
+		add_child(settings_screen)
+		settings_screen.closed.connect(func() -> void: show_slots(SaveStore.SLOT_COUNT + 1))
+		settings_screen.changed.connect(settings_changed.emit)
+	menu.visible = false
+	settings_screen.open()
 
 
 func _row_text(r: Dictionary) -> String:
@@ -76,7 +96,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_chosen(index: int) -> void:
 	if _slot == 0:
-		_open_slot(index + 1)
+		if index >= SaveStore.SLOT_COUNT:
+			open_settings()
+		else:
+			_open_slot(index + 1)
 	elif _confirming:
 		if index == 0:
 			start.emit(_slot, {})

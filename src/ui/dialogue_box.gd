@@ -190,7 +190,4 @@ static func display_name(speaker: String) -> String:
 
 ## Name of the first key bound to [param action] (reflects remapping).
 static func _key(action: String) -> String:
-	for ev in InputMap.action_get_events(action):
-		if ev is InputEventKey:
-			return OS.get_keycode_string(ev.physical_keycode)
-	return action
+	return Controls.key_label(Controls.key_of(action))
