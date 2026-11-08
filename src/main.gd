@@ -1229,10 +1229,11 @@ func is_door_open(door: Dictionary) -> bool:
 	return state.has_flag(g)
 
 
+## The door whose zone [param pos] is in: its tile and the ground up to
+## its arch in the wall ([method Room.door_zone]).
 func _door_at(pos: Vector2) -> String:
 	for door in room.data.doors:
-		var t: Array = door.get("tile", [0, 0])
-		if room.data.tile_center(Vector2i(int(t[0]), int(t[1]))).distance_to(pos) <= 8.0:
+		if room.door_zone(door).has_point(pos):
 			return str(door["id"])
 	return ""
 
@@ -1283,6 +1284,14 @@ func _go_through(door: Dictionary) -> void:
 	get_tree().paused = false
 	_transitioning = false
 	_on_room_entered()
+
+
+func _exit_tree() -> void:
+	# Leaving mid-transition (back to the title, a test tearing down) must
+	# not leave the whole tree paused.
+	if _transitioning and is_inside_tree():
+		get_tree().paused = false
+		_transitioning = false
 
 
 ## Playtest helper: spawns [param kind] about five tiles from the player,

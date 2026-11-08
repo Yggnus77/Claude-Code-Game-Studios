@@ -58,6 +58,8 @@ var _flicker_time := 0.0
 static var _light_texture: GradientTexture2D
 ## Most lights a room places (Godot lights a canvas item with at most 16).
 const MAX_ROOM_LIGHTS := 12
+## How far to each side of a door's arch walking into the wall still enters.
+const DOOR_SIDE_SLACK := 5.0
 ## Per-cell picture plan made by [method _plan_cells]: tile kind, the piece
 ## drawn over it ("" none) and the cells above the tall wall.
 var _cell_kinds: Dictionary = {}
@@ -522,6 +524,30 @@ func door_frame_tile(door: Dictionary) -> Vector2i:
 					return w
 				break
 	return at
+
+
+## Where stepping in uses the door: its own tile plus the ground between it
+## and the arch drawn in the wall, so walking up to the arch goes through.
+func door_zone(door: Dictionary) -> Rect2:
+	var t: Array = door.get("tile", [0, 0])
+	var at := Vector2i(int(t[0]), int(t[1]))
+	var ts := float(data.tile_size)
+	var zone := Rect2(Vector2(at) * ts, Vector2(ts, ts))
+	var frame := door_frame_tile(door)
+	if frame != at:
+		# The walkable cells in between; the feet stop at the wall's face,
+		# which is still inside the last of them.
+		var step := (frame - at).sign()
+		var cell := at + step
+		while cell != frame and data.is_walkable(cell):
+			zone = zone.merge(Rect2(Vector2(cell) * ts, Vector2(ts, ts)))
+			cell += step
+		# A little wider than the arch, so arriving slightly to one side
+		# still goes through instead of rubbing against the wall.
+		var side := DOOR_SIDE_SLACK
+		zone = zone.grow_individual(side if step.y != 0 else 0.0, side if step.x != 0 else 0.0,
+			side if step.y != 0 else 0.0, side if step.x != 0 else 0.0)
+	return zone
 
 
 func _is_occupied(at: Vector2i) -> bool:

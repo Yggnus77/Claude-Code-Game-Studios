@@ -90,3 +90,14 @@ func test_doors_are_set_into_the_nearest_wall() -> void:
 	for d: Dictionary in room.decor:
 		assert_true(absi((d["tile"] as Vector2i).x - 16) > 1, "no decoration on the doorway")
 	room.free()
+
+
+func test_walking_up_to_the_arch_uses_the_door() -> void:
+	var room := _room("t00_base")  # north door at [16, 2], arch in the wall at [16, 0]
+	var zone := room.door_zone({"tile": [16, 2]})
+	assert_true(zone.has_point(room.data.tile_center(Vector2i(16, 2))), "the door's own tile")
+	assert_true(zone.has_point(Vector2(16 * 16 + 8, 16 + 4)), "right under the arch, against the wall")
+	assert_true(not zone.has_point(room.data.tile_center(Vector2i(16, 3))), "not the tile in front of it")
+	var west := room.door_zone({"tile": [2, 12]})
+	assert_true(west.has_point(Vector2(16 + 4, 12 * 16 + 8)), "against the west wall")
+	room.free()

@@ -66,7 +66,8 @@ func test_guard_blocks_charge_from_front() -> void:
 func test_dodge_does_not_cross_wall() -> void:
 	var p := _setup()
 	var data: RoomData = main.room.data
-	p.respawn_at(data.tile_center(Vector2i(1, 12)) + Vector2(2, 0))
+	# Row 8: no door there (walking up to a door's arch would go through it).
+	p.respawn_at(data.tile_center(Vector2i(1, 8)) + Vector2(2, 0))
 	p.input_override = Vector2.LEFT
 	p.request_dodge()
 	await _frames(20)
