@@ -409,7 +409,7 @@ func _advance_anim(delta: float) -> void:
 	var a := current_anim()
 	if a != _anim:
 		if a == "dodge" and _sheet:
-			Fx.dust(get_parent(), global_position)
+			Fx.dust(get_parent(), global_position - Vector2(0, 1))
 		_anim = a
 		_anim_t = 0.0
 	else:
@@ -420,7 +420,7 @@ func _advance_anim(delta: float) -> void:
 		if step != _last_step:
 			_last_step = step
 			if step % 2 == 0:
-				Fx.dust(get_parent(), global_position + Vector2(0, 1))
+				Fx.dust(get_parent(), global_position - Vector2(0, 1))
 	else:
 		_last_step = -1
 

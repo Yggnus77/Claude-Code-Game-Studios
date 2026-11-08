@@ -169,16 +169,24 @@ def furn_front():
 
 
 def gap(edge):
+    """Abismo: escuridão com névoa roxa subindo de longe."""
     t = P(PAL)
     t.r(0, 0, T, T, "void")
-    for x, y in ((3, 9), (11, 4), (8, 13)):
-        t.p(x, y, "void_lo")
+    for y in range(T):
+        for x in range(T):
+            if (x * 7 + y * 3) % 11 == 0 and y > 5:
+                t.p(x, y, "void_lo")
+            if (x * 5 + y * 13) % 29 == 0:
+                t.p(x, y, "#231c30")
     if edge:
         t.r(0, 0, T, 3, "slab_lo")
         t.hl(0, 15, 0, "slab")
         for x in range(0, T, 5):
             t.r(x + 1, 3, 2, 2, "brick_dk")
         t.hl(0, 15, 3, "joint")
+        for y in range(5, 9):          # a face de pedra sumindo no escuro
+            for x in range(0, T, 2 if y < 7 else 4):
+                t.p(x + (y % 2), y, "brick_dk")
     return t.c
 
 

@@ -89,13 +89,15 @@
      "#ffc074",
      1.1,
      96,
-     17
+     17,
+     true
     ],
     "window": [
      "#8fb0ff",
      0.55,
      72,
-     14
+     14,
+     false
     ]
    },
    "furn_light": [
@@ -115,19 +117,22 @@
      "#ffc074",
      1.2,
      110,
-     23
+     23,
+     true
     ],
     "window": [
      "#ffb860",
      0.6,
      64,
-     22
+     22,
+     false
     ],
     "flowerbox": [
      "#ffb860",
      0.6,
      64,
-     22
+     22,
+     false
     ]
    },
    "furn_light": null,
@@ -143,13 +148,15 @@
      "#ffc074",
      1.25,
      120,
-     8
+     8,
+     true
     ],
     "fireflies": [
      "#d8f8a0",
      0.4,
      40,
-     18
+     18,
+     true
     ]
    },
    "furn_light": null,
@@ -165,19 +172,22 @@
      "#ffa850",
      1.15,
      96,
-     13
+     13,
+     true
     ],
     "brazier": [
      "#ffa850",
      1.25,
      110,
-     15
+     15,
+     true
     ],
     "slit": [
      "#8fb0ff",
      0.5,
      64,
-     16
+     16,
+     false
     ]
    },
    "furn_light": [
@@ -190,6 +200,23 @@
     24
    ]
   }
+ },
+ "pickup_lights": {
+  "unique_fragment": [
+   "#6fe0e0",
+   0.6,
+   40
+  ],
+  "checkpoint": [
+   "#f2c14e",
+   0.6,
+   40
+  ],
+  "mystery_clue": [
+   "#ffe8a0",
+   0.5,
+   30
+  ]
  },
  "object_size": [
   16,

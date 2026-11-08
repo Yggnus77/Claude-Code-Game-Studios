@@ -45,23 +45,48 @@ Daltonismo: vermelho e verde nunca são o único sinal (sempre há forma, anel o
 
 ## 5. Personagens
 
+Segunda versão (detalhada): os personagens são desenhados à mão, linha a linha, em texto (uma
+letra por pixel, legenda de cores no topo de `tools/art/yggnus_frente.py`). Contorno escuro de 1 px,
+luz do alto à esquerda, 3 tons por material (claro, base, sombra) e um brilho pontual em metal e
+olhos.
+
 - Yggnus: quadro 32×48, pivô [16,44] (pés), 3 vistas (frente, costas, lado; a esquerda é espelho).
-  Animações desta leva: parado 2, andar 4, corte 1 (2), corte 2 (2), finalização (3), defesa 2,
-  esquiva 2, dano 1, queda 2, ferramenta 1. O kit sugere mais quadros; esta é a versão mínima que
-  já mostra cada estado do combate.
+  Rosto com olhos, sobrancelhas e boca; cabelo cacheado com brilho; casaco índigo com galão
+  dourado; cachecol creme; nas costas, o farol bordado. Peças (cabeça, cachecol, tronco, braços,
+  pernas) são deslocadas pelas poses: parado 2, andar 4, corte 1 (2), corte 2 (2), finalização (3),
+  defesa 2, esquiva 2, dano 1, queda 2, ferramenta 1. Espada, broquel e ferramenta são desenhados
+  por cima, com contorno próprio (`tools/art/yggnus_hd.py`).
 - Inimigos: quadro 32×48, pivô nos pés, uma pose por estado de combate (parado, preparar, atacar,
-  aberto). A preparação muda a silhueta, não só a cor.
-- Yame Black: pequena, papel preto, olhos âmbar que acendem antes de lançar. Não é derrotada.
+  aberto). A preparação muda a silhueta, não só a cor. Volumes sombreados (`inimigos_hd.py`).
+- Yame Black: pequena, papel preto em dobras, olhos de brasa que acendem antes de lançar. Não é
+  derrotada.
 - Igris: quadro 48×64, maior que todos; abafador e regulador aparecem no peito na fase certa.
   Sem animação de morte (kit).
 
 ## 6. Cenário
 
-- Ladrilhos 16×16 por tema: 3 pisos, topo de parede, face de parede, vão e borda de vão.
-- Face de parede aparece só quando há chão logo abaixo; a borda do vão, quando há chão acima.
-- Variação de piso por posição (sem aleatoriedade em tempo de jogo), com poucas peças especiais.
-- Objetos em quadros 16×32 com pivô [8,24]: portas, baús, pistas, NPC, válvula, marco apagado e
-  aceso, argola, bloco, fragmento, sino e sino aceso.
+- Uma linha de ladrilhos 16×16 por tema (oficina, praça, estrada, torre), colunas em
+  `cenario_detalhado.HD_COLS`: parede alta em 3 peças (alto, meio, base), 4 pisos (o quarto é raro:
+  bueiro, runa), topo de parede, móveis (4 tampos, sendo um aceso, e a frente), vão e borda,
+  4 decalques de chão e tapete/caminho em 9 peças.
+- A parede de cima tem 3 ladrilhos de altura: a base fica na linha 0 do mapa e as outras duas
+  sobem acima dele (a câmera mostra). Blocos de parede no meio da sala viram móveis do tema
+  (bancada, canteiro, pedra, bloco de pedra com braseiro).
+- Decoração 16×32 pendurada na parede alta (`decor.png`, 6 por tema), alternando uma que dá luz e
+  uma que não dá. Tapetes e caminhos vêm do mapa (`"art": {"rugs": [[x, y, w, h]]}`).
+- Sombra suave no chão logo abaixo e à direita de paredes e móveis.
+- Variação de piso, decalques e decoração por posição (sem aleatoriedade em tempo de jogo).
+- Objetos em quadros 16×32 com pivô [8,24]: portas em arco, baús, pistas, relojoeiro, placa de
+  examinar, marco apagado e aceso, argola, bloco, fragmento, sino e sino aceso.
+
+## 6.1 Luz e efeitos
+
+- Cada tema escurece a sala com uma cor ambiente (CanvasModulate) e acende luzes nas lamparinas,
+  janelas, lampiões, tochas e braseiros (`cenario.json` → `lighting`). As chamas respiram de leve.
+- Yggnus leva uma luz suave para ser visto em qualquer canto; fragmentos e marcos brilham.
+- Efeitos: faíscas com clarão no golpe (douradas quando bloqueado), poeira nos passos e na esquiva,
+  respingo ao derrotar um inimigo, poeira ou vaga-lumes flutuando no ar e o golpe como um
+  crescente branco.
 
 ## 7. Interface
 

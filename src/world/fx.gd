@@ -3,6 +3,19 @@ extends RefCounted
 ## Small one-shot effects (sparks, dust, ink splashes) and the room's
 ## floating motes. Each burst is a CPUParticles2D that frees itself.
 
+static var _fades: Dictionary = {}
+
+
+## A colour fading out, shared by every burst of that colour.
+static func _fade(color: Color) -> Gradient:
+	if not _fades.has(color):
+		var g := Gradient.new()
+		g.set_color(0, color)
+		g.set_color(1, Color(color, 0.0))
+		_fades[color] = g
+	return _fades[color]
+
+
 ## Sparks of a sword hit: bright and quick, thrown away from [param from].
 static func hit_sparks(parent: Node, at: Vector2, from: Vector2, blocked: bool = false) -> CPUParticles2D:
 	var away := (at - from).normalized() if at != from else Vector2.UP
@@ -10,6 +23,7 @@ static func hit_sparks(parent: Node, at: Vector2, from: Vector2, blocked: bool =
 	var p := burst(at + Vector2(0, 2), away, color, 10 if blocked else 8, 95.0, 0.3, 40.0, 12.0)
 	p.scale_amount_min = 2.0
 	p.scale_amount_max = 3.0
+	p.z_index = 2  # sparks fly in front of everything
 	if spawn(parent, p) == null:
 		return null
 	# A brief flash of light, so the sparks read in a dark room too.
@@ -53,8 +67,8 @@ static func spawn(parent: Node, p: CPUParticles2D) -> CPUParticles2D:
 
 ## Generic one-shot burst (not yet in the tree): [param count] squares
 ## thrown along [param dir] within [param spread] degrees, living [param life] s.
-## The node sits at [param at] (so it sorts in front of what it hits) and the
-## squares start [param lift] px above it.
+## The node sits at [param at] (it sorts by height like the rest, just in
+## front of what it hits) and the squares start [param lift] px above it.
 static func burst(at: Vector2, dir: Vector2, color: Color, count: int, speed: float, life: float, spread: float, lift: float = 0.0) -> CPUParticles2D:
 	var p := CPUParticles2D.new()
 	if lift != 0.0:
@@ -73,12 +87,8 @@ static func burst(at: Vector2, dir: Vector2, color: Color, count: int, speed: fl
 	p.damping_max = speed * 2.5
 	p.scale_amount_min = 1.0
 	p.scale_amount_max = 1.5
-	var fade := Gradient.new()
-	fade.set_color(0, color)
-	fade.set_color(1, Color(color, 0.0))
-	p.color_ramp = fade
+	p.color_ramp = _fade(color)
 	p.position = at
-	p.z_index = 2
 	p.finished.connect(p.queue_free)
 	return p
 

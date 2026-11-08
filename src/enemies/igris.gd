@@ -27,6 +27,8 @@ var is_defeated := false
 var _wave_center := Vector2.ZERO
 var _wave_time := 0.0
 var _wave_flash := 0.0
+var _wave_mark: Node2D
+var _wave_light: PointLight2D
 var _hit_ids: Dictionary = {}
 var _flash := 0.0
 var _clang := 0.0
@@ -48,6 +50,18 @@ func _ready() -> void:
 	circle.radius = body_radius()
 	shape.shape = circle
 	add_child(shape)
+	# The wave warning is drawn on its own node above everyone (it centres on
+	# Yggnus, so his sprite must not hide it), with a red light under it.
+	_wave_mark = WaveMark.new()
+	_wave_mark.igris = self
+	_wave_mark.z_index = 1
+	add_child(_wave_mark)
+	_wave_light = PointLight2D.new()
+	_wave_light.texture = Room.light_texture()
+	_wave_light.color = COLOR_WAVE
+	_wave_light.texture_scale = 0.9
+	_wave_light.visible = false
+	add_child(_wave_light)
 
 
 ## Radius used by the sword and hook to reach Igris.
@@ -106,18 +120,32 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 
-func _draw() -> void:
-	# Waves: the danger zone is marked at full size and a second ring closes
-	# in on it; the strike lands when the two meet, then the zone flashes.
+## Waves: the danger zone is marked at full size and a second ring closes
+## in on it; the strike lands when the two meet, then the zone flashes.
+## Drawn by [WaveMark] on [param item] so it sits above the player.
+func draw_wave(item: CanvasItem) -> void:
+	var r := float(wiring.get("wave_radius", 26))
 	if fight and fight.wave_announced and _wave_time > 0.0:
 		var c := to_local(_wave_center)
-		var r := float(wiring.get("wave_radius", 26))
 		var left := clampf(_wave_time / maxf(fight.telegraph(), 0.01), 0.0, 1.0)
-		draw_arc(c, r, 0, TAU, 32, Color(COLOR_WAVE, 0.9), 2.0)
-		draw_circle(c, r, Color(COLOR_WAVE, 0.15))
-		draw_arc(c, r * (1.0 + 2.0 * left), 0, TAU, 40, Color(COLOR_WAVE, 0.6), 1.5)
+		var pulse := 0.5 + 0.5 * sin(_wave_time * 18.0)
+		item.draw_circle(c, r, Color(COLOR_WAVE, 0.22 + 0.1 * pulse))
+		item.draw_arc(c, r, 0, TAU, 32, Color("1b1420"), 5.0)
+		item.draw_arc(c, r, 0, TAU, 32, Color("ff8a6a"), 3.0)
+		item.draw_arc(c, r * (1.0 + 2.0 * left), 0, TAU, 40, Color("1b1420", 0.8), 4.0)
+		item.draw_arc(c, r * (1.0 + 2.0 * left), 0, TAU, 40, Color(COLOR_WAVE, 0.95), 2.0)
 	if _wave_flash > 0.0:
-		draw_circle(to_local(_wave_center), float(wiring.get("wave_radius", 26)), Color(COLOR_WAVE, 0.5))
+		item.draw_circle(to_local(_wave_center), r, Color("ffb090", 0.65))
+
+
+func _draw() -> void:
+	if _wave_mark:
+		_wave_mark.queue_redraw()
+	if _wave_light:
+		var warning := fight != null and fight.wave_announced and _wave_time > 0.0
+		_wave_light.visible = warning or _wave_flash > 0.0
+		_wave_light.position = to_local(_wave_center)
+		_wave_light.energy = 1.6 if _wave_flash > 0.0 else 0.9
 	var art := SpriteAtlas.igris()
 	if art:
 		var frame := "idle"
@@ -163,3 +191,11 @@ func _draw_phase_shapes() -> void:
 			draw_circle(Vector2(0, -18), 6.0, COLOR_REGULATOR)
 		IgrisFight.Phase.DONE:
 			draw_circle(Vector2(0, -18), 4.0, Color("f2e6c4"))
+
+
+class WaveMark extends Node2D:
+	var igris: Igris
+
+	func _draw() -> void:
+		if igris and is_instance_valid(igris):
+			igris.draw_wave(self)

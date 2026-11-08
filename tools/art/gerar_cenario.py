@@ -35,20 +35,24 @@ def obj(name):
 
 
 # Luz de cada tema: cor ambiente (CanvasModulate) e as luzes que a
-# decoração acende: [cor, energia, raio em px, altura da chama no quadro];
+# decoração acende: [cor, energia, raio em px, altura da chama no quadro,
+# se tremula como chama];
 # "motes": [cor, quantidade] da poeira (ou vaga-lumes) flutuando na sala.
 LIGHTING = {
-    "oficina": {"ambient": "#a49cb4", "decor_lights": {"lamp": ["#ffc074", 1.1, 96, 17], "window": ["#8fb0ff", 0.55, 72, 14]},
+    "oficina": {"ambient": "#a49cb4", "decor_lights": {"lamp": ["#ffc074", 1.1, 96, 17, True], "window": ["#8fb0ff", 0.55, 72, 14, False]},
                 "furn_light": ["#ffc074", 0.8, 64], "motes": ["#ffe8b0a0", 26]},
-    "praca": {"ambient": "#8a94bc", "decor_lights": {"lantern": ["#ffc074", 1.2, 110, 23], "window": ["#ffb860", 0.6, 64, 22],
-                                                      "flowerbox": ["#ffb860", 0.6, 64, 22]}, "furn_light": None,
+    "praca": {"ambient": "#8a94bc", "decor_lights": {"lantern": ["#ffc074", 1.2, 110, 23, True], "window": ["#ffb860", 0.6, 64, 22, False],
+                                                      "flowerbox": ["#ffb860", 0.6, 64, 22, False]}, "furn_light": None,
               "motes": ["#c8d8ff60", 14]},
-    "estrada": {"ambient": "#7c8ab4", "decor_lights": {"lantern": ["#ffc074", 1.25, 120, 8], "fireflies": ["#d8f8a0", 0.4, 40, 18]},
+    "estrada": {"ambient": "#7c8ab4", "decor_lights": {"lantern": ["#ffc074", 1.25, 120, 8, True], "fireflies": ["#d8f8a0", 0.4, 40, 18, True]},
                 "furn_light": None, "motes": ["#e8f8a0d0", 22]},
-    "torre": {"ambient": "#968aae", "decor_lights": {"torch": ["#ffa850", 1.15, 96, 13], "brazier": ["#ffa850", 1.25, 110, 15],
-                                                      "slit": ["#8fb0ff", 0.5, 64, 16]}, "furn_light": ["#ffa850", 1.0, 80],
+    "torre": {"ambient": "#968aae", "decor_lights": {"torch": ["#ffa850", 1.15, 96, 13, True], "brazier": ["#ffa850", 1.25, 110, 15, True],
+                                                      "slit": ["#8fb0ff", 0.5, 64, 16, False]}, "furn_light": ["#ffa850", 1.0, 80],
               "motes": ["#ffd0a090", 24]},
 }
+# Brilho das coisas que se pegam ou ativam: [cor, energia, raio em px].
+PICKUP_LIGHTS = {"unique_fragment": ["#6fe0e0", 0.6, 40], "checkpoint": ["#f2c14e", 0.6, 40],
+                 "mystery_clue": ["#ffe8a0", 0.5, 30]}
 THEME_MODULES = {"oficina": oficina, "praca": praca, "estrada": estrada, "torre": torre}
 
 def theme_tiles(th):
@@ -81,7 +85,7 @@ def main():
     meta = {
         "tile_size": T, "themes": THEMES, "tile_cols": oficina.HD_COLS, "wall_rows": 3,
         "theme_by_room_prefix": {"v00": "oficina", "v": "praca", "r": "estrada", "t": "torre"},
-        "decor_size": [T, 32], "decor": decor_names, "lighting": LIGHTING,
+        "decor_size": [T, 32], "decor": decor_names, "lighting": LIGHTING, "pickup_lights": PICKUP_LIGHTS,
         "object_size": [OBJ_W, OBJ_H], "object_pivot": list(OBJ_PIVOT), "object_cols": OBJ_COLS,
     }
     with open(os.path.join(out, "cenario.json"), "w", encoding="utf-8") as f:

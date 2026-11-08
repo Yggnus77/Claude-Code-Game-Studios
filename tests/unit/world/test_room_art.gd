@@ -58,3 +58,35 @@ func test_decor_sits_on_the_tall_wall_and_lamps_light_up() -> void:
 func test_effects_without_a_parent_are_dropped() -> void:
 	assert_eq(Fx.hit_sparks(null, Vector2.ZERO, Vector2.LEFT), null, "no parent, no sparks")
 	assert_eq(Fx.dust(null, Vector2.ZERO), null, "no parent, no dust")
+
+
+func test_rebuilding_replaces_the_old_lights_at_once() -> void:
+	var room := _room("t07_igris")
+	room.build(RoomData.load_room("v00_oficina"))
+	assert_true(room.get_node_or_null("Ambient") is CanvasModulate, "the new ambient keeps its name")
+	var ambients := room.get_children().filter(func(n: Node) -> bool: return n is CanvasModulate)
+	assert_eq(ambients.size(), 1, "only one ambient per room")
+	assert_true(room.light_specs.size() <= Room.MAX_ROOM_LIGHTS, "lights capped")
+	room.free()
+
+
+func test_a_wall_joined_to_the_top_edge_is_not_furniture() -> void:
+	var d := RoomData.from_dict({"id": "t99", "width": 6, "height": 5, "tile_size": 16, "grid": [
+		"######", "#.##.#", "#....#", "#.##.#", "######"]})
+	var room := Room.new()
+	room._ready()
+	room.build(d)
+	assert_true(not room.is_furniture(Vector2i(2, 1)), "pillar hanging from the top wall")
+	assert_eq(room.tile_kind(Vector2i(2, 1)), "wall_lower", "it is the tall wall's base")
+	assert_true(room.is_furniture(Vector2i(2, 3)), "a free block is furniture")
+	room.free()
+
+
+func test_doors_are_set_into_the_nearest_wall() -> void:
+	var room := _room("t00_base")  # doors at [2, 12], [29, 12], [16, 2]
+	assert_eq(room.door_frame_tile({"tile": [16, 2]}), Vector2i(16, 0), "north door sits in the tall wall")
+	assert_eq(room.door_frame_tile({"tile": [2, 12]}), Vector2i(0, 12), "west door sits in the side wall")
+	assert_eq(room.door_frame_tile({"tile": [10, 10]}), Vector2i(10, 10), "far from walls it stays put")
+	for d: Dictionary in room.decor:
+		assert_true(absi((d["tile"] as Vector2i).x - 16) > 1, "no decoration on the doorway")
+	room.free()

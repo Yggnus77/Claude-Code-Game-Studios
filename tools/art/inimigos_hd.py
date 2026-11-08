@@ -14,7 +14,7 @@ K = "#1b1420"
 W, H, FY = 32, 48, 44
 
 C = {
-    "ink": "#2c2858", "ink_hi": "#4a46a0", "ink_lo": "#18153a", "ink_spec": "#9a98e0",
+    "ink": "#312c66", "ink_hi": "#5e5ac0", "ink_lo": "#18153a", "ink_spec": "#9a98e0",
     "eye": "#ffd25a", "eye_hi": "#fff2b0",
     "paper": "#ebe2c9", "paper_lo": "#c4b796", "paper_dk": "#948866", "fold": "#a89a78",
     "red": "#a8343a", "red_hi": "#d0505a", "red_lo": "#6e2228",
