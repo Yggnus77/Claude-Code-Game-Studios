@@ -12,6 +12,8 @@ const OPEN_GUARD := 0.15
 
 var selected := 0
 var options: PackedStringArray = []
+## Most options shown at once (0: all); a longer list scrolls with the cursor.
+var max_rows := 0
 var _title: Label
 var _message: Label
 var _list: VBoxContainer
@@ -48,8 +50,10 @@ func _init() -> void:
 
 ## Shows [param title], [param message] and [param choices], with
 ## [param start] highlighted. [param back] names what the pause key does
-## ("" hides that part of the hint).
-func show_menu(title: String, message: String, choices: PackedStringArray, start: int = 0, back: String = "") -> void:
+## ("" hides that part of the hint). [param rows] limits how many options
+## show at once (0: all).
+func show_menu(title: String, message: String, choices: PackedStringArray, start: int = 0, back: String = "", rows: int = 0) -> void:
+	max_rows = rows
 	_title.text = title
 	_message.text = message
 	_message.visible = not message.is_empty()
@@ -59,6 +63,8 @@ func show_menu(title: String, message: String, choices: PackedStringArray, start
 	_hint.text = "%s/%s escolher · %s confirmar" % [DialogueBox._key("move_up"), DialogueBox._key("move_down"), DialogueBox._key("interact")]
 	if not back.is_empty():
 		_hint.text += " · %s %s" % [DialogueBox._key("pause"), back]
+	# A page with nothing to pick (waiting for a key) shows no hint.
+	_hint.visible = not choices.is_empty()
 	_render()
 	visible = true
 	# Shrink to the new content, then keep the panel centred on screen.
@@ -94,9 +100,27 @@ func _render() -> void:
 	for c in _list.get_children():
 		_list.remove_child(c)
 		c.queue_free()
-	for i in options.size():
+	var first := 0
+	var last := options.size()
+	var scrolls := max_rows > 0 and options.size() > max_rows
+	if scrolls:
+		first = clampi(selected - (max_rows >> 1), 0, options.size() - max_rows)
+		last = first + max_rows
+		# Both marks always take their line, so the panel keeps its size.
+		_list.add_child(_more_label("↑ mais %d" % first if first > 0 else ""))
+	for i in range(first, last):
 		var l := Label.new()
 		l.add_theme_font_size_override("font_size", 11)
 		l.text = ("> " if i == selected else "   ") + options[i]
 		l.modulate = Color.WHITE if i == selected else Color(1, 1, 1, 0.6)
 		_list.add_child(l)
+	if scrolls:
+		_list.add_child(_more_label("↓ mais %d" % (options.size() - last) if last < options.size() else ""))
+
+
+func _more_label(text: String) -> Label:
+	var l := Label.new()
+	l.add_theme_font_size_override("font_size", 9)
+	l.text = "   " + text
+	l.modulate = Color(1, 1, 1, 0.45)
+	return l

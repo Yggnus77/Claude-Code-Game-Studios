@@ -7,19 +7,216 @@
   "torre"
  ],
  "tile_cols": [
+  "wall_upper",
+  "wall_mid",
+  "wall_lower",
   "floor_a",
   "floor_b",
   "floor_c",
+  "floor_d",
   "wall_top",
-  "wall_front",
+  "furn_top_a",
+  "furn_top_b",
+  "furn_top_c",
+  "furn_top_d",
+  "furn_front",
   "gap",
-  "gap_edge"
+  "gap_edge",
+  "decal_a",
+  "decal_b",
+  "decal_c",
+  "decal_d",
+  "rug_tl",
+  "rug_t",
+  "rug_tr",
+  "rug_l",
+  "rug_c",
+  "rug_r",
+  "rug_bl",
+  "rug_b",
+  "rug_br"
  ],
+ "wall_rows": 3,
  "theme_by_room_prefix": {
   "v00": "oficina",
   "v": "praca",
   "r": "estrada",
   "t": "torre"
+ },
+ "decor_size": [
+  16,
+  32
+ ],
+ "decor": {
+  "oficina": [
+   "window",
+   "lamp",
+   "shelf",
+   "clock",
+   "tools",
+   "picture"
+  ],
+  "praca": [
+   "window",
+   "lantern",
+   "sign",
+   "ivy",
+   "window_dark",
+   "flowerbox"
+  ],
+  "estrada": [
+   "lantern",
+   "sign",
+   "tree",
+   "fireflies",
+   "fence",
+   "stone"
+  ],
+  "torre": [
+   "torch",
+   "banner",
+   "slit",
+   "gears",
+   "chains",
+   "brazier"
+  ]
+ },
+ "lighting": {
+  "oficina": {
+   "ambient": "#a49cb4",
+   "decor_lights": {
+    "lamp": [
+     "#ffc074",
+     1.1,
+     96,
+     17,
+     true
+    ],
+    "window": [
+     "#8fb0ff",
+     0.55,
+     72,
+     14,
+     false
+    ]
+   },
+   "furn_light": [
+    "#ffc074",
+    0.8,
+    64
+   ],
+   "motes": [
+    "#ffe8b0a0",
+    26
+   ]
+  },
+  "praca": {
+   "ambient": "#8a94bc",
+   "decor_lights": {
+    "lantern": [
+     "#ffc074",
+     1.2,
+     110,
+     23,
+     true
+    ],
+    "window": [
+     "#ffb860",
+     0.6,
+     64,
+     22,
+     false
+    ],
+    "flowerbox": [
+     "#ffb860",
+     0.6,
+     64,
+     22,
+     false
+    ]
+   },
+   "furn_light": null,
+   "motes": [
+    "#c8d8ff60",
+    14
+   ]
+  },
+  "estrada": {
+   "ambient": "#7c8ab4",
+   "decor_lights": {
+    "lantern": [
+     "#ffc074",
+     1.25,
+     120,
+     8,
+     true
+    ],
+    "fireflies": [
+     "#d8f8a0",
+     0.4,
+     40,
+     18,
+     true
+    ]
+   },
+   "furn_light": null,
+   "motes": [
+    "#e8f8a0d0",
+    22
+   ]
+  },
+  "torre": {
+   "ambient": "#968aae",
+   "decor_lights": {
+    "torch": [
+     "#ffa850",
+     1.15,
+     96,
+     13,
+     true
+    ],
+    "brazier": [
+     "#ffa850",
+     1.25,
+     110,
+     15,
+     true
+    ],
+    "slit": [
+     "#8fb0ff",
+     0.5,
+     64,
+     16,
+     false
+    ]
+   },
+   "furn_light": [
+    "#ffa850",
+    1.0,
+    80
+   ],
+   "motes": [
+    "#ffd0a090",
+    24
+   ]
+  }
+ },
+ "pickup_lights": {
+  "unique_fragment": [
+   "#6fe0e0",
+   0.6,
+   40
+  ],
+  "checkpoint": [
+   "#f2c14e",
+   0.6,
+   40
+  ],
+  "mystery_clue": [
+   "#ffe8a0",
+   0.5,
+   30
+  ]
  },
  "object_size": [
   16,
@@ -43,6 +240,9 @@
   "push_block",
   "fragment",
   "bell",
-  "bell_lit"
+  "bell_lit",
+  "bush",
+  "bush_cut",
+  "pot"
  ]
 }

@@ -22,6 +22,11 @@ var entry_default: Vector2i = Vector2i.ZERO
 ## Special crossings, e.g. {"from": [c, r], "to": [c, r], "requires_item":
 ## "gancho_retorno", "bidirectional": true, "type": "grapple_traversal"}.
 var special_edges: Array = []
+## Art-only extras from the map's "art" key, e.g. {"rugs": [[x, y, w, h]]}.
+var art: Dictionary = {}
+## Bushes and pots from the map's "breakables" key: {kind: [Vector2i]}, floor
+## cells only (design/gdd/exploracao.md §2).
+var breakables: Dictionary = {}
 
 
 ## Builds a RoomData from the parsed JSON dictionary of one room.
@@ -36,6 +41,20 @@ static func from_dict(d: Dictionary) -> RoomData:
 	room.doors = d.get("doors", [])
 	room.entities = d.get("entities", [])
 	room.special_edges = d.get("special_edges", [])
+	room.art = d.get("art", {})
+	var raw: Variant = d.get("breakables", {})
+	if raw is Dictionary:
+		for kind: Variant in raw:
+			var cells: Array[Vector2i] = []
+			var list: Variant = raw[kind]
+			if not list is Array:
+				continue
+			for t: Variant in list:
+				if t is Array and (t as Array).size() == 2:
+					var at := Vector2i(int(t[0]), int(t[1]))
+					if room.is_walkable(at) and not cells.has(at):
+						cells.append(at)
+			room.breakables[str(kind)] = cells
 	var entry: Array = d.get("entry_default", [1, 1])
 	room.entry_default = Vector2i(int(entry[0]), int(entry[1]))
 	return room

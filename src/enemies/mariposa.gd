@@ -95,3 +95,7 @@ func _draw_body() -> void:
 	if state == State.LAND:
 		draw_arc(body, r + 6.0, 0, TAU, 16, COLOR_WARN, 1.5)
 		draw_line(body, body + dive_direction * (r + 12.0), COLOR_WARN, 2.0)
+
+
+func _defeat_color() -> Color:
+	return Color("ebe2c9")

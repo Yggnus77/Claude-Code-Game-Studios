@@ -19,6 +19,7 @@ var _objective: Label
 var _item: Label
 var _inventory: PanelContainer
 var _inventory_text: Label
+var _hint: Label
 var _inventory_status := ""
 var _inv_state: GameState
 var _inv_config: GameConfig
@@ -28,6 +29,12 @@ var inventory_extra: Callable = func() -> PackedStringArray: return PackedString
 var relic_cycle: Callable = Callable()
 var _current := 0
 var _maximum := 1
+## Anchor Fragments gauge: four diamonds next to the life numbers, one lit per
+## fragment toward the next point of life (GameState.FRAGMENTS_PER_LIFE).
+var _gauge: Control
+var _fragments := -1
+var _gauge_flash := 0.0
+const COLOR_FRAGMENT := Color("6fe0e0")
 
 
 func _ready() -> void:
@@ -48,6 +55,11 @@ func _ready() -> void:
 	_banner.add_theme_font_size_override("font_size", 16)
 	_banner.visible = false
 	add_child(_banner)
+	_gauge = Control.new()
+	_gauge.position = Vector2(170, 5)
+	_gauge.size = Vector2(4 * 9, 12)
+	_gauge.draw.connect(_draw_gauge)
+	add_child(_gauge)
 	_bronze = Label.new()
 	_bronze.position = Vector2(8, 18)
 	_bronze.add_theme_font_size_override("font_size", 10)
@@ -102,12 +114,30 @@ func _ready() -> void:
 	_inventory.add_child(_inventory_text)
 	_inventory.visible = false
 	add_child(_inventory)
-	var hint := Label.new()
-	hint.text = "WASD andar · J espada · K examinar · L item · Q troca · Espaço esquiva · Shift defesa · Tab inventário · 1-4 inimigo · R reinicia"
-	hint.add_theme_font_size_override("font_size", 9)
-	hint.modulate = Color(1, 1, 1, 0.7)
-	hint.position = Vector2(6, 342)
-	add_child(hint)
+	_hint = Label.new()
+	_hint.add_theme_font_size_override("font_size", 9)
+	_hint.modulate = Color(1, 1, 1, 0.7)
+	_hint.position = Vector2(6, 342)
+	add_child(_hint)
+	refresh_hint()
+
+
+## Rewrites the key hint at the bottom from the current bindings.
+func refresh_hint() -> void:
+	if _hint == null:
+		return
+	var k := func(action: String) -> String: return Controls.key_label(Controls.key_of(action))
+	var walk := "/".join([k.call("move_up"), k.call("move_left"), k.call("move_down"), k.call("move_right")])
+	if walk == "W/A/S/D":
+		walk = "WASD"
+	_hint.text = "%s andar · %s espada · %s examinar · %s item · %s troca · %s esquiva · %s defesa · %s inventário · 1-4 inimigo · %s reinicia" % [
+		walk, k.call("attack"), k.call("interact"), k.call("item"), k.call("quick_swap"), k.call("dodge"),
+		k.call("guard"), k.call("map"), k.call("reset_room")]
+	# Long key names must not push the hint off the screen.
+	for size in [9, 8, 7]:
+		_hint.add_theme_font_size_override("font_size", size)
+		if _hint.get_minimum_size().x <= 628.0:
+			break
 
 
 ## Follows [param health]'s changes.
@@ -140,6 +170,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if _gauge_flash > 0.0:
+		_gauge_flash = maxf(0.0, _gauge_flash - delta)
+		_gauge.queue_redraw()
 	if _saved_left > 0.0:
 		_saved_left -= delta
 		_saved.modulate.a = clampf(_saved_left / 0.4, 0.0, 0.8)
@@ -163,8 +196,40 @@ func flash_saved() -> void:
 
 ## Follows Bronze and reserve from [param state].
 func bind_state(state: GameState) -> void:
-	state.changed.connect(func() -> void: _show_bronze(state))
+	state.changed.connect(func() -> void:
+		_show_bronze(state)
+		_show_fragments(state.fragments.size()))
 	_show_bronze(state)
+	_show_fragments(state.fragments.size())
+
+
+## Number of lit diamonds (fragments toward the next point of life).
+func fragment_gauge() -> int:
+	return maxi(0, _fragments) % GameState.FRAGMENTS_PER_LIFE
+
+
+func _show_fragments(count: int) -> void:
+	if _fragments >= 0 and count == _fragments + 1 and count % GameState.FRAGMENTS_PER_LIFE == 0:
+		_gauge_flash = 1.2  # a full set: the gauge shines, then empties
+	_fragments = count
+	_gauge.queue_redraw()
+
+
+func _draw_gauge() -> void:
+	var lit := fragment_gauge()
+	# The full set shines only until the next fragment starts a new one.
+	var full := _gauge_flash > 0.0 and lit == 0
+	for i in GameState.FRAGMENTS_PER_LIFE:
+		var c := Vector2(4.5 + i * 9.0, 6.0)
+		var pts := PackedVector2Array([c + Vector2(0, -5), c + Vector2(4, 0), c + Vector2(0, 5), c + Vector2(-4, 0)])
+		_gauge.draw_colored_polygon(pts, Color(0.05, 0.08, 0.1, 0.8))
+		if full or i < lit:
+			var inner := PackedVector2Array([c + Vector2(0, -4), c + Vector2(3, 0), c + Vector2(0, 4), c + Vector2(-3, 0)])
+			var color := COLOR_FRAGMENT.lightened(0.5 * absf(sin(_gauge_flash * 9.0))) if full else COLOR_FRAGMENT
+			_gauge.draw_colored_polygon(inner, color)
+			_gauge.draw_rect(Rect2(c + Vector2(-1, -2), Vector2(1, 1)), Color.WHITE)
+		pts.append(pts[0])
+		_gauge.draw_polyline(pts, COLOR_FRAGMENT.darkened(0.3), 1.0)
 
 
 func _show_bronze(state: GameState) -> void:
