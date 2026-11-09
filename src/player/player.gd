@@ -370,6 +370,11 @@ func _apply_sword_hits() -> void:
 		if closest.distance_to(enemy.global_position) <= r:
 			if enemy.receive_sword_hit(combo.damage(), combo.attack_id, global_position):
 				sword_landed.emit()
+	# Bushes and pots in reach break too (exploração §2).
+	for b in get_tree().get_nodes_in_group("breakables"):
+		var b_closest := Vector2(clampf(b.global_position.x, box.position.x, box.end.x), clampf(b.global_position.y, box.position.y, box.end.y))
+		if b_closest.distance_to(b.global_position) <= b.body_radius():
+			b.receive_sword_hit(combo.damage(), combo.attack_id, global_position)
 
 
 func _on_died() -> void:

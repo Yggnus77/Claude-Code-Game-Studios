@@ -37,6 +37,10 @@ var door_open: Callable = func(_door: Dictionary) -> bool: return true
 var highlight_id := ""
 ## Raised state of push blocks pulled by the hook (by entity id).
 var raised: Dictionary = {}
+## Bush and pot rules; null builds no breakables (tests, old callers).
+var breakable_rules: Breakables
+## Breakables built for this visit (emitted so the game can hand drops).
+signal breakable_broken(breakable: Breakable)
 
 const TILES_PATH := "res://assets/art/cenario/tiles.png"
 const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
@@ -110,6 +114,7 @@ func build(room_data: RoomData) -> void:
 				prop.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))
 				add_child(prop)
 				_props.append(prop)
+	_build_breakables()
 	var body := StaticBody2D.new()
 	body.name = "Walls"
 	body.collision_layer = WORLD_LAYER
@@ -364,6 +369,34 @@ func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO, item: Can
 	var h := float(size[1])
 	var src := Rect2(Vector2(col * w, 0), Vector2(w, h))
 	item.draw_texture_rect_region(_objects, Rect2(center + lift - Vector2(float(pivot[0]), float(pivot[1])), Vector2(w, h)), src)
+
+
+## Bushes and pots listed in the map ("breakables": {"bush": [[x, y]…]}),
+## whole again on every visit.
+func _build_breakables() -> void:
+	if breakable_rules == null:
+		return
+	for kind: String in data.breakables:
+		if not breakable_rules.has_kind(kind):
+			continue
+		for at: Vector2i in data.breakables[kind]:
+			var b := Breakable.new()
+			b.room = self
+			b.rules = breakable_rules
+			b.kind = kind
+			b.tile = at
+			b.name = "%s_%d_%d" % [kind, at.x, at.y]
+			b.position = data.tile_center(at)
+			b.broken.connect(breakable_broken.emit)
+			add_child(b)
+
+
+## Draws object column [param kind] centred on [param item] (bushes, pots).
+func draw_object_on(item: CanvasItem, kind: String) -> void:
+	if _objects:
+		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, item)
+	else:
+		item.draw_circle(Vector2.ZERO, 6.0, COLOR_OTHER)
 
 
 func _draw() -> void:

@@ -21,6 +21,8 @@ const DEFAULT_ROOM := "v00_oficina"
 const RESPAWN_DELAY := 1.2
 ## Fade out and fade in of a room transition (mecanicas §2).
 const FADE_TIME := 0.18
+## Door sides that slide the screen (others fade).
+const SLIDE_DIRS := ["north", "south", "east", "west"]
 ## Reach of the interact action, in front of the feet.
 const INTERACT_REACH := 14.0
 const INTERACT_RADIUS := 14.0
@@ -93,6 +95,10 @@ var bell_puzzle: BellPuzzle
 var bells: Array[Bell] = []
 ## Igris while his room is loaded and the fight is not won, else null.
 var igris: Igris
+## Bush and pot rules (exploracao.json).
+var breakables: Breakables
+## Random number in [0, 1) for drops; tests replace it to pick the outcome.
+var drop_roll: Callable = func() -> float: return randf()
 ## Optional mysteries wired into this slice (m01, m02), keyed by id.
 var mysteries: Dictionary = {}
 ## The relic slot rules (always rebuilt from the base numbers).
@@ -147,6 +153,7 @@ func _ready() -> void:
 		])
 	# Every game starts with one empty flask (auditoria-e-decisoes.md item 2).
 	state.apply([{"op": "grant_unique", "item_id": "frasco_01", "quantity": 1, "receipt_id": "new_game.frasco_01"}])
+	breakables = Breakables.load_from()
 	shop = Shop.new(config)
 	mysteries = config.mystery_quests()
 	relics = config.relic_loadout()
@@ -455,6 +462,8 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 		room = Room.new()
 		room.state = state
 		room.door_open = is_door_open
+		room.breakable_rules = breakables
+		room.breakable_broken.connect(_on_breakable_broken)
 		add_child(room)
 		move_child(room, 0)
 	room.build(data)
@@ -616,6 +625,37 @@ func _on_enemy_defeated(enemy: Node) -> void:
 		coin.position = enemy.global_position
 		coin.collected.connect(func(c: Pickup) -> void: state.apply([{"op": "add_bronze", "amount": c.amount}]))
 		add_child.call_deferred(coin)
+
+
+## A bush or pot broke: roll its drop (exploracao.json) and leave it there.
+func _on_breakable_broken(b: Breakable) -> void:
+	_drop_from(b.kind, b.global_position, drop_roll.call())
+
+
+## Spawns what [param kind] drops for [param roll] in [0, 1) at [param at].
+## Returns the drop id ("none" when nothing). Nothing drops in a boss arena.
+func _drop_from(kind: String, at: Vector2, roll: float) -> String:
+	if igris != null:
+		return "none"
+	var drop := breakables.drop_for(kind, roll)
+	var life := Breakables.life_amount(drop)
+	var coin_amount := Pickup.bronze_amount(drop)
+	if life <= 0 and coin_amount <= 0:
+		return "none"
+	var p := Pickup.new()
+	p.target = player
+	p.position = at
+	if life > 0:
+		p.kind = Pickup.KIND_LIFE
+		p.amount = life
+		p.lifetime = breakables.life_lifetime
+		p.collected.connect(func(c: Pickup) -> void: player.health.heal(c.amount))
+	else:
+		p.amount = coin_amount
+		p.collected.connect(func(c: Pickup) -> void: state.apply([{"op": "add_bronze", "amount": c.amount}]))
+	# Added now (not deferred), so a door taken in the same frame clears it.
+	add_child(p)
+	return drop
 
 
 ## Sets the room's clear flag (torre-akurame.json "room_clear_flags") once
@@ -1281,17 +1321,152 @@ func _go_through(door: Dictionary) -> void:
 		state.apply(effects)
 	_transitioning = true
 	get_tree().paused = true
-	var out := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	out.tween_property(_fade, "modulate:a", 1.0, FADE_TIME)
-	await out.finished
 	var t: Array = door.get("target_tile", [1, 1])
-	load_room(str(door["target_room"]), Vector2i(int(t[0]), int(t[1])), false)
-	var back := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	back.tween_property(_fade, "modulate:a", 0.0, FADE_TIME)
-	await back.finished
+	var target := Vector2i(int(t[0]), int(t[1]))
+	if _can_slide(door):
+		await _slide_to(door, target)
+	else:
+		var out := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		out.tween_property(_fade, "modulate:a", 1.0, FADE_TIME)
+		await out.finished
+		load_room(str(door["target_room"]), target, false)
+		var back := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		back.tween_property(_fade, "modulate:a", 0.0, FADE_TIME)
+		await back.finished
+	if not is_inside_tree():
+		return
 	get_tree().paused = false
 	_transitioning = false
 	_on_room_entered()
+
+
+## The screen scrolls from the old room to the next one, side by side, as
+## if the camera slid across the wall (exploração §1). A copy of the old room
+## ("ghost", drawn only) is put next to the new room for the length of the
+## slide.
+func _slide_to(door: Dictionary, target: Vector2i) -> void:
+	var old_data := room.data
+	var old_top := room.top_extent()
+	var old_door := old_data.tile_center(_door_tile(door))
+	var spent := _broken_breakables()
+	var cam := player.camera
+	var old_center := cam.get_screen_center_position()
+	load_room(str(door["target_room"]), target, false)
+	var ghost := Room.new()
+	ghost.state = state
+	ghost.door_open = is_door_open
+	ghost.breakable_rules = breakables
+	add_child(ghost)
+	move_child(ghost, 0)
+	ghost.build(old_data)
+	ghost.name = "SlideGhost"  # build() names it after the room
+	# Drawn only: no walls or pots to hit, the bushes and pots look as the
+	# player left them, and one ambient colour and set of lights (the new
+	# room's, which must not go over the per-item light limit).
+	for c in ghost.get_children():
+		if c is Breakable:
+			var b := c as Breakable
+			b.remove_from_group("breakables")
+			b.collision_layer = 0
+			if spent.has(b.tile):
+				if breakables.stub(b.kind).is_empty():
+					ghost.remove_child(b)
+					b.queue_free()
+				else:
+					b.is_broken = true
+					b.queue_redraw()
+		elif c is PointLight2D or c.name == "Walls" or c.name == "Ambient":
+			ghost.remove_child(c)
+			c.queue_free()
+	var side := str(door.get("side", ""))
+	var new_size := Vector2(room.data.pixel_size())
+	var old_size := Vector2(old_data.pixel_size())
+	var arrive := room.data.tile_center(target)
+	var at := arrive - old_door  # lines the two doors up on the other axis
+	match side:
+		"north":
+			at.y = new_size.y + old_top
+		"south":
+			at.y = -room.top_extent() - old_size.y
+		"east":
+			at.x = -old_size.x
+		"west":
+			at.x = new_size.x
+	ghost.position = at
+	ghost.reset_physics_interpolation()
+	# The tree is paused, so no physics frame would move an interpolated
+	# camera: it is driven by hand, without interpolation, for the slide.
+	var interp := cam.physics_interpolation_mode
+	cam.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	cam.force_update_scroll()
+	var new_center := cam.get_screen_center_position()
+	var smoothing := cam.position_smoothing_enabled
+	cam.position_smoothing_enabled = false
+	cam.limit_enabled = false
+	cam.offset = Vector2.ZERO
+	cam.force_update_scroll()
+	# Offsets are measured from where the free camera sits now (node offset
+	# and drag margin included), so the slide starts and ends without a jump.
+	var base := cam.get_screen_center_position()
+	var from := old_center + at - base
+	var to := new_center - base
+	var move := func(o: Vector2) -> void:
+		cam.offset = o
+		cam.force_update_scroll()
+	move.call(from)
+	var slide := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	slide.tween_method(move, from, to, breakables.slide_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await slide.finished
+	if is_instance_valid(ghost):
+		ghost.queue_free()
+	if not is_instance_valid(cam):
+		return
+	cam.offset = Vector2.ZERO
+	cam.limit_enabled = true
+	cam.position_smoothing_enabled = smoothing
+	cam.reset_smoothing()
+	cam.force_update_scroll()
+	cam.physics_interpolation_mode = interp
+	cam.reset_physics_interpolation()
+
+
+## Tiles of the current room's bushes and pots already broken this visit.
+func _broken_breakables() -> Dictionary:
+	var out := {}
+	if room == null or room.data == null:
+		return out
+	var standing := {}
+	for c in room.get_children():
+		if c is Breakable and not (c as Breakable).is_broken and not c.is_queued_for_deletion():
+			standing[(c as Breakable).tile] = true
+	for kind: String in room.data.breakables:
+		for at: Vector2i in room.data.breakables[kind]:
+			if not standing.has(at):
+				out[at] = true
+	return out
+
+
+## Whether [param door] slides the screen: it has a side and the door it
+## leads to is on the opposite side of the next room, so the two rooms can
+## sit edge to edge. Other doors fade.
+func _can_slide(door: Dictionary) -> bool:
+	var side := str(door.get("side", ""))
+	if not SLIDE_DIRS.has(side) or room == null or room.data == null:
+		return false
+	var next := RoomData.load_room(str(door.get("target_room", "")))
+	if next == null:
+		return false
+	var opposite: String = SLIDE_DIRS[SLIDE_DIRS.find(side) ^ 1]
+	for d: Dictionary in next.doors:
+		if str(d.get("target_room", "")) == room.data.id and str(d.get("side", "")) == opposite:
+			return true
+	return false
+
+
+## Tile of [param door] in the room it leaves.
+func _door_tile(door: Dictionary) -> Vector2i:
+	var t: Array = door.get("tile", [0, 0])
+	return Vector2i(int(t[0]), int(t[1]))
 
 
 func _exit_tree() -> void:

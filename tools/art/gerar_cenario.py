@@ -27,6 +27,7 @@ OBJ_PIVOT = (8, 24)
 OBJ_COLS = [
     "door_open", "door_closed", "chest", "chest_open", "clue", "npc", "interact",
     "marco", "marco_active", "anchor", "push_block", "fragment", "bell", "bell_lit",
+    "bush", "bush_cut", "pot",
 ]
 
 def obj(name):

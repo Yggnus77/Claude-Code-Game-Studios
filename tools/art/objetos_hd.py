@@ -17,6 +17,10 @@ C.update({
     "safe": "#7ee0ff", "safe_lo": "#3a90c0", "wood_hi": "#9c6c45", "boot": "#3e2a22",
     "npc_coat": "#5a7a5a", "npc_coat_hi": "#78986e", "npc_coat_lo": "#3e5640", "npc_hair": "#8a8a90",
     "apron": "#d8ccb0", "apron_lo": "#a89a7c",
+    "bush": "#3f6a34", "bush_hi": "#5f8c46", "bush_lo": "#2a4a26", "bush_dk": "#1a3020", "bush_tip": "#86b060",
+    "flower": "#e8d070", "flower_hi": "#fff4b8", "berry": "#c0485a",
+    "clay": "#b0643c", "clay_hi": "#d88a58", "clay_lo": "#7a4028", "clay_dk": "#4e2818",
+    "glaze": "#3a6a8a", "glaze_hi": "#5a92b0",
 })
 OW, OH, PY = 16, 32, 24
 
@@ -210,10 +214,59 @@ def bell(lit):
     return c
 
 
+def bush():
+    """Arbusto que a espada corta: tufos sobrepostos, luz do alto à esquerda."""
+    c = Canvas(OW, OH)
+    for cx, cy, r in ((5, PY - 1, 4), (11, PY - 1, 4), (8, PY - 5, 5), (4, PY - 5, 3), (12, PY - 5, 3)):
+        ball(c, cx, cy, r, r - 1, "bush", "bush_hi", "bush_lo")
+    for x, y in ((3, PY - 6), (7, PY - 9), (10, PY - 8), (5, PY - 3), (12, PY - 4), (9, PY - 2)):
+        put(c, x, y, "bush_tip")
+        put(c, x + 1, y + 1, "bush_hi")
+    for x, y in ((6, PY + 1), (10, PY + 2), (13, PY), (2, PY + 1)):
+        put(c, x, y, "bush_dk")
+    for x, y in ((6, PY - 7), (11, PY - 3)):
+        put(c, x, y, "flower")
+        put(c, x, y - 1, "flower_hi")
+    put(c, 4, PY - 1, "berry")
+    c.outline(K)
+    return c
+
+
+def bush_cut():
+    """Toco que fica depois do corte."""
+    c = Canvas(OW, OH)
+    for x in (4, 6, 8, 10, 12):
+        h = 2 + (x * 7) % 3
+        line(c, x, PY + 3 - h, x, PY + 3, "bush_lo")
+        put(c, x, PY + 3 - h, "bush_tip")
+    line(c, 3, PY + 4, 13, PY + 4, "bush_dk")
+    c.outline(K)
+    return c
+
+
+def pot():
+    """Pote de barro com faixa azul vidrada."""
+    c = Canvas(OW, OH)
+    ball(c, 8, PY - 1, 6, 6, "clay", "clay_hi", "clay_lo")
+    box(c, 4, PY - 9, 8, 2, "clay_lo", "clay_hi", "clay_dk")
+    line(c, 5, PY - 7, 10, PY - 7, "clay_dk")
+    for x in range(3, 14):
+        put(c, x, PY - 2, "glaze" if x % 3 else "glaze_hi")
+    line(c, 3, PY - 1, 13, PY - 1, "clay_lo")
+    for x in (5, 8, 11):
+        put(c, x, PY - 2, "gold_hi")
+    put(c, 5, PY - 5, "clay_hi")
+    put(c, 4, PY - 4, "white")
+    line(c, 6, PY + 4, 10, PY + 4, "clay_dk")
+    c.outline(K)
+    return c
+
+
 OBJECTS = {
     "door_open": lambda: door(True), "door_closed": lambda: door(False),
     "chest": lambda: chest(False), "chest_open": lambda: chest(True), "clue": clue, "npc": npc,
     "interact": interact, "marco": lambda: marco(False), "marco_active": lambda: marco(True),
     "anchor": anchor, "push_block": push_block, "fragment": fragment,
     "bell": lambda: bell(False), "bell_lit": lambda: bell(True),
+    "bush": bush, "bush_cut": bush_cut, "pot": pot,
 }

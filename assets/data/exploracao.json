@@ -1,0 +1,21 @@
+{
+  "_doc": "Exploração (design/gdd/exploracao.md). Objetos quebráveis reaparecem ao entrar de novo na sala; prêmios pequenos, nunca dentro de arena de chefe.",
+  "breakables": {
+    "bush": {
+      "name": "Arbusto",
+      "solid": true,
+      "stub": "bush_cut",
+      "fx_color": "#5f8c46",
+      "drops": [["none", 70], ["vida_1", 15], ["bronze_1", 15]]
+    },
+    "pot": {
+      "name": "Pote de barro",
+      "solid": true,
+      "stub": "",
+      "fx_color": "#b0643c",
+      "drops": [["none", 40], ["vida_1", 25], ["bronze_1", 20], ["bronze_5", 15]]
+    }
+  },
+  "life_drop": {"lifetime": 12.0},
+  "slide_time": 0.55
+}
