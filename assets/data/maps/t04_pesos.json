@@ -67,6 +67,13 @@
   ],
   "entities": [
     {
+      "id": "t04_pesos.bussola",
+      "kind": "chest",
+      "tile": [6, 20],
+      "trigger_id": "chest_bussola_akurame",
+      "persistent_receipt": "unique.t04_pesos.bussola"
+    },
+    {
       "id": "t04_pesos.weight",
       "kind": "push_block",
       "tile": [

@@ -2,6 +2,27 @@
   "schema_version": 1,
   "rewards": [
     {
+      "id": "chest_mapa_akurame",
+      "entity": "t01_guardas.mapa",
+      "item": "mapa_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.mapa"
+    },
+    {
+      "id": "chest_bussola_akurame",
+      "entity": "t04_pesos.bussola",
+      "item": "bussola_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.bussola"
+    },
+    {
+      "id": "chest_chave_chefe_akurame",
+      "entity": "t05_sinos.chave_chefe",
+      "item": "chave_chefe_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.chave_chefe"
+    },
+    {
       "id": "chest_ak_key",
       "entity": "t00_base.ak_key",
       "item": "key_ak_base",

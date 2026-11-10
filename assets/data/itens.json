@@ -2,6 +2,33 @@
   "schema_version": 1,
   "items": [
     {
+      "id": "mapa_akurame",
+      "name": "Mapa da Torre",
+      "type": "mapa",
+      "stack_limit": 1,
+      "source": "chest_mapa_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "bussola_akurame",
+      "name": "Bússola da Torre",
+      "type": "bussola",
+      "stack_limit": 1,
+      "source": "chest_bussola_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "chave_chefe_akurame",
+      "name": "Chave Grande de Akurame",
+      "type": "chave_chefe",
+      "stack_limit": 1,
+      "source": "chest_chave_chefe_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
       "id": "espada_oficina",
       "name": "Espada de Oficina",
       "type": "arma",

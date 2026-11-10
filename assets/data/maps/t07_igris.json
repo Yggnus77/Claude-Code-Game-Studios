@@ -48,7 +48,7 @@
         21,
         9
       ],
-      "gate": null,
+      "gate": "boss_key:chave_chefe_akurame",
       "unlock_persistent_flag": "open.door.t06_marco.t07_igris",
       "key_consumption": null
     },

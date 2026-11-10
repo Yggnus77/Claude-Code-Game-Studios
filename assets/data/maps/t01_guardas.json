@@ -84,6 +84,13 @@
   ],
   "entities": [
     {
+      "id": "t01_guardas.mapa",
+      "kind": "chest",
+      "tile": [26, 4],
+      "trigger_id": "chest_mapa_akurame",
+      "persistent_receipt": "unique.t01_guardas.mapa"
+    },
+    {
       "id": "t01_guardas.guard_a",
       "kind": "guarda_contrapeso",
       "tile": [

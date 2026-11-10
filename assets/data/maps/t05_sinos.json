@@ -67,6 +67,13 @@
   ],
   "entities": [
     {
+      "id": "t05_sinos.chave_chefe",
+      "kind": "chest",
+      "tile": [4, 20],
+      "trigger_id": "chest_chave_chefe_akurame",
+      "persistent_receipt": "unique.t05_sinos.chave_chefe"
+    },
+    {
       "id": "t05_sinos.bell_circle",
       "kind": "bell",
       "tile": [

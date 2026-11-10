@@ -97,6 +97,8 @@ var bells: Array[Bell] = []
 var igris: Igris
 ## Bush and pot rules (exploracao.json).
 var breakables: Breakables
+## Key dungeons: map, compass, keys (masmorras.json).
+var dungeons: Dungeons
 ## Random number in [0, 1) for drops; tests replace it to pick the outcome.
 var drop_roll: Callable = func() -> float: return randf()
 ## Optional mysteries wired into this slice (m01, m02), keyed by id.
@@ -154,6 +156,7 @@ func _ready() -> void:
 	# Every game starts with one empty flask (auditoria-e-decisoes.md item 2).
 	state.apply([{"op": "grant_unique", "item_id": "frasco_01", "quantity": 1, "receipt_id": "new_game.frasco_01"}])
 	breakables = Breakables.load_from()
+	dungeons = Dungeons.load_from()
 	shop = Shop.new(config)
 	mysteries = config.mystery_quests()
 	relics = config.relic_loadout()
@@ -193,6 +196,8 @@ func _ready() -> void:
 	fade_layer.layer = 20
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
+	hud.dungeon_view = dungeon_map_view
+	hud.key_line = dungeon_key_line
 	hud.bind_state(state)
 	hud.inventory_extra = _inventory_lines
 	hud.relic_cycle = cycle_relic
@@ -496,6 +501,11 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 			var enemy := spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
 			if enemy:
 				enemy.set_meta("entity", entity)
+	var dungeon := dungeons.dungeon_of(id)
+	if not dungeon.is_empty() and not state.has_flag(Dungeons.VISITED_PREFIX + id):
+		state.apply([{"op": "set_flag", "flag": Dungeons.VISITED_PREFIX + id, "value": true}])
+	if hud:
+		hud.refresh_status(state)  # the key line depends on the room
 	_build_bells()
 	_build_igris()
 	_sync_invasion()
@@ -973,7 +983,9 @@ func interact() -> String:
 				effects.append({"op": "add_receipt", "receipt_id": receipt})
 				if state.apply(effects):
 					var r: Dictionary = config.rewards[trigger]
-					hud.toast("Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"]))))
+					var got := "Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"])))
+					var tip := _dungeon_item_tip(str(r.get("item", "")))
+					hud.toast(got + ("\n" + tip if not tip.is_empty() else ""), 3.0 if tip.is_empty() else 5.0)
 				return "chest"
 			var chest_scene := dialogue.blocking_scene_id(trigger)
 			if dialogue.request(trigger):
@@ -1272,6 +1284,8 @@ func is_door_open(door: Dictionary) -> bool:
 	if state.has_flag(str(door.get("unlock_persistent_flag", ""))):
 		return true
 	var g := str(gate)
+	if g.begins_with("boss_key:"):
+		return dungeons.boss_gate_open(g.trim_prefix("boss_key:"), state)
 	if g.begins_with("key:") or g.begins_with("item:"):
 		return state.item_count(g.split(":")[1]) > 0
 	return state.has_flag(g)
@@ -1305,10 +1319,59 @@ func _check_doors() -> void:
 				var scene := str(config.tower.get("locked_door_scenes", {}).get(here, ""))
 				if not scene.is_empty() and dialogue.request(scene):
 					return
-				hud.toast("As amarras de Yame prendem a porta." if prologue.blocks_door(state, room_id, here) else "A passagem está fechada.")
+				hud.toast(_locked_text(door, here))
 				playtest.refuse(session_time(), "porta fechada (%s)" % here)
 			return
 		_go_through(door)
+
+
+## What a closed door says when the player walks into it.
+func _locked_text(door: Dictionary, door_id: String) -> String:
+	if prologue.blocks_door(state, room_id, door_id):
+		return "As amarras de Yame prendem a porta."
+	var gate := str(door.get("gate", ""))
+	if gate.begins_with("boss_key:"):
+		return "Uma porta grande com fechadura dourada. Precisa da %s." % config.item_name(gate.trim_prefix("boss_key:"))
+	if gate.begins_with("key:"):
+		return "Trancada. Precisa de uma chave pequena."
+	return "A passagem está fechada."
+
+
+## What a dungeon item does, told when it is found ("" for other items).
+func _dungeon_item_tip(item: String) -> String:
+	for id: String in dungeons.defs:
+		var def: Dictionary = dungeons.defs[id]
+		if item == str(def.get("map_item", "")):
+			return "Todas as salas aparecem no mapa do inventário (%s)." % DialogueBox._key("map")
+		if item == str(def.get("compass_item", "")):
+			return "O mapa agora marca os baús fechados e a sala do chefe."
+		if item == str(def.get("boss_key", "")):
+			return "Ela abre a porta grande de fechadura dourada."
+	return ""
+
+
+## The dungeon map for the inventory ({} outside a dungeon).
+func dungeon_map_view() -> Dictionary:
+	var d := dungeons.dungeon_of(room_id)
+	if d.is_empty():
+		return {}
+	var v := dungeons.map_view(d, state, room_id)
+	v["name"] = str(dungeons.def_of(d).get("name", ""))
+	return v
+
+
+## "Chaves 1 · Chave Grande" for the HUD while inside a dungeon.
+func dungeon_key_line() -> String:
+	var d := dungeons.dungeon_of(room_id)
+	if d.is_empty():
+		return ""
+	var v := dungeons.map_view(d, state, room_id)
+	var parts := PackedStringArray()
+	if int(v["small_keys"]) > 0:
+		parts.append("Chaves %d" % int(v["small_keys"]))
+	if v["boss_key"]:
+		parts.append("Chave Grande")
+	return "   ".join(parts)
 
 
 func _go_through(door: Dictionary) -> void:
