@@ -305,6 +305,14 @@ func _render_inventory() -> void:
 	var map_view: Dictionary = dungeon_view.call()
 	_dungeon_map.show_view(map_view)
 	_inventory_text.custom_minimum_size.x = 464.0 - (_dungeon_map.custom_minimum_size.x + 10.0 if not map_view.is_empty() else 0.0)
+	# The narrower text beside the map must still fit the panel: smaller
+	# letters until it does (masmorras §3).
+	for font_size in [10, 9, 8]:
+		_inventory_text.add_theme_font_size_override("font_size", font_size)
+		_inventory_text.reset_size()
+		if _inventory_text.get_minimum_size().y <= 310.0:
+			break
+	_inventory.reset_size()
 
 
 ## Shows a centred message, or hides it with an empty string.

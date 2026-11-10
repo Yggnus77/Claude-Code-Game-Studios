@@ -66,3 +66,17 @@ func test_key_count() -> void:
 	var s := _state()
 	s.apply([{"op": "grant_unique", "item_id": "key_ak_base", "quantity": 1, "receipt_id": "t.k"}])
 	assert_eq(d.map_view("akurame", s, "t00_base")["small_keys"], 1, "one small key")
+
+
+func test_old_saves_that_reached_the_boss_pass() -> void:
+	var d := Dungeons.load_from()
+	var s := _state()
+	s.apply([{"op": "set_flag", "flag": "visited.t07_igris", "value": true}])
+	assert_true(d.boss_gate_open("chave_chefe_akurame", s), "already reached the arena")
+
+
+func test_boss_flag_matches_the_tower_data() -> void:
+	var d := Dungeons.load_from()
+	var tower: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/data/torre-akurame.json"))
+	assert_eq(str(d.def_of("akurame")["boss_done_flag"]), "seen.%s" % str(tower["igris"]["end_scene"]), "same victory flag")
+	assert_eq(str(d.def_of("akurame")["boss_room"]), str(tower["igris"]["room"]), "same arena")

@@ -166,6 +166,7 @@ func test_the_boss_door_needs_the_big_key() -> void:
 	assert_true(main._locked_text(door, str(door["id"])).contains("Chave Grande"), "says which key")
 	main.state.apply([{"op": "grant_unique", "item_id": "chave_chefe_akurame", "quantity": 1, "receipt_id": "t.bk"}])
 	assert_true(main.is_door_open(door), "open with the big key")
+	main._on_room_entered()
 	assert_true(main.state.has_flag("visited.t06_marco"), "the room counts as visited")
 	assert_true(main.dungeon_key_line().contains("Chave Grande"), "the HUD shows it")
 	main.load_room("r01_cruzamento", Vector2i(5, 12))

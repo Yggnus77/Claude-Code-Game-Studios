@@ -19,7 +19,7 @@ var _blink := 0.0
 
 
 func _init() -> void:
-	custom_minimum_size = Vector2(190, 210)
+	custom_minimum_size = Vector2(170, 200)
 
 
 func show_view(v: Dictionary) -> void:
@@ -29,7 +29,7 @@ func show_view(v: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
-	if visible:
+	if is_visible_in_tree():
 		_blink += delta
 		queue_redraw()
 

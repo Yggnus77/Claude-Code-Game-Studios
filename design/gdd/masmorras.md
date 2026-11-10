@@ -44,7 +44,12 @@ Sem números novos. Célula da sala no mapa = soma dos passos das portas
 ## 5. Casos especiais
 
 - Duas salas que cairiam na mesma célula: a segunda fica fora do mapa.
-- Portas sem lado oposto (base ↔ arena, ambas "north") não entram no mapa.
+- Portas sem lado oposto (base ↔ arena, ambas "north") não entram no mapa:
+  o atalho de volta da arena para a base não aparece nele.
+- Saves de antes da Chave Grande que já chegaram à arena (`visited.t07_igris`)
+  passam pela porta sem a chave, para ninguém ficar preso.
+- Objetivo: depois dos sinos, "Encontre a Chave Grande na Galeria dos sinos"
+  até pegar a chave.
 - Recompensa de baú já recebida: o baú some da bússola.
 - Fora de masmorra: sem mapa no inventário e sem linha de chaves.
 

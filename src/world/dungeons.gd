@@ -130,12 +130,15 @@ func map_view(dungeon: String, state: GameState, here: String) -> Dictionary:
 
 
 ## Whether the big-key door gate "boss_key:<item>" is open: the key is held,
-## or the boss of that dungeon is already beaten (older saves).
+## the boss is already beaten, or the boss room was already reached (saves
+## from before the big key existed must never lock the player in or out).
 func boss_gate_open(item: String, state: GameState) -> bool:
 	if state.item_count(item) > 0:
 		return true
 	for id: String in defs:
 		var def: Dictionary = defs[id]
-		if str(def.get("boss_key", "")) == item and state.has_flag(str(def.get("boss_done_flag", "-"))):
+		if str(def.get("boss_key", "")) != item:
+			continue
+		if state.has_flag(str(def.get("boss_done_flag", "-"))) or state.has_flag(VISITED_PREFIX + str(def.get("boss_room", "-"))):
 			return true
 	return false

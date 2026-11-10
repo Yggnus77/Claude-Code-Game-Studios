@@ -501,9 +501,6 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 			var enemy := spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
 			if enemy:
 				enemy.set_meta("entity", entity)
-	var dungeon := dungeons.dungeon_of(id)
-	if not dungeon.is_empty() and not state.has_flag(Dungeons.VISITED_PREFIX + id):
-		state.apply([{"op": "set_flag", "flag": Dungeons.VISITED_PREFIX + id, "value": true}])
 	if hud:
 		hud.refresh_status(state)  # the key line depends on the room
 	_build_bells()
