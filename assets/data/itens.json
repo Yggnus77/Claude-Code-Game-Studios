@@ -29,6 +29,15 @@
       "sellable": false
     },
     {
+      "id": "lamparina_oleo",
+      "name": "Lamparina de Óleo",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "chest_lamparina",
+      "unique": true,
+      "sellable": false
+    },
+    {
       "id": "espada_oficina",
       "name": "Espada de Oficina",
       "type": "arma",

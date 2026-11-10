@@ -1,0 +1,68 @@
+{
+  "_doc": "Ferramentas do botão de item (design/gdd/ferramentas.md). Tempos em segundos, distâncias em px, dano em pontos de vida.",
+  "order": [
+    "frasco",
+    "gancho",
+    "arco",
+    "cargas",
+    "lamparina"
+  ],
+  "tools": {
+    "gancho": {
+      "name": "Gancho",
+      "item": "gancho_retorno",
+      "how": "{item} lança o gancho, {swap} troca de item.",
+      "equipped": "Gancho equipado"
+    },
+    "arco": {
+      "name": "Arco",
+      "item": "arco_fio",
+      "ammo": "agulha_fio",
+      "ammo_cap": 20,
+      "startup": 0.18,
+      "speed": 260,
+      "cooldown": 0.3,
+      "damage": 2,
+      "range": 224,
+      "dropped_lifetime": 10.0,
+      "how": "{item} dispara agulhas para onde Yggnus olha. Acerte placas de longe; {swap} troca de item.",
+      "empty": "Sem agulhas. Recolha as que erraram ou procure um recipiente.",
+      "drop_chance": {
+        "pot": 0.2,
+        "bush": 0.1
+      },
+      "drop_amount": 3,
+      "equipped": "Arco equipado"
+    },
+    "cargas": {
+      "name": "Cargas",
+      "item": "carga_bronze",
+      "ammo": "carga_bronze",
+      "ammo_cap": 9,
+      "known_flag": "gear.cargas",
+      "fuse": 1.6,
+      "radius": 28,
+      "damage": 3,
+      "self_damage": 1,
+      "place_distance": 14,
+      "max_active": 2,
+      "cooldown": 0.3,
+      "crack_reach": 12,
+      "how": "{item} põe uma carga no chão. Afaste-se! Ela derruba paredes rachadas.",
+      "empty": "Sem cargas. O comerciante da praça vende três por 12 Bronze.",
+      "equipped": "Cargas equipadas"
+    },
+    "lamparina": {
+      "name": "Lamparina",
+      "item": "lamparina_oleo",
+      "reach": 18,
+      "cooldown": 0.35,
+      "dark_glow_radius": 120,
+      "dark_glow_energy": 0.95,
+      "how": "{item} acende a tocha à frente de Yggnus. Em salas escuras, ela ilumina o caminho.",
+      "equipped": "Lamparina equipada"
+    }
+  },
+  "refill_amount": 10,
+  "dark_ambient": "#2a2638"
+}

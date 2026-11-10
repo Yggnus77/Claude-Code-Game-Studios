@@ -57,7 +57,10 @@ func close() -> void:
 
 ## Buys the highlighted offer. Returns true when it was delivered.
 func buy_selected() -> bool:
-	var offer: Dictionary = shop.offers[_index]
+	var list := shop.for_state(state)
+	if list.is_empty():
+		return false
+	var offer: Dictionary = list[_index % list.size()]
 	var why := shop.refusal(state, offer)
 	var ok := why.is_empty() and shop.buy(state, offer)
 	_message = "Comprado." if ok else why
@@ -69,9 +72,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _panel.visible:
 		return
 	if event.is_action_pressed("move_up"):
-		_index = posmod(_index - 1, shop.offers.size())
+		_index = posmod(_index - 1, shop.for_state(state).size())
 	elif event.is_action_pressed("move_down"):
-		_index = posmod(_index + 1, shop.offers.size())
+		_index = posmod(_index + 1, shop.for_state(state).size())
 	elif event.is_action_pressed("interact"):
 		buy_selected()
 	elif event.is_action_pressed("pause") or event.is_action_pressed("attack") or event.is_action_pressed("map"):
@@ -84,11 +87,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _refresh() -> void:
 	var lines := PackedStringArray(["COMERCIANTE", ""])
-	for i in shop.offers.size():
-		var o: Dictionary = shop.offers[i]
+	var list := shop.for_state(state)
+	for i in list.size():
+		var o: Dictionary = list[i]
 		lines.append("%s %s — %d Bronze" % ["►" if i == _index else "  ", o["label"], o["price"]])
 	lines.append("")
-	lines.append("Bronze %d · frascos cheios %d/%d · pão %d" % [state.bronze, state.full_flask_count(), state.flasks().size(), state.item_count("pao_porto")])
+	var stock := "Bronze %d · frascos cheios %d/%d · pão %d" % [state.bronze, state.full_flask_count(), state.flasks().size(), state.item_count("pao_porto")]
+	if state.has_flag("gear.cargas"):
+		stock += " · cargas %d" % state.item_count("carga_bronze")
+	lines.append(stock)
 	lines.append(_message)
 	lines.append("K compra · J ou Esc sai")
 	_text.text = "\n".join(lines)

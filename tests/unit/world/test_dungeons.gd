@@ -14,7 +14,8 @@ func test_the_tower_layout_follows_its_side_doors() -> void:
 	assert_eq(cells.get("t01_guardas"), Vector2i(1, 0), "east of the base")
 	assert_eq(cells.get("t02_oficina"), Vector2i(1, -1), "north of the guards")
 	assert_eq(cells.get("t07_igris"), Vector2i(5, -1), "the arena past the antechamber")
-	assert_eq(cells.size(), 8, "eight rooms")
+	assert_eq(cells.get("t08_mirante"), cells.get("t06_marco", Vector2i.ZERO) + Vector2i(0, -1), "the lookout north of the antechamber")
+	assert_eq(cells.size(), 9, "nine rooms")
 	assert_eq(d.dungeon_of("t03_treino"), "akurame", "a tower room")
 	assert_eq(d.dungeon_of("r01_cruzamento"), "", "outside")
 

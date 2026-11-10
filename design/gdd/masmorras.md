@@ -25,6 +25,9 @@ onde ainda há tesouro; a Chave Grande é o sinal de que o chefe está perto.
   - Mapa da Torre: baú na sala dos guardas (`t01_guardas`, 26,4).
   - Bússola da Torre: baú dos contrapesos (`t04_pesos`, 6,20).
   - Chave Grande de Akurame: baú da galeria dos sinos (`t05_sinos`, 4,20).
+  - Mirante (`t08_mirante`, sala opcional ao norte da antecâmara): abre com
+    uma agulha do Arco de Fio na placa (`design/gdd/ferramentas.md`); entra
+    no mapa como qualquer sala e a bússola marca o baú dele.
   - Porta antecâmara ↔ Igris: `gate: "boss_key:chave_chefe_akurame"`. A
     chave não é gasta. Saves que já venceram Igris (`seen.t10`) nunca ficam
     presos.

@@ -80,6 +80,23 @@
       "gate": null,
       "unlock_persistent_flag": "open.door.r01_cruzamento.t00_base",
       "key_consumption": null
+    },
+    {
+      "id": "door.r01_cruzamento.r04_adega",
+      "side": "north",
+      "tile": [
+        30,
+        2
+      ],
+      "target_room": "r04_adega",
+      "target_tile": [
+        12,
+        15
+      ],
+      "gate": "world.cracked.r01_adega",
+      "unlock_persistent_flag": "open.door.r01_cruzamento.r04_adega",
+      "key_consumption": null,
+      "cracked": true
     }
   ],
   "entities": [

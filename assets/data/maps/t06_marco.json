@@ -58,6 +58,23 @@
       "gate": "boss_key:chave_chefe_akurame",
       "unlock_persistent_flag": "open.door.t06_marco.t07_igris",
       "key_consumption": null
+    },
+    {
+      "id": "door.t06_marco.t08_mirante",
+      "side": "north",
+      "tile": [
+        4,
+        2
+      ],
+      "target_room": "t08_mirante",
+      "target_tile": [
+        12,
+        15
+      ],
+      "gate": "world.plate.t06_marco",
+      "unlock_persistent_flag": "open.door.t06_marco.t08_mirante",
+      "key_consumption": null,
+      "locked_text": "A passagem está fechada. Bem no alto da parede há uma placa de bronze."
     }
   ],
   "entities": [
@@ -70,6 +87,28 @@
       ],
       "trigger_id": null,
       "persistent_receipt": null
+    },
+    {
+      "id": "t06_marco.placa",
+      "kind": "plate",
+      "tile": [
+        17,
+        0
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "sets_flag": "world.plate.t06_marco"
+    },
+    {
+      "id": "t06_marco.agulhas",
+      "kind": "refill",
+      "tile": [
+        5,
+        13
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "item": "agulha_fio"
     }
   ],
   "special_edges": [],

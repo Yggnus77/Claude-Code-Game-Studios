@@ -170,4 +170,6 @@ func test_road_needs_no_enemy_defeated() -> void:
 		assert_true(main.is_door_open(door), "%s open" % door["id"])
 	main.load_room("r01_cruzamento")
 	for door in main.room.data.doors:
+		if Room.is_cracked(door):
+			continue  # the optional cellar behind the cracked wall needs a charge
 		assert_true(main.is_door_open(door), "%s open" % door["id"])

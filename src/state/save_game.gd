@@ -12,7 +12,7 @@ extends RefCounted
 ## or the middle of a boss fight. Missions, doors and chests have no fields
 ## of their own: their state lives in the flags and receipts.
 
-const TOOLS := ["frasco", "gancho"]
+const TOOLS := ["frasco", "gancho", "arco", "cargas", "lamparina"]
 const MAX_STACK := 999
 const MAX_RESERVE := 9999999
 const MAX_FRAGMENTS := 64

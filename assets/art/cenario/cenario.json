@@ -41,7 +41,9 @@
   "v00": "oficina",
   "v": "praca",
   "r": "estrada",
-  "t": "torre"
+  "t": "torre",
+  "r03": "torre",
+  "r04": "oficina"
  },
  "decor_size": [
   16,
@@ -243,6 +245,12 @@
   "bell_lit",
   "bush",
   "bush_cut",
-  "pot"
+  "pot",
+  "torch_off",
+  "torch_on",
+  "plate",
+  "plate_hit",
+  "refill",
+  "door_cracked"
  ]
 }

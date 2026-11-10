@@ -201,6 +201,25 @@ func fire_hook() -> bool:
 	return true
 
 
+## Readies a tool on the item button (bow, charge, lamp): false while
+## attacking, dodging, healing, hooking, stunned or dead. Using a tool
+## lowers the shield, as the hook does.
+func ready_tool() -> bool:
+	if is_dead() or is_busy():
+		return false
+	guard.set_held(false)
+	return true
+
+
+## Size and strength of the soft light around Yggnus (the lamp widens it
+## in dark rooms). No effect without the sprite sheet (no glow then).
+func set_glow(radius: float, energy: float) -> void:
+	var glow := get_node_or_null("Glow") as PointLight2D
+	if glow:
+		glow.texture_scale = radius * 2.0 / 128.0
+		glow.energy = energy
+
+
 ## Pulls Yggnus along the latched cable to [param target] (a safe tile
 ## across a gap). Walls and gaps are ignored only during this pull.
 func start_pull(target: Vector2) -> void:

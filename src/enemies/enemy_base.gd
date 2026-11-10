@@ -112,18 +112,31 @@ func receive_sword_hit(damage: int, attack_id: int, from: Vector2) -> bool:
 		_block_flash = 0.12
 		Fx.hit_sparks(get_parent(), global_position, from, true)
 		return false
+	_take_hit(damage, from)
+	return true
+
+
+## A Carga de Bronze going off at [param from] (ferramentas.md §3): the
+## shield does not stop a blast. Returns true if damage was applied.
+func receive_blast(damage: int, from: Vector2) -> bool:
+	if is_defeated or not _hittable():
+		return false
+	_take_hit(damage, from)
+	return true
+
+
+func _take_hit(damage: int, from: Vector2) -> void:
 	health.take_damage(damage)
 	_flash = 0.08
 	Fx.hit_sparks(get_parent(), global_position, from)
 	if health.is_dead():
 		_defeat()
-		return true
+		return
 	if _flinches():
 		var stun := maxf(p("hitstun", 0.2), 0.01)
 		_hurt_left = stun
 		_knockback = (global_position - from).normalized() * (p("knockback", 8) / stun)
 		_on_hurt()
-	return true
 
 
 func _defeat() -> void:
