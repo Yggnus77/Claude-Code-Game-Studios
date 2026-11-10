@@ -19,6 +19,12 @@ var _objective: Label
 var _item: Label
 var _inventory: PanelContainer
 var _inventory_text: Label
+## Dungeon map beside the inventory text (masmorras §3).
+var _dungeon_map: DungeonMapView
+## Returns the dungeon map view for the current room ({} outside dungeons).
+var dungeon_view: Callable = func() -> Dictionary: return {}
+## One line about keys for the top-left status, "" outside dungeons.
+var key_line: Callable = func() -> String: return ""
 var _hint: Label
 var _inventory_status := ""
 var _inv_state: GameState
@@ -111,7 +117,15 @@ func _ready() -> void:
 	_inventory_text.add_theme_font_size_override("font_size", 10)
 	_inventory_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_inventory_text.custom_minimum_size = Vector2(464, 0)
-	_inventory.add_child(_inventory_text)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_inventory.add_child(row)
+	row.add_child(_inventory_text)
+	_inventory_text.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_dungeon_map = DungeonMapView.new()
+	_dungeon_map.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_dungeon_map.visible = false
+	row.add_child(_dungeon_map)
 	_inventory.visible = false
 	add_child(_inventory)
 	_hint = Label.new()
@@ -232,12 +246,20 @@ func _draw_gauge() -> void:
 		_gauge.draw_polyline(pts, COLOR_FRAGMENT.darkened(0.3), 1.0)
 
 
+## Rewrites the status line (Bronze, flasks, keys), e.g. after a room change.
+func refresh_status(state: GameState) -> void:
+	_show_bronze(state)
+
+
 func _show_bronze(state: GameState) -> void:
 	_bronze.text = "Bronze %d/%d" % [state.bronze, state.wallet_capacity] + ("  (reserva %d)" % state.bronze_reserve if state.bronze_reserve > 0 else "")
 	if not state.flasks().is_empty():
 		_bronze.text += "   Frascos %d/%d" % [state.full_flask_count(), state.flasks().size()]
 	if state.item_count("pao_porto") > 0:
 		_bronze.text += "   Pão %d" % state.item_count("pao_porto")
+	var keys := str(key_line.call())
+	if not keys.is_empty():
+		_bronze.text += "   " + keys
 
 
 func is_inventory_open() -> bool:
@@ -280,6 +302,17 @@ func _render_inventory() -> void:
 		lines.append(_inventory_status)
 	lines.append("%s fecha" % DialogueBox._key("map") + ("  ·  %s troca a relíquia" % DialogueBox._key("interact") if state.has_flag(GameState.RELIC_SLOT_FLAG) else ""))
 	_inventory_text.text = "\n".join(lines)
+	var map_view: Dictionary = dungeon_view.call()
+	_dungeon_map.show_view(map_view)
+	_inventory_text.custom_minimum_size.x = 464.0 - (_dungeon_map.custom_minimum_size.x + 10.0 if not map_view.is_empty() else 0.0)
+	# The narrower text beside the map must still fit the panel: smaller
+	# letters until it does (masmorras §3).
+	for font_size in [10, 9, 8]:
+		_inventory_text.add_theme_font_size_override("font_size", font_size)
+		_inventory_text.reset_size()
+		if _inventory_text.get_minimum_size().y <= 310.0:
+			break
+	_inventory.reset_size()
 
 
 ## Shows a centred message, or hides it with an empty string.

@@ -2,6 +2,62 @@
   "schema_version": 1,
   "rewards": [
     {
+      "id": "chest_mapa_akurame",
+      "entity": "t01_guardas.mapa",
+      "item": "mapa_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.mapa"
+    },
+    {
+      "id": "chest_bussola_akurame",
+      "entity": "t04_pesos.bussola",
+      "item": "bussola_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.bussola"
+    },
+    {
+      "id": "chest_chave_chefe_akurame",
+      "entity": "t05_sinos.chave_chefe",
+      "item": "chave_chefe_akurame",
+      "quantity": 1,
+      "receipt": "reward.akurame.chave_chefe"
+    },
+    {
+      "id": "chest_lamparina",
+      "entity": "r02_bomba.lamparina",
+      "item": "lamparina_oleo",
+      "quantity": 1,
+      "receipt": "reward.lamparina"
+    },
+    {
+      "id": "chest_cargas_poco",
+      "entity": "r03_poco.cargas",
+      "item": "carga_bronze",
+      "quantity": 3,
+      "receipt": "reward.cargas.poco",
+      "sets_flag": "gear.cargas"
+    },
+    {
+      "id": "chest_arco_fio",
+      "entity": "r04_adega.arco",
+      "item": "arco_fio",
+      "quantity": 1,
+      "receipt": "reward.arco_fio",
+      "also": [
+        {
+          "item": "agulha_fio",
+          "quantity": 10
+        }
+      ]
+    },
+    {
+      "id": "loot_mirante",
+      "entity": "t08_mirante.tesouro",
+      "bronze": 60,
+      "receipt": "loot.t08_mirante.tesouro",
+      "quantity": 1
+    },
+    {
       "id": "chest_ak_key",
       "entity": "t00_base.ak_key",
       "item": "key_ak_base",

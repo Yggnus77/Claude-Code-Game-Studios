@@ -83,7 +83,8 @@ func test_objective_always_says_what_to_do() -> void:
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base"], "guardas"],
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base", "world.guards_clear", "seen.t03"], "gancho"],
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base", "world.guards_clear", "seen.t03", "world.weight_locked"], "sinos"],
-		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base", "world.guards_clear", "seen.t03", "world.weight_locked", "world.bells_solved"], "Igris"],
+		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base", "world.guards_clear", "seen.t03", "world.weight_locked", "world.bells_solved"], "Chave Grande"],
+		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base", "world.guards_clear", "seen.t03", "world.weight_locked", "world.bells_solved", "visited.t07_igris"], "Igris"],
 	]
 	for step in steps:
 		var text := r.objective(_state(step[0]))

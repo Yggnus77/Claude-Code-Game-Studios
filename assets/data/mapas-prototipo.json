@@ -14,7 +14,10 @@
     "t04_pesos",
     "t05_sinos",
     "t06_marco",
-    "t07_igris"
+    "t07_igris",
+    "r03_poco",
+    "r04_adega",
+    "t08_mirante"
   ],
   "entry_room": "v00_oficina",
   "links": [
@@ -82,6 +85,21 @@
       "from": "t07_igris",
       "to": "t00_base",
       "gate": "seen.t11"
+    },
+    {
+      "from": "r02_bomba",
+      "to": "r03_poco",
+      "gate": "world.torches.r02_bomba"
+    },
+    {
+      "from": "r01_cruzamento",
+      "to": "r04_adega",
+      "gate": "world.cracked.r01_adega"
+    },
+    {
+      "from": "t06_marco",
+      "to": "t08_mirante",
+      "gate": "world.plate.t06_marco"
     }
   ],
   "key_source": {

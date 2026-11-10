@@ -28,6 +28,7 @@ OBJ_COLS = [
     "door_open", "door_closed", "chest", "chest_open", "clue", "npc", "interact",
     "marco", "marco_active", "anchor", "push_block", "fragment", "bell", "bell_lit",
     "bush", "bush_cut", "pot",
+    "torch_off", "torch_on", "plate", "plate_hit", "refill", "door_cracked",
 ]
 
 def obj(name):
@@ -85,7 +86,8 @@ def main():
     sheet(objs, len(OBJ_COLS)).save(os.path.join(out, "objetos.png"))
     meta = {
         "tile_size": T, "themes": THEMES, "tile_cols": oficina.HD_COLS, "wall_rows": 3,
-        "theme_by_room_prefix": {"v00": "oficina", "v": "praca", "r": "estrada", "t": "torre"},
+        "theme_by_room_prefix": {"v00": "oficina", "v": "praca", "r": "estrada", "t": "torre",
+                                 "r03": "torre", "r04": "oficina"},
         "decor_size": [T, 32], "decor": decor_names, "lighting": LIGHTING, "pickup_lights": PICKUP_LIGHTS,
         "object_size": [OBJ_W, OBJ_H], "object_pivot": list(OBJ_PIVOT), "object_cols": OBJ_COLS,
     }

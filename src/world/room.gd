@@ -26,7 +26,9 @@ const COLOR_FRAGMENT := Color("6fe0e0")
 const COLOR_OTHER := Color("5fa8a0")
 const COLOR_HIGHLIGHT := Color("ffffff")
 ## Entity kinds drawn by the room (enemies are their own nodes).
-const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "push_block"]
+const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "push_block", "plate", "refill"]
+## Wall plates hang this far above their tile (they sit on the tall wall).
+const PLATE_LIFT := Vector2(0, -6)
 
 var data: RoomData
 ## Progress used to draw opened/collected things; may be null in tests.
@@ -41,6 +43,12 @@ var raised: Dictionary = {}
 var breakable_rules: Breakables
 ## Breakables built for this visit (emitted so the game can hand drops).
 signal breakable_broken(breakable: Breakable)
+## Ambient colour of a room marked dark ("art": {"dark": true}).
+var dark_ambient := Color("2a2638")
+## Torches of this visit (the Lamparina lights them).
+var torches: Array[Torch] = []
+## Reach of a lit torch's light.
+var torch_light_radius := 104.0
 
 const TILES_PATH := "res://assets/art/cenario/tiles.png"
 const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
@@ -101,6 +109,7 @@ func build(room_data: RoomData) -> void:
 	_theme = str(themes[_theme_row]) if _theme_row < themes.size() else ""
 	_props.clear()
 	_lights.clear()
+	torches.clear()
 	_plan_art()
 	if _tiles:
 		_plan_cells()
@@ -115,6 +124,7 @@ func build(room_data: RoomData) -> void:
 				add_child(prop)
 				_props.append(prop)
 	_build_breakables()
+	_build_torches()
 	var body := StaticBody2D.new()
 	body.name = "Walls"
 	body.collision_layer = WORLD_LAYER
@@ -205,6 +215,9 @@ func _plan_art() -> void:
 					rug_cells[Vector2i(x, y)] = true
 	var names: Array = (_art.get("decor", {}) as Dictionary).get(_theme, [])
 	var lit_kinds: Dictionary = _theme_light("decor_lights") if _theme_light("decor_lights") != null else {}
+	if is_dark():
+		lit_kinds = {}  # a dark room: no lamps burn on its walls
+		names = names.filter(func(n: String) -> bool: return not (_theme_light("decor_lights") as Dictionary).has(n)) if _theme_light("decor_lights") != null else names
 	var lit: Array = names.filter(func(n: String) -> bool: return lit_kinds.has(n))
 	var unlit: Array = names.filter(func(n: String) -> bool: return not lit_kinds.has(n))
 	var seed := data.id.hash()
@@ -233,7 +246,7 @@ func _plan_art() -> void:
 			var top := float((at.y - (int(_art.get("wall_rows", 1)) - 1)) * ts)
 			light_specs.append({"pos": Vector2(at.x * ts + ts * 0.5, top + float(l[3])), "color": Color(str(l[0])),
 				"energy": float(l[1]), "radius": float(l[2]), "flicker": l.size() > 4 and bool(l[4])})
-	var furn: Variant = _theme_light("furn_light")
+	var furn: Variant = null if is_dark() else _theme_light("furn_light")
 	for y in data.height:
 		for x in data.width:
 			var at := Vector2i(x, y)
@@ -273,8 +286,13 @@ static func light_texture() -> GradientTexture2D:
 	return _light_texture
 
 
+## Whether the map marks this room as dark.
+func is_dark() -> bool:
+	return data != null and bool(data.art.get("dark", false))
+
+
 func _add_lights() -> void:
-	var ambient: Variant = _theme_light("ambient")
+	var ambient: Variant = dark_ambient.to_html() if is_dark() else _theme_light("ambient")
 	if ambient != null:
 		var mod := CanvasModulate.new()
 		mod.name = "Ambient"
@@ -292,6 +310,12 @@ func _add_lights() -> void:
 		light.texture_scale = float(spec["radius"]) * 2.0 / 128.0
 		add_child(light)
 		_lights.append(light)
+
+
+## Whether the plate [param e] was already hit (its flag is set).
+func plate_hit(e: Dictionary) -> bool:
+	var flag := str(e.get("sets_flag", ""))
+	return state != null and not flag.is_empty() and state.has_flag(flag)
 
 
 ## Whether entity [param e] is already used up (open chest, read clue, picked fragment).
@@ -391,12 +415,43 @@ func _build_breakables() -> void:
 			add_child(b)
 
 
+## Torches listed as entities (kind "torch"), lit when their puzzle's flag
+## is already set.
+func _build_torches() -> void:
+	for e in data.entities:
+		if str(e.get("kind", "")) != "torch":
+			continue
+		var t: Array = e.get("tile", [0, 0])
+		var torch := Torch.new()
+		torch.room = self
+		torch.light_radius = torch_light_radius
+		torch.entity = e
+		torch.name = "Torch_%s" % str(e.get("id", "")).replace(".", "_")
+		torch.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))
+		var flag := torch.puzzle_flag()
+		torch.lit = state != null and not flag.is_empty() and state.has_flag(flag)
+		add_child(torch)
+		torches.append(torch)
+
+
+## Whether [param door] is a cracked wall (a bomb opens it).
+static func is_cracked(door: Dictionary) -> bool:
+	return bool(door.get("cracked", false))
+
+
 ## Draws object column [param kind] centred on [param item] (bushes, pots).
 func draw_object_on(item: CanvasItem, kind: String) -> void:
 	if _objects:
 		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, item)
 	else:
-		item.draw_circle(Vector2.ZERO, 6.0, COLOR_OTHER)
+		match kind:
+			"torch_off", "torch_on":
+				item.draw_rect(Rect2(-1, -10, 2, 12), Color("4a3a30"))
+				item.draw_rect(Rect2(-3, -13, 6, 3), Color("6a5a48"))
+				if kind == "torch_on":
+					item.draw_circle(Vector2(0, -15), 3.0, Color("ffa850"))
+			_:
+				item.draw_circle(Vector2.ZERO, 6.0, COLOR_OTHER)
 
 
 func _draw() -> void:
@@ -423,6 +478,8 @@ func _draw() -> void:
 		var center := data.tile_center(Vector2i(int(t[0]), int(t[1])))
 		var open := bool(door_open.call(door))
 		draw_rect(Rect2(center - Vector2(7, 7), Vector2(14, 14)), COLOR_DOOR if open else COLOR_DOOR_LOCKED, open == false, 2.0 if open else -1.0)
+		if not open and is_cracked(door):
+			draw_line(center + Vector2(-5, -6), center + Vector2(4, 6), COLOR_GAP, 1.0)
 	for e in data.entities:
 		var kind := str(e.get("kind", ""))
 		if not DRAWN_KINDS.has(kind):
@@ -459,6 +516,11 @@ func _draw() -> void:
 			"unique_fragment":
 				if not spent:
 					draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(4, 0), c + Vector2(0, 5), c + Vector2(-4, 0)]), COLOR_FRAGMENT)
+			"plate":
+				draw_circle(c + PLATE_LIFT, 5.0, COLOR_CHECKPOINT if plate_hit(e) else COLOR_DOOR_LOCKED)
+				draw_circle(c + PLATE_LIFT, 2.0, COLOR_HIGHLIGHT)
+			"refill":
+				draw_rect(Rect2(c - Vector2(4, 7), Vector2(8, 11)), COLOR_INTERACT)
 			_:
 				draw_circle(c, 3.0, COLOR_OTHER)
 		if str(e.get("id", "")) == highlight_id:
@@ -474,7 +536,9 @@ func _draw_art() -> void:
 		if e is Dictionary:
 			_lights[i].visible = not is_spent(e)
 	for door in data.doors:
-		_draw_object(data.tile_center(door_frame_tile(door)), "door_open" if bool(door_open.call(door)) else "door_closed")
+		var open := bool(door_open.call(door))
+		var look := "door_open" if open else ("door_cracked" if is_cracked(door) else "door_closed")
+		_draw_object(data.tile_center(door_frame_tile(door)), look)
 	for e in data.entities:
 		var kind := str(e.get("kind", ""))
 		if not DRAWN_KINDS.has(kind):
@@ -499,6 +563,10 @@ func _draw_art() -> void:
 			"unique_fragment":
 				if not spent:
 					_draw_object(c, "fragment")
+			"plate":
+				_draw_object(c, "plate_hit" if plate_hit(e) else "plate", PLATE_LIFT)
+			"refill":
+				_draw_object(c, "refill")
 		if str(e.get("id", "")) == highlight_id:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
 

@@ -27,7 +27,14 @@ const SLIDE_DIRS := ["north", "south", "east", "west"]
 const INTERACT_REACH := 14.0
 const INTERACT_RADIUS := 14.0
 ## Kinds the interact action can use.
-const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint"]
+const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill"]
+## Arrow hits get their own attack ids, far above the sword's.
+const ARROW_ATTACK_BASE := 1000000
+## Entity kinds a needle stops at (things standing on the floor).
+const ARROW_STOPPERS := ["chest", "npc", "interact", "checkpoint", "anchor", "push_block", "bell"]
+## How far back from where a needle stopped it may fall, looking for
+## floor (it never lands on a gap or in a wall).
+const NEEDLE_DROP_SEARCH := 64.0
 ## Playtest keys 1–4 spawn these enemies near the player.
 ## Triggers tried when an interactable's own scene has already played:
 ## the pump hands its reward once both parts are found (r03 → r04).
@@ -87,9 +94,20 @@ var invasion: YameInvasion
 ## Merchant rules and menu (Etapa 5).
 var shop: Shop
 var shop_panel: ShopPanel
-## Item on the item button: "frasco" (flask, else bread) or "gancho".
+## Tool on the item button: "frasco" (flask, else bread), "gancho",
+## "arco", "cargas" or "lamparina" (ferramentas.json "order").
 var equipped := "frasco"
-var _hook_known := false
+## Item-button tools (ferramentas.json).
+var tools: ToolRules
+## Tools owned at the last story refresh (a new one gets equipped).
+var _owned_tools: Array[String] = [ToolRules.FLASK]
+## How-to text of a tool just found, until a toast shows it.
+var _new_tool_tip := ""
+## Seconds before the bow, charges or lamp can be used again.
+var _tool_cooldown := 0.0
+var _arrow_ids := 0
+## Counts room loads, so a needle drawn in one visit is not shot in the next.
+var _visit := 0
 ## Bell puzzle of the current room, if it has one, and its bells.
 var bell_puzzle: BellPuzzle
 var bells: Array[Bell] = []
@@ -97,6 +115,8 @@ var bells: Array[Bell] = []
 var igris: Igris
 ## Bush and pot rules (exploracao.json).
 var breakables: Breakables
+## Key dungeons: map, compass, keys (masmorras.json).
+var dungeons: Dungeons
 ## Random number in [0, 1) for drops; tests replace it to pick the outcome.
 var drop_roll: Callable = func() -> float: return randf()
 ## Optional mysteries wired into this slice (m01, m02), keyed by id.
@@ -154,6 +174,8 @@ func _ready() -> void:
 	# Every game starts with one empty flask (auditoria-e-decisoes.md item 2).
 	state.apply([{"op": "grant_unique", "item_id": "frasco_01", "quantity": 1, "receipt_id": "new_game.frasco_01"}])
 	breakables = Breakables.load_from()
+	dungeons = Dungeons.load_from()
+	tools = ToolRules.load_from()
 	shop = Shop.new(config)
 	mysteries = config.mystery_quests()
 	relics = config.relic_loadout()
@@ -193,6 +215,8 @@ func _ready() -> void:
 	fade_layer.layer = 20
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
+	hud.dungeon_view = dungeon_map_view
+	hud.key_line = dungeon_key_line
 	hud.bind_state(state)
 	hud.inventory_extra = _inventory_lines
 	hud.relic_cycle = cycle_relic
@@ -266,8 +290,9 @@ func _begin_new_game() -> void:
 func continue_from(doc: Dictionary) -> void:
 	var r := SaveGame.restore(doc)
 	var loaded: GameState = r["state"]
-	_hook_known = loaded.item_count("gancho_retorno") > 0
-	equipped = str(r["tool"]) if _hook_known else "frasco"
+	_owned_tools = tools.owned(loaded)
+	var saved_tool := str(r["tool"])
+	equipped = saved_tool if tools.owns(saved_tool, loaded) else ToolRules.FLASK
 	playtime = float(r["playtime"])
 	_slice_was_done = loaded.has_flag(SLICE_END_FLAG)
 	state.replace_with(loaded)
@@ -457,12 +482,15 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	if data == null:
 		return
 	room_id = id
+	_visit += 1
 	_refresh_story()  # the objective line depends on the room too
 	if room == null:
 		room = Room.new()
 		room.state = state
 		room.door_open = is_door_open
 		room.breakable_rules = breakables
+		room.dark_ambient = tools.dark_ambient
+		room.torch_light_radius = tools.num("lamparina", "torch_light_radius", 104.0)
 		room.breakable_broken.connect(_on_breakable_broken)
 		add_child(room)
 		move_child(room, 0)
@@ -485,6 +513,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	player.respawn_at(data.tile_center(tile), restore_life)
 	_entry_tile = tile
 	player.set_camera_limits(data.pixel_size(), room.top_extent())
+	_update_glow()
 	_arrival_door = _door_at(player.global_position)
 	clear_enemies()
 	room.raised = {}
@@ -496,6 +525,8 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 			var enemy := spawn_enemy(kind, Vector2i(int(t[0]), int(t[1])))
 			if enemy:
 				enemy.set_meta("entity", entity)
+	if hud:
+		hud.refresh_status(state)  # the key line depends on the room
 	_build_bells()
 	_build_igris()
 	_sync_invasion()
@@ -570,14 +601,19 @@ func _refresh_story() -> void:
 		player.has_sword = state.item_count("espada_oficina") > 0
 		player.has_shield = state.item_count("escudo_bronze") > 0
 		player.apply_relic_params(relics.params(state.equipped_relic))
-	if state.item_count("gancho_retorno") > 0 and not _hook_known:
-		_hook_known = true
-		equipped = "gancho"
-		if hud:
-			hud.toast("Gancho equipado: L lança, Q troca para o frasco.", 4.0)
+	var found := tools.new_tools(_owned_tools, state)
+	_owned_tools = tools.owned(state)
+	if not found.is_empty():
+		# The newest tool goes on the button; its how-to is told once.
+		equipped = found[-1]
+		_new_tool_tip = "%s: %s" % [tools.text(equipped, "equipped"), _tool_how(equipped)]
+		_flush_tool_tip.call_deferred()
+		_update_glow()
+	if not tools.owns(equipped, state):
+		equipped = ToolRules.FLASK
 	if hud:
 		hud.set_objective(prologue.objective(state, room_id))
-		hud.set_item("Gancho" if equipped == "gancho" else "Frasco", state.item_count("gancho_retorno") > 0)
+		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1)
 
 
 ## Adds enemy [param kind] on [param tile]. Returns it, or null if unknown.
@@ -641,6 +677,13 @@ func _drop_from(kind: String, at: Vector2, roll: float) -> String:
 	var life := Breakables.life_amount(drop)
 	var coin_amount := Pickup.bronze_amount(drop)
 	if life <= 0 and coin_amount <= 0:
+		# Once the bow is found, an empty pot or bush may hold needles
+		# (ferramentas.json arco.drop_chance), on a second roll.
+		var chance := float((tools.def_of("arco").get("drop_chance", {}) as Dictionary).get(kind, 0.0))
+		if chance > 0.0 and tools.owns("arco", state) and float(drop_roll.call()) < chance:
+			var n := int(tools.num("arco", "drop_amount", 3))
+			drop_needles(at, n, breakables.life_lifetime)
+			return "agulha_%d" % n
 		return "none"
 	var p := Pickup.new()
 	p.target = player
@@ -671,11 +714,23 @@ func _check_room_clear() -> void:
 	hud.toast("Ouviu-se a trava da porta se abrir.")
 
 
-## Item button: throws the hook or drinks/eats, by what is equipped.
+## Item button: throws the hook, shoots, sets a charge, lights the lamp,
+## or drinks/eats, by what is equipped.
 func use_item() -> void:
-	if equipped == "gancho" and state.item_count("gancho_retorno") > 0:
-		player.fire_hook()
-		return
+	match equipped:
+		"gancho":
+			if tools.owns("gancho", state):
+				player.fire_hook()
+				return
+		"arco":
+			shoot_arrow()
+			return
+		"cargas":
+			place_bomb()
+			return
+		"lamparina":
+			use_lamp()
+			return
 	if player.health.current >= player.health.maximum:
 		playtest.refuse(session_time(), "curar com a vida cheia")
 		return
@@ -684,13 +739,268 @@ func use_item() -> void:
 		playtest.refuse(session_time(), "curar sem frasco cheio nem pão")
 
 
-## Quick swap: cycles the item button between flask and hook.
+## Quick swap: the next tool the player has (ferramentas.json "order").
 func quick_swap() -> void:
-	if state.item_count("gancho_retorno") == 0:
+	if _owned_tools.size() <= 1:
 		return
-	equipped = "frasco" if equipped == "gancho" else "gancho"
+	equipped = tools.next_tool(equipped, state)
 	_refresh_story()
 	_queue_save()
+
+
+## A tool's how-to text with the player's own keys.
+func _tool_how(tool: String) -> String:
+	return tools.text(tool, "how").replace("{item}", DialogueBox._key("item")).replace("{swap}", DialogueBox._key("quick_swap"))
+
+
+## Shows the how-to of a tool just found, unless a chest's toast already
+## carried it.
+func _flush_tool_tip() -> void:
+	if not _new_tool_tip.is_empty() and hud:
+		hud.toast(_new_tool_tip, 4.5)
+	_new_tool_tip = ""
+
+
+## Hands over (and forgets) the how-to of a tool just found ("" if none).
+func _take_tool_tip() -> String:
+	var tip := _new_tool_tip
+	_new_tool_tip = ""
+	return tip
+
+
+## The light around Yggnus: wider in a dark room once he has the lamp.
+func _update_glow() -> void:
+	if player == null or room == null:
+		return
+	if room.is_dark() and tools.owns("lamparina", state):
+		player.set_glow(tools.num("lamparina", "dark_glow_radius", 120.0), tools.num("lamparina", "dark_glow_energy", 0.95))
+	else:
+		player.set_glow(Player.GLOW_RADIUS, Player.GLOW_ENERGY)
+
+
+## Whether a tool can be used now; tells the player why not. Returns ""
+## when it can, else "busy" or "empty".
+func _tool_ready(tool: String) -> String:
+	if _tool_cooldown > 0.0 or player.is_dead() or player.is_busy():
+		return "busy"
+	if tools.ammo_count(tool, state) == 0:
+		hud.toast(tools.text(tool, "empty"), 3.0)
+		playtest.refuse(session_time(), "%s sem munição" % tools.text(tool, "name").to_lower())
+		return "empty"
+	if not player.ready_tool(tools.num(tool, "startup", 0.0)):
+		return "busy"
+	return ""
+
+
+## Arco de Fio: spends a needle and shoots it where Yggnus faces after the
+## draw time (ferramentas.md §3). Returns "shot", "busy" or "empty".
+func shoot_arrow() -> String:
+	var why := _tool_ready("arco")
+	if not why.is_empty():
+		return why
+	if not state.apply([{"op": "use_item", "item_id": tools.ammo_of("arco")}]):
+		return "empty"
+	var startup := tools.num("arco", "startup", 0.18)
+	_tool_cooldown = startup + tools.num("arco", "cooldown", 0.3)
+	playtest.first(session_time(), "arco")
+	_release_arrow(_visit, player.motor.facing, startup)
+	return "shot"
+
+
+## Lets the needle go after the draw time [param startup], unless the room
+## changed (visit [param visit] is over) or Yggnus fell meanwhile.
+func _release_arrow(visit: int, dir: Vector2, startup: float) -> void:
+	if startup > 0.0:
+		await get_tree().create_timer(startup, false).timeout
+	if visit != _visit or not is_instance_valid(player) or player.is_dead():
+		return  # the needle is lost
+	# Yggnus is busy through the draw (Player.ready_tool), so nothing else
+	# (sword, dodge, hook) can start before the needle leaves.
+	spawn_arrow(player.global_position + dir.normalized() * 6.0, dir)
+
+
+## Puts a flying needle at [param from] going [param dir].
+func spawn_arrow(from: Vector2, dir: Vector2) -> Arrow:
+	var a := Arrow.new()
+	a.direction = dir
+	a.speed = tools.num("arco", "speed", 260.0)
+	a.max_range = tools.num("arco", "range", 224.0)
+	a.probe = _arrow_probe
+	a.position = from
+	a.stopped.connect(_on_arrow_stopped.bind(dir.normalized()))
+	add_child(a)
+	return a
+
+
+## What a needle's tip touches at [param pos]: an enemy, a plate, a pot or
+## bush ("solid"), a wall, or {}.
+func _arrow_probe(pos: Vector2) -> Dictionary:
+	for enemy in enemies:
+		if is_instance_valid(enemy) and not enemy.is_defeated and enemy.global_position.distance_to(pos) <= enemy.body_radius():
+			return {"type": "enemy", "node": enemy}
+	var cell := Vector2i((pos / room.data.tile_size).floor())
+	for e: Dictionary in room.data.entities:
+		if str(e.get("kind", "")) != "plate":
+			continue
+		var t := Vector2i(int(e["tile"][0]), int(e["tile"][1]))
+		# Once at the plate's row, a near miss by a column still counts.
+		if cell.y <= t.y and absf(pos.x - room.data.tile_center(t).x) <= tools.num("arco", "plate_half_width", 16.0):
+			return {"type": "plate", "entity": e}
+	for e: Dictionary in room.data.entities:
+		if ARROW_STOPPERS.has(str(e.get("kind", ""))) and Vector2i(int(e["tile"][0]), int(e["tile"][1])) == cell:
+			return {"type": "solid"}
+	for b in get_tree().get_nodes_in_group("breakables"):
+		if b is Breakable and not (b as Breakable).is_broken and b.global_position.distance_to(pos) <= (b as Breakable).body_radius():
+			return {"type": "solid"}
+	if room.data.cell(cell) == RoomData.WALL:
+		return {"type": "wall"}
+	return {}
+
+
+func _on_arrow_stopped(hit: Dictionary, at: Vector2, dir: Vector2) -> void:
+	match str(hit.get("type", "")):
+		"enemy":
+			var enemy: Node = hit["node"]
+			if enemy is EnemyBase:
+				_arrow_ids += 1
+				enemy.receive_sword_hit(int(tools.num("arco", "damage", 2)), ARROW_ATTACK_BASE + _arrow_ids, at - dir * 8.0)
+			else:
+				# Igris: the needle glances off his brass.
+				Fx.hit_sparks(self, at, at - dir * 8.0, true)
+		"plate":
+			var flag := str((hit["entity"] as Dictionary).get("sets_flag", ""))
+			Fx.hit_sparks(self, at, at - dir * 8.0, true)
+			if not flag.is_empty() and not state.has_flag(flag):
+				state.apply([{"op": "set_flag", "flag": flag, "value": true}])
+				hud.toast("A placa soou. Uma passagem se abriu.", 3.0)
+				playtest.first(session_time(), "placa")
+		"solid":
+			Fx.hit_sparks(self, at, at - dir * 8.0, true)
+		"wall", "range":
+			# A needle that missed falls and can be picked up again, on the
+			# nearest floor back along its path (never on a gap).
+			var back := 4.0
+			while back <= NEEDLE_DROP_SEARCH:
+				var spot := at - dir * back
+				if room.data.is_walkable(Vector2i((spot / room.data.tile_size).floor())):
+					drop_needles(spot, 1, tools.num("arco", "dropped_lifetime", 10.0))
+					break
+				back += 4.0
+
+
+## Leaves [param amount] needles on the ground at [param at].
+func drop_needles(at: Vector2, amount: int, lifetime: float) -> Pickup:
+	var p := Pickup.new()
+	p.kind = Pickup.KIND_NEEDLE
+	p.amount = amount
+	p.lifetime = lifetime
+	p.target = player
+	p.position = at
+	# A full quiver leaves the needles on the ground.
+	p.can_collect = func() -> bool: return state.item_count(tools.ammo_of("arco")) < tools.ammo_cap("arco")
+	p.collected.connect(func(c: Pickup) -> void:
+		var item := tools.ammo_of("arco")
+		var room_left := tools.ammo_cap("arco") - state.item_count(item)
+		if room_left > 0:
+			state.apply([{"op": "add_item", "item_id": item, "quantity": mini(c.amount, room_left), "stack_limit": tools.ammo_cap("arco")}]))
+	add_child(p)
+	return p
+
+
+## Cargas de Bronze: sets a charge a step ahead (at the feet when that is
+## not floor). Returns "placed", "busy", "full" or "empty".
+func place_bomb() -> String:
+	var why := _tool_ready("cargas")
+	if not why.is_empty():
+		return why
+	if active_bombs().size() >= int(tools.num("cargas", "max_active", 2)):
+		return "full"
+	if not state.apply([{"op": "use_item", "item_id": tools.ammo_of("cargas")}]):
+		return "empty"
+	_tool_cooldown = tools.num("cargas", "cooldown", 0.3)
+	var at := player.global_position + player.motor.facing.normalized() * tools.num("cargas", "place_distance", 14.0)
+	if not room.data.is_walkable(Vector2i((at / room.data.tile_size).floor())):
+		at = player.global_position
+	spawn_bomb(at)
+	playtest.first(session_time(), "carga")
+	return "placed"
+
+
+## Puts a lit charge at [param at].
+func spawn_bomb(at: Vector2) -> Bomb:
+	var b := Bomb.new()
+	b.fuse = tools.num("cargas", "fuse", 1.6)
+	b.radius = tools.num("cargas", "radius", 28.0)
+	b.position = at
+	b.exploded.connect(_on_bomb_exploded)
+	add_child(b)
+	return b
+
+
+## Charges burning now.
+func active_bombs() -> Array[Bomb]:
+	var out: Array[Bomb] = []
+	for n in get_tree().get_nodes_in_group("projectiles"):
+		if n is Bomb and not (n as Bomb).done and not n.is_queued_for_deletion():
+			out.append(n)
+	return out
+
+
+## What a blast reaches: enemies (no shield stops it), pots and bushes,
+## other charges, Yggnus, and cracked walls (ferramentas.md §3).
+func _on_bomb_exploded(bomb: Bomb) -> void:
+	var at := bomb.global_position
+	var r := bomb.radius
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy is EnemyBase and not enemy.is_defeated and enemy.global_position.distance_to(at) <= r + enemy.body_radius():
+			(enemy as EnemyBase).receive_blast(int(tools.num("cargas", "damage", 3)), at)
+	for b in get_tree().get_nodes_in_group("breakables"):
+		if b is Breakable and not (b as Breakable).is_broken and b.global_position.distance_to(at) <= r + (b as Breakable).body_radius():
+			(b as Breakable).break_open(at)
+	for other in active_bombs():
+		if other != bomb and other.global_position.distance_to(at) <= r:
+			other.detonate.call_deferred()
+	if not player.is_dead() and player.global_position.distance_to(at) <= r + Player.FEET_RADIUS:
+		# It hurts, but never takes the last point of life (ferramentas.md §3).
+		var hurt := mini(int(tools.num("cargas", "self_damage", 1)), player.health.current - 1)
+		if hurt > 0:
+			player.receive_hit(hurt, at, false, true, "a própria Carga de Bronze")
+	for door: Dictionary in room.data.doors:
+		if not Room.is_cracked(door) or is_door_open(door):
+			continue
+		if tools.blast_reaches_wall(at, room.data.tile_center(room.door_frame_tile(door)), r):
+			state.apply([{"op": "set_flag", "flag": str(door.get("gate", "")), "value": true}])
+			hud.toast("A parede rachada desmoronou!", 3.0)
+			playtest.first(session_time(), "parede_rachada")
+
+
+## Lamparina: lights the torch in front of Yggnus. When every torch of its
+## puzzle burns, the puzzle's flag is set for good. Returns "lit",
+## "solved", "nothing" or "busy".
+func use_lamp() -> String:
+	var why := _tool_ready("lamparina")
+	if not why.is_empty():
+		return why
+	_tool_cooldown = tools.num("lamparina", "cooldown", 0.35)
+	var flame := player.global_position + player.motor.facing.normalized() * tools.num("lamparina", "reach", 18.0)
+	Fx.flame_puff(self, flame)
+	for torch in room.torches:
+		if torch.lit or torch.position.distance_to(flame) > tools.num("lamparina", "torch_radius", 20.0):
+			continue
+		torch.set_lit(true)
+		playtest.first(session_time(), "lamparina")
+		var flag := torch.puzzle_flag()
+		if flag.is_empty() or state.has_flag(flag):
+			hud.toast("A tocha acendeu.")
+			return "lit"
+		for other in room.torches:
+			if other.puzzle_flag() == flag and not other.lit:
+				hud.toast("A tocha acendeu. Falta outra.")
+				return "lit"
+		state.apply([{"op": "set_flag", "flag": flag, "value": true}])
+		hud.toast("As tochas ardem juntas. A porta selada se abriu.", 3.5)
+		return "solved"
+	return "nothing"
 
 
 ## What the hook's tip touches at [param pos].
@@ -875,6 +1185,7 @@ func _heal_commit() -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	_tool_cooldown = maxf(0.0, _tool_cooldown - delta)
 	if player == null or player.is_dead():
 		return
 	if _autoattack:
@@ -973,7 +1284,14 @@ func interact() -> String:
 				effects.append({"op": "add_receipt", "receipt_id": receipt})
 				if state.apply(effects):
 					var r: Dictionary = config.rewards[trigger]
-					hud.toast("Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"]))))
+					var got := "Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else _amount_text(str(r["item"]), int(r.get("quantity", 1))))
+					for x: Variant in r.get("also", []):
+						if x is Dictionary:
+							got += " e %s" % _amount_text(str(x.get("item", "")), int(x.get("quantity", 1)))
+					var tip := _dungeon_item_tip(str(r.get("item", "")))
+					if tip.is_empty():
+						tip = _take_tool_tip()
+					hud.toast(got + ("\n" + tip if not tip.is_empty() else ""), 3.0 if tip.is_empty() else 5.0)
 				return "chest"
 			var chest_scene := dialogue.blocking_scene_id(trigger)
 			if dialogue.request(trigger):
@@ -994,6 +1312,8 @@ func interact() -> String:
 			hud.toast("Pista registrada.")
 			_on_clue_noted(str(e["sets_flag"]))
 			return "clue"
+		"refill":
+			return _use_refill(e)
 		"checkpoint":
 			# The marco becomes the safe entry: a load starts beside it.
 			_entry_tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)
@@ -1020,6 +1340,21 @@ func interact() -> String:
 					return "scene"
 			hud.toast(str(FOLLOW_UP_NOTES.get(trigger, "...")))
 			return "nothing"
+
+
+## A needle container: tops the needles up (ferramentas.json refill_amount).
+func _use_refill(e: Dictionary) -> String:
+	var tool := tools.tool_for_ammo(str(e.get("item", "")))
+	if tool.is_empty() or not tools.owns(tool, state):
+		hud.toast("Um recipiente com agulhas de fio. Ainda não há com o que dispará-las.")
+		return "nothing"
+	var effects := tools.top_up_effects(tool, tools.refill_amount, state)
+	if effects.is_empty():
+		hud.toast("Suas agulhas já estão completas.")
+		return "nothing"
+	state.apply(effects)
+	hud.toast("Agulhas repostas: %d." % tools.ammo_count(tool, state))
+	return "refill"
 
 
 ## Plays scene [param scene_id] through its trigger. False if it cannot play now.
@@ -1106,6 +1441,14 @@ func answer_mystery(mystery_id: String, index: int) -> int:
 ## Inventory lines for the relic slot and the mysteries in progress.
 func _inventory_lines() -> PackedStringArray:
 	var lines := PackedStringArray()
+	var gear := PackedStringArray()
+	for tool in _owned_tools:
+		var n := tools.ammo_count(tool, state)
+		if n >= 0:
+			gear.append("%s %d/%d" % [config.item_name(tools.ammo_of(tool)), n, tools.ammo_cap(tool)])
+	if not gear.is_empty():
+		lines.append("")
+		lines.append("MUNIÇÃO: " + " · ".join(gear))
 	if state.has_flag(GameState.RELIC_SLOT_FLAG):
 		lines.append("")
 		lines.append("RELÍQUIA (uma por vez): %s" % (config.item_name(state.equipped_relic) if not state.equipped_relic.is_empty() else "nenhuma"))
@@ -1272,6 +1615,8 @@ func is_door_open(door: Dictionary) -> bool:
 	if state.has_flag(str(door.get("unlock_persistent_flag", ""))):
 		return true
 	var g := str(gate)
+	if g.begins_with("boss_key:"):
+		return dungeons.boss_gate_open(g.trim_prefix("boss_key:"), state)
 	if g.begins_with("key:") or g.begins_with("item:"):
 		return state.item_count(g.split(":")[1]) > 0
 	return state.has_flag(g)
@@ -1305,10 +1650,71 @@ func _check_doors() -> void:
 				var scene := str(config.tower.get("locked_door_scenes", {}).get(here, ""))
 				if not scene.is_empty() and dialogue.request(scene):
 					return
-				hud.toast("As amarras de Yame prendem a porta." if prologue.blocks_door(state, room_id, here) else "A passagem está fechada.")
+				hud.toast(_locked_text(door, here))
 				playtest.refuse(session_time(), "porta fechada (%s)" % here)
 			return
 		_go_through(door)
+
+
+## What a closed door says when the player walks into it.
+func _locked_text(door: Dictionary, door_id: String) -> String:
+	if prologue.blocks_door(state, room_id, door_id):
+		return "As amarras de Yame prendem a porta."
+	if door.has("locked_text"):
+		return str(door["locked_text"])
+	if Room.is_cracked(door):
+		return "A parede está rachada. Uma explosão a derrubaria."
+	var gate := str(door.get("gate", ""))
+	if gate.begins_with("boss_key:"):
+		return "Uma porta grande com fechadura dourada. Precisa da %s." % config.item_name(gate.trim_prefix("boss_key:"))
+	if gate.begins_with("key:"):
+		return "Trancada. Precisa de uma chave pequena."
+	return "A passagem está fechada."
+
+
+## "Arco de Fio", or "3 Cargas de Bronze" (itens.json "plural") when more
+## than one.
+func _amount_text(item: String, n: int) -> String:
+	if n <= 1:
+		return config.item_name(item)
+	return "%d %s" % [n, str(config.items.get(item, {}).get("plural", config.item_name(item)))]
+
+
+## What a dungeon item does, told when it is found ("" for other items).
+func _dungeon_item_tip(item: String) -> String:
+	for id: String in dungeons.defs:
+		var def: Dictionary = dungeons.defs[id]
+		if item == str(def.get("map_item", "")):
+			return "Todas as salas aparecem no mapa do inventário (%s)." % DialogueBox._key("map")
+		if item == str(def.get("compass_item", "")):
+			return "O mapa agora marca os baús fechados e a sala do chefe."
+		if item == str(def.get("boss_key", "")):
+			return "Ela abre a porta grande de fechadura dourada."
+	return ""
+
+
+## The dungeon map for the inventory ({} outside a dungeon).
+func dungeon_map_view() -> Dictionary:
+	var d := dungeons.dungeon_of(room_id)
+	if d.is_empty():
+		return {}
+	var v := dungeons.map_view(d, state, room_id)
+	v["name"] = str(dungeons.def_of(d).get("name", ""))
+	return v
+
+
+## "Chaves 1 · Chave Grande" for the HUD while inside a dungeon.
+func dungeon_key_line() -> String:
+	var d := dungeons.dungeon_of(room_id)
+	if d.is_empty():
+		return ""
+	var v := dungeons.map_view(d, state, room_id)
+	var parts := PackedStringArray()
+	if int(v["small_keys"]) > 0:
+		parts.append("Chaves %d" % int(v["small_keys"]))
+	if v["boss_key"]:
+		parts.append("Chave Grande")
+	return "   ".join(parts)
 
 
 func _go_through(door: Dictionary) -> void:
@@ -1375,6 +1781,8 @@ func _slide_to(door: Dictionary, target: Vector2i) -> void:
 				else:
 					b.is_broken = true
 					b.queue_redraw()
+		elif c is Torch:
+			(c as Torch).drop_light()
 		elif c is PointLight2D or c.name == "Walls" or c.name == "Ambient":
 			ghost.remove_child(c)
 			c.queue_free()

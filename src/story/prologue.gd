@@ -110,6 +110,9 @@ func objective(state: GameState, room_id: String = "") -> String:
 		return "Atravesse o vão com o gancho e prenda o contrapeso."
 	if not state.has_flag("world.bells_solved"):
 		return "Toque os sinos na ordem da inscrição."
+	# masmorras.md: the big key opens Igris's door (old saves already past it).
+	if state.item_count("chave_chefe_akurame") == 0 and not state.has_flag("visited.t07_igris") and not state.has_flag("seen.t08"):
+		return "Encontre a Chave Grande na Galeria dos sinos."
 	if not state.has_flag("seen.t08"):
 		return "Suba até a câmara de Igris."
 	if not state.has_flag("seen.t11"):

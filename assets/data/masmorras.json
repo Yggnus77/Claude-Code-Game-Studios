@@ -1,0 +1,16 @@
+{
+  "_doc": "Masmorras de chaves (design/gdd/masmorras.md): mapa, bússola, chaves pequenas e chave grande por masmorra.",
+  "dungeons": {
+    "akurame": {
+      "name": "Torre de Akurame",
+      "room_prefix": "t",
+      "start": "t00_base",
+      "map_item": "mapa_akurame",
+      "compass_item": "bussola_akurame",
+      "boss_key": "chave_chefe_akurame",
+      "small_keys": ["key_ak_base"],
+      "boss_room": "t07_igris",
+      "boss_done_flag": "seen.t10"
+    }
+  }
+}

@@ -21,6 +21,12 @@ C.update({
     "flower": "#e8d070", "flower_hi": "#fff4b8", "berry": "#c0485a",
     "clay": "#b0643c", "clay_hi": "#d88a58", "clay_lo": "#7a4028", "clay_dk": "#4e2818",
     "glaze": "#3a6a8a", "glaze_hi": "#5a92b0",
+    "iron": "#4a4652", "iron_hi": "#6e6878", "iron_lo": "#2e2a34",
+    "char": "#2a1e1a", "char_hi": "#4a3428", "ember_lo": "#c0482a",
+    "fire": "#f08a32", "fire_hi": "#ffc85a", "fire_core": "#fff4c8",
+    "needle": "#d8d2c4", "needle_lo": "#8a8478", "thread": "#7ee0ff",
+    "danger": "#e0503c", "danger_hi": "#ff8a6a",
+    "mortar": "#3a3240", "brick": "#7a6e78", "brick_hi": "#968a92", "brick_lo": "#5a4e5a",
 })
 OW, OH, PY = 16, 32, 24
 
@@ -262,6 +268,141 @@ def pot():
     return c
 
 
+def torch(lit):
+    """Tocha de pé: cesto de ferro numa haste com base, lenha carbonizada;
+    acesa, uma chama em camadas com fagulhas (ferramentas.md)."""
+    c = Canvas(OW, OH)
+    box(c, 4, PY + 3, 8, 3, "iron", "iron_hi", "iron_lo")          # base
+    line(c, 5, PY + 2, 10, PY + 2, "iron_lo")
+    line(c, 7, PY - 9, 7, PY + 2, "iron_hi")                       # haste
+    line(c, 8, PY - 9, 8, PY + 2, "iron_lo")
+    line(c, 6, PY - 2, 9, PY - 2, "iron")                          # anel
+    put(c, 6, PY - 2, "iron_hi")
+    # cesto: aros de ferro abrindo para cima
+    for i, y in enumerate(range(PY - 13, PY - 9)):
+        w = 5 - i
+        line(c, 8 - w, y, 7 + w, y, "iron" if i % 2 else "iron_lo")
+        put(c, 8 - w, y, "iron_hi")
+    for x in (4, 7, 10):
+        put(c, x, PY - 12, "iron_hi")
+    # lenha
+    for x, k in ((5, "char"), (7, "char_hi"), (9, "char"), (10, "char_hi")):
+        line(c, x, PY - 15, x + 1, PY - 13, k)
+    if lit:
+        for x in (6, 8, 10):
+            put(c, x, PY - 13, "ember_lo")
+        flame = (
+            "....Y....",
+            "...YO....",
+            "...OOY...",
+            "..ROYO...",
+            "..ROYYO..",
+            ".ROYWYOR.",
+            ".ROYWWYOR",
+            "ROYWWWYOR",
+            "ROYWWWYOR",
+            ".ROYWYOR.",
+            "..RROOR..",
+        )
+        keys = {"R": "ember_lo", "O": "fire", "Y": "fire_hi", "W": "fire_core"}
+        for j, row in enumerate(flame):
+            for i, ch in enumerate(row):
+                if ch in keys:
+                    put(c, 4 + i, PY - 24 + j, keys[ch])
+        for x, y in ((3, PY - 21), (12, PY - 25), (13, PY - 19), (6, PY - 26)):
+            put(c, x, y, "fire_hi")
+    else:
+        put(c, 6, PY - 15, "stone_hi")      # cinza fria
+        put(c, 9, PY - 16, "stone_hi")
+    c.outline(K)
+    return c
+
+
+def plate(hit):
+    """Placa de bronze de acertar à distância, presa na parede por quatro
+    rebites: anéis de alvo e um olho no centro, vermelho; dourada com o
+    olho azul quando já foi acertada."""
+    c = Canvas(OW, OH)
+    cy = PY - 4
+    rings = ("brass_dk", "gold" if hit else "brass", "brass_lo", "gold_hi" if hit else "brass_hi", "brass_lo")
+    for j in range(-6, 7):
+        for i in range(-6, 7):
+            d = (i * i + j * j) ** 0.5
+            if d > 6.2:
+                continue
+            k = rings[min(4, int((6.2 - d) / 1.25))]
+            if i + j < -5 and k in ("brass", "gold"):
+                k = "gold_hi" if hit else "brass_hi"
+            put(c, 8 + i, cy + j, k)
+    ball(c, 8, cy, 1, 1, "thread" if hit else "danger", "white" if hit else "danger_hi", "safe_lo" if hit else "rust")
+    for x, y in ((3, cy - 5), (12, cy - 5), (3, cy + 5), (12, cy + 5)):
+        put(c, x, y, "iron_hi")
+    put(c, 5, cy - 4, "white")
+    if hit:
+        for x, y in ((0, cy), (15, cy), (8, cy - 8), (8, cy + 8)):
+            put(c, x, y, "lamp_hi")
+    c.outline(K)
+    return c
+
+
+def refill():
+    """Recipiente de agulhas: pote de madeira com aros de latão, agulhas de
+    prata espetadas (cada uma com seu olho) e um carretel de fio azul."""
+    c = Canvas(OW, OH)
+    box(c, 3, PY - 6, 10, 11, "wood", "wood_hi", "wood_lo")
+    for y in (PY - 4, PY + 2):
+        line(c, 3, y, 12, y, "brass")
+        put(c, 4, y, "brass_hi")
+    line(c, 7, PY - 3, 7, PY + 1, "wood_lo")
+    line(c, 10, PY - 3, 10, PY + 1, "wood_lo")
+    box(c, 3, PY - 7, 10, 2, "wood_lo", "wood", "wood_lo")
+    for x, top in ((5, PY - 14), (7, PY - 16), (9, PY - 13), (11, PY - 15)):
+        line(c, x, top + 2, x, PY - 8, "needle")
+        put(c, x, top, "needle_lo")
+        put(c, x, top + 1, "white")
+    line(c, 6, PY - 12, 6, PY - 8, "needle_lo")
+    box(c, 12, PY - 1, 3, 4, "thread", "white", "safe_lo")
+    line(c, 12, PY - 2, 14, PY - 2, "wood_hi")
+    line(c, 12, PY + 3, 14, PY + 3, "wood_hi")
+    line(c, 11, PY - 15, 13, PY - 2, "thread")
+    put(c, 4, PY - 5, "white")
+    c.outline(K)
+    return c
+
+
+def door_cracked():
+    """Arco fechado por tijolos com uma rachadura larga (abre com Carga de
+    Bronze): o mesmo arco das portas, cheio de alvenaria rachada."""
+    c = Canvas(OW, OH)
+    y0 = PY - 16
+    box(c, 0, y0 + 3, 16, 21, "stone", "stone_hi", "stone_dk")
+    ball(c, 8, y0 + 4, 8, 4, "stone", "stone_hi", "stone_dk")
+    for y in range(y0 + 7, PY + 7, 4):
+        put(c, 0, y, "stone_dk")
+        put(c, 15, y, "stone_dk")
+    # alvenaria dentro do arco
+    box(c, 3, y0 + 5, 10, 18, "mortar", "mortar", "mortar")
+    ball(c, 8, y0 + 5, 5, 3, "mortar", "mortar", "mortar")
+    for row, y in enumerate(range(y0 + 4, PY + 7, 3)):
+        off = 0 if row % 2 else 2
+        for x in range(3 + off, 13, 4):
+            for i in range(3):
+                for j in range(2):
+                    if 3 <= x + i <= 12:
+                        put(c, x + i, y + j, "brick_hi" if j == 0 and i == 0 else ("brick" if j == 0 else "brick_lo"))
+    # a rachadura: um raio escuro do alto até a base, com lascas
+    path = ((8, y0 + 3), (7, y0 + 6), (9, y0 + 9), (8, y0 + 12), (6, y0 + 14), (7, y0 + 17), (9, y0 + 19), (8, PY + 3), (10, PY + 6))
+    for (xa, ya), (xb, yb) in zip(path, path[1:]):
+        line(c, xa, ya, xb, yb, "night")
+        line(c, xa + 1, ya, xb + 1, yb, "stone_dk")
+    for x, y in ((5, y0 + 13), (11, y0 + 8), (10, y0 + 18), (4, PY + 1)):
+        line(c, x, y, x + (1 if x < 8 else -1), y + 2, "night")
+    for x, y in ((3, PY + 6), (12, PY + 6), (6, PY + 7)):
+        put(c, x, y, "brick_lo")
+    c.outline(K)
+    return c
+
+
 OBJECTS = {
     "door_open": lambda: door(True), "door_closed": lambda: door(False),
     "chest": lambda: chest(False), "chest_open": lambda: chest(True), "clue": clue, "npc": npc,
@@ -269,4 +410,7 @@ OBJECTS = {
     "anchor": anchor, "push_block": push_block, "fragment": fragment,
     "bell": lambda: bell(False), "bell_lit": lambda: bell(True),
     "bush": bush, "bush_cut": bush_cut, "pot": pot,
+    "torch_off": lambda: torch(False), "torch_on": lambda: torch(True),
+    "plate": lambda: plate(False), "plate_hit": lambda: plate(True),
+    "refill": refill, "door_cracked": door_cracked,
 }

@@ -2,6 +2,42 @@
   "schema_version": 1,
   "items": [
     {
+      "id": "mapa_akurame",
+      "name": "Mapa da Torre",
+      "type": "mapa",
+      "stack_limit": 1,
+      "source": "chest_mapa_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "bussola_akurame",
+      "name": "Bússola da Torre",
+      "type": "bussola",
+      "stack_limit": 1,
+      "source": "chest_bussola_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "chave_chefe_akurame",
+      "name": "Chave Grande de Akurame",
+      "type": "chave_chefe",
+      "stack_limit": 1,
+      "source": "chest_chave_chefe_akurame",
+      "unique": true,
+      "sellable": false
+    },
+    {
+      "id": "lamparina_oleo",
+      "name": "Lamparina de Óleo",
+      "type": "ferramenta",
+      "stack_limit": 1,
+      "source": "chest_lamparina",
+      "unique": true,
+      "sellable": false
+    },
+    {
       "id": "espada_oficina",
       "name": "Espada de Oficina",
       "type": "arma",
@@ -238,6 +274,7 @@
     {
       "id": "carga_bronze",
       "name": "Carga de Bronze",
+      "plural": "Cargas de Bronze",
       "type": "consumivel",
       "stack_limit": 9,
       "source": "shop",
@@ -266,6 +303,7 @@
     {
       "id": "agulha_fio",
       "name": "Agulha de Fio",
+      "plural": "Agulhas de Fio",
       "type": "municao",
       "stack_limit": 20,
       "source": "refill",

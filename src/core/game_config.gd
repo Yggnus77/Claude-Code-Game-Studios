@@ -175,7 +175,8 @@ func item_name(item_id: String) -> String:
 
 
 ## The GameState effects that hand out world reward [param reward_id]
-## (an item or Bronze, guarded by the reward's receipt). Empty if unknown.
+## (an item or Bronze, guarded by the reward's receipt, plus any "also"
+## items and "sets_flag"). Empty if unknown.
 func reward_effects(reward_id: String) -> Array:
 	var r: Dictionary = rewards.get(reward_id, {})
 	if r.is_empty():
@@ -183,7 +184,19 @@ func reward_effects(reward_id: String) -> Array:
 	var receipt := str(r.get("receipt", "reward.%s" % reward_id))
 	if r.has("bronze"):
 		return [{"op": "grant_bronze_unique", "amount": int(r["bronze"]), "receipt_id": receipt}]
-	return [{"op": "grant_unique", "item_id": str(r["item"]), "quantity": int(r.get("quantity", 1)), "receipt_id": receipt}]
+	var out: Array = [{"op": "grant_unique", "item_id": str(r["item"]), "quantity": int(r.get("quantity", 1)), "receipt_id": receipt}]
+	# Extra items in the same chest ("also": [{"item", "quantity"}]), each
+	# with its own receipt, and a flag the reward sets ("sets_flag").
+	var extra: Variant = r.get("also", [])
+	if extra is Array:
+		for i in (extra as Array).size():
+			var x: Variant = extra[i]
+			if x is Dictionary:
+				out.append({"op": "grant_unique", "item_id": str(x.get("item", "")), "quantity": int(x.get("quantity", 1)), "receipt_id": "%s.also.%d" % [receipt, i]})
+	var flag := str(r.get("sets_flag", ""))
+	if not flag.is_empty():
+		out.append({"op": "set_flag", "flag": flag, "value": true})
+	return out
 
 
 ## Receipt id of world reward [param reward_id], or "".
