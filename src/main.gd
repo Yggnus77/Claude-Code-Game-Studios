@@ -30,10 +30,11 @@ const INTERACT_RADIUS := 14.0
 const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill"]
 ## Arrow hits get their own attack ids, far above the sword's.
 const ARROW_ATTACK_BASE := 1000000
-## How close to a plate's wall cell a needle must reach (px).
-const PLATE_RADIUS := 9.0
-## How close to the lamp's flame a torch must be (px).
-const TORCH_RADIUS := 12.0
+## Entity kinds a needle stops at (things standing on the floor).
+const ARROW_STOPPERS := ["chest", "npc", "interact", "checkpoint", "anchor", "push_block", "bell"]
+## How far back from where a needle stopped it may fall, looking for
+## floor (it never lands on a gap or in a wall).
+const NEEDLE_DROP_SEARCH := 64.0
 ## Playtest keys 1–4 spawn these enemies near the player.
 ## Triggers tried when an interactable's own scene has already played:
 ## the pump hands its reward once both parts are found (r03 → r04).
@@ -489,6 +490,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 		room.door_open = is_door_open
 		room.breakable_rules = breakables
 		room.dark_ambient = tools.dark_ambient
+		room.torch_light_radius = tools.num("lamparina", "torch_light_radius", 104.0)
 		room.breakable_broken.connect(_on_breakable_broken)
 		add_child(room)
 		move_child(room, 0)
@@ -773,7 +775,7 @@ func _update_glow() -> void:
 	if room.is_dark() and tools.owns("lamparina", state):
 		player.set_glow(tools.num("lamparina", "dark_glow_radius", 120.0), tools.num("lamparina", "dark_glow_energy", 0.95))
 	else:
-		player.set_glow(72.0, 0.45)
+		player.set_glow(Player.GLOW_RADIUS, Player.GLOW_ENERGY)
 
 
 ## Whether a tool can be used now; tells the player why not. Returns ""
@@ -785,7 +787,7 @@ func _tool_ready(tool: String) -> String:
 		hud.toast(tools.text(tool, "empty"), 3.0)
 		playtest.refuse(session_time(), "%s sem munição" % tools.text(tool, "name").to_lower())
 		return "empty"
-	if not player.ready_tool():
+	if not player.ready_tool(tools.num(tool, "startup", 0.0)):
 		return "busy"
 	return ""
 
@@ -812,6 +814,8 @@ func _release_arrow(visit: int, dir: Vector2, startup: float) -> void:
 		await get_tree().create_timer(startup, false).timeout
 	if visit != _visit or not is_instance_valid(player) or player.is_dead():
 		return  # the needle is lost
+	# Yggnus is busy through the draw (Player.ready_tool), so nothing else
+	# (sword, dodge, hook) can start before the needle leaves.
 	spawn_arrow(player.global_position + dir.normalized() * 6.0, dir)
 
 
@@ -839,8 +843,12 @@ func _arrow_probe(pos: Vector2) -> Dictionary:
 		if str(e.get("kind", "")) != "plate":
 			continue
 		var t := Vector2i(int(e["tile"][0]), int(e["tile"][1]))
-		if t == cell or (room.data.tile_center(t) + Room.PLATE_LIFT).distance_to(pos) <= PLATE_RADIUS:
+		# Once at the plate's row, a near miss by a column still counts.
+		if cell.y <= t.y and absf(pos.x - room.data.tile_center(t).x) <= tools.num("arco", "plate_half_width", 16.0):
 			return {"type": "plate", "entity": e}
+	for e: Dictionary in room.data.entities:
+		if ARROW_STOPPERS.has(str(e.get("kind", ""))) and Vector2i(int(e["tile"][0]), int(e["tile"][1])) == cell:
+			return {"type": "solid"}
 	for b in get_tree().get_nodes_in_group("breakables"):
 		if b is Breakable and not (b as Breakable).is_broken and b.global_position.distance_to(pos) <= (b as Breakable).body_radius():
 			return {"type": "solid"}
@@ -869,8 +877,15 @@ func _on_arrow_stopped(hit: Dictionary, at: Vector2, dir: Vector2) -> void:
 		"solid":
 			Fx.hit_sparks(self, at, at - dir * 8.0, true)
 		"wall", "range":
-			# A needle that missed falls and can be picked up again.
-			drop_needles(at - dir * 4.0, 1, tools.num("arco", "dropped_lifetime", 10.0))
+			# A needle that missed falls and can be picked up again, on the
+			# nearest floor back along its path (never on a gap).
+			var back := 4.0
+			while back <= NEEDLE_DROP_SEARCH:
+				var spot := at - dir * back
+				if room.data.is_walkable(Vector2i((spot / room.data.tile_size).floor())):
+					drop_needles(spot, 1, tools.num("arco", "dropped_lifetime", 10.0))
+					break
+				back += 4.0
 
 
 ## Leaves [param amount] needles on the ground at [param at].
@@ -881,6 +896,8 @@ func drop_needles(at: Vector2, amount: int, lifetime: float) -> Pickup:
 	p.lifetime = lifetime
 	p.target = player
 	p.position = at
+	# A full quiver leaves the needles on the ground.
+	p.can_collect = func() -> bool: return state.item_count(tools.ammo_of("arco")) < tools.ammo_cap("arco")
 	p.collected.connect(func(c: Pickup) -> void:
 		var item := tools.ammo_of("arco")
 		var room_left := tools.ammo_cap("arco") - state.item_count(item)
@@ -944,7 +961,10 @@ func _on_bomb_exploded(bomb: Bomb) -> void:
 		if other != bomb and other.global_position.distance_to(at) <= r:
 			other.detonate.call_deferred()
 	if not player.is_dead() and player.global_position.distance_to(at) <= r + Player.FEET_RADIUS:
-		player.receive_hit(int(tools.num("cargas", "self_damage", 1)), at, false, true, "a própria Carga de Bronze")
+		# It hurts, but never takes the last point of life (ferramentas.md §3).
+		var hurt := mini(int(tools.num("cargas", "self_damage", 1)), player.health.current - 1)
+		if hurt > 0:
+			player.receive_hit(hurt, at, false, true, "a própria Carga de Bronze")
 	for door: Dictionary in room.data.doors:
 		if not Room.is_cracked(door) or is_door_open(door):
 			continue
@@ -965,7 +985,7 @@ func use_lamp() -> String:
 	var flame := player.global_position + player.motor.facing.normalized() * tools.num("lamparina", "reach", 18.0)
 	Fx.flame_puff(self, flame)
 	for torch in room.torches:
-		if torch.lit or torch.position.distance_to(flame) > TORCH_RADIUS + 8.0:
+		if torch.lit or torch.position.distance_to(flame) > tools.num("lamparina", "torch_radius", 20.0):
 			continue
 		torch.set_lit(true)
 		playtest.first(session_time(), "lamparina")
@@ -1264,9 +1284,10 @@ func interact() -> String:
 				effects.append({"op": "add_receipt", "receipt_id": receipt})
 				if state.apply(effects):
 					var r: Dictionary = config.rewards[trigger]
-					var got := "Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else config.item_name(str(r["item"])))
-					if not r.has("bronze") and int(r.get("quantity", 1)) > 1:
-						got += " ×%d" % int(r["quantity"])
+					var got := "Recebeu %s" % ("%d Bronze" % int(r["bronze"]) if r.has("bronze") else _amount_text(str(r["item"]), int(r.get("quantity", 1))))
+					for x: Variant in r.get("also", []):
+						if x is Dictionary:
+							got += " e %s" % _amount_text(str(x.get("item", "")), int(x.get("quantity", 1)))
 					var tip := _dungeon_item_tip(str(r.get("item", "")))
 					if tip.is_empty():
 						tip = _take_tool_tip()
@@ -1649,6 +1670,14 @@ func _locked_text(door: Dictionary, door_id: String) -> String:
 	if gate.begins_with("key:"):
 		return "Trancada. Precisa de uma chave pequena."
 	return "A passagem está fechada."
+
+
+## "Arco de Fio", or "3 Cargas de Bronze" (itens.json "plural") when more
+## than one.
+func _amount_text(item: String, n: int) -> String:
+	if n <= 1:
+		return config.item_name(item)
+	return "%d %s" % [n, str(config.items.get(item, {}).get("plural", config.item_name(item)))]
 
 
 ## What a dungeon item does, told when it is found ("" for other items).

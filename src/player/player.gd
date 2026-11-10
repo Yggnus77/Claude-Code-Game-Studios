@@ -58,6 +58,11 @@ var has_sword := true
 var has_shield := true
 
 var _hitstun := 0.0
+## Seconds left drawing the bow (or another tool's start): busy meanwhile.
+var _tool_lock := 0.0
+## The soft light around Yggnus, as it is outside dark rooms.
+const GLOW_RADIUS := 72.0
+const GLOW_ENERGY := 0.45
 var _hitstun_time := 0.18
 var _knockback_px := 18.0
 var _knockback := Vector2.ZERO
@@ -117,8 +122,8 @@ func _ready() -> void:
 		glow.texture = Room.light_texture()
 		glow.position = Vector2(0, -14)
 		glow.color = Color(1.0, 0.92, 0.8)
-		glow.energy = 0.45
-		glow.texture_scale = 72.0 * 2.0 / 128.0
+		glow.energy = GLOW_ENERGY
+		glow.texture_scale = GLOW_RADIUS * 2.0 / 128.0
 		add_child(glow)
 	queue_redraw()
 
@@ -136,13 +141,13 @@ func set_camera_limits(size_px: Vector2i, top: int = 0) -> void:
 
 ## Queues a sword press (same as the attack action).
 func request_attack() -> void:
-	if combo and has_sword:
+	if combo and has_sword and _tool_lock <= 0.0:
 		combo.request()
 
 
 ## Queues a dodge press (same as the dodge action).
 func request_dodge() -> void:
-	if dodge:
+	if dodge and _tool_lock <= 0.0:
 		dodge.request()
 
 
@@ -153,6 +158,7 @@ func respawn_at(pos: Vector2, restore_life: bool = true) -> void:
 	global_position = pos
 	velocity = Vector2.ZERO
 	_hitstun = 0.0
+	_tool_lock = 0.0
 	combo.reset()
 	dodge.reset()
 	guard.reset()
@@ -193,7 +199,7 @@ func request_heal() -> bool:
 
 ## Throws the hook where Yggnus faces. False while busy or cooling down.
 func fire_hook() -> bool:
-	if hook == null or is_dead() or combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy():
+	if hook == null or is_dead() or combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy() or _tool_lock > 0.0:
 		return false
 	if not hook.fire(motor.facing):
 		return false
@@ -203,11 +209,13 @@ func fire_hook() -> bool:
 
 ## Readies a tool on the item button (bow, charge, lamp): false while
 ## attacking, dodging, healing, hooking, stunned or dead. Using a tool
-## lowers the shield, as the hook does.
-func ready_tool() -> bool:
+## lowers the shield, as the hook does, and keeps Yggnus busy for
+## [param lock] seconds (the bow's draw).
+func ready_tool(lock: float = 0.0) -> bool:
 	if is_dead() or is_busy():
 		return false
 	guard.set_held(false)
+	_tool_lock = maxf(0.0, lock)
 	return true
 
 
@@ -229,7 +237,7 @@ func start_pull(target: Vector2) -> void:
 
 ## True while attacking, dodging, healing, hooking or stunned: story scenes wait for this to end.
 func is_busy() -> bool:
-	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
+	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or _tool_lock > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
 
 
 ## True once life reaches zero, until the respawn.
@@ -286,6 +294,7 @@ func _physics_process(delta: float) -> void:
 	_advance_anim(delta)
 	health.tick(delta)
 	dodge.tick(delta)
+	_tool_lock = maxf(0.0, _tool_lock - delta)
 	guard.tick(delta)
 	if not combo.is_busy():
 		# Buffer and chain-reset clocks run while hooking, dodging, healing or

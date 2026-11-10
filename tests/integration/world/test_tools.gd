@@ -224,3 +224,71 @@ func test_the_new_rooms_are_saveable_and_tools_round_trip() -> void:
 	main.continue_from(doc)
 	assert_eq(main.equipped, "arco", "bow still on the button")
 	assert_eq(main.room_id, "r04_adega", "same room")
+
+
+func test_the_bow_draw_keeps_yggnus_busy() -> void:
+	var p := _setup("r01_cruzamento", Vector2i(20, 12), {"arco_fio": 1, "agulha_fio": 3})
+	p.motor.facing = Vector2.RIGHT
+	assert_eq(main.shoot_arrow(), "shot", "drawing")
+	assert_true(p.is_busy(), "busy while drawing")
+	p.request_attack()
+	await _frames(2)
+	assert_true(not p.combo.is_busy(), "no sword swing during the draw")
+	await _frames(15)
+	assert_true(not p.is_busy(), "free once the needle is off")
+
+
+func test_a_full_quiver_leaves_needles_on_the_ground() -> void:
+	var p := _setup("r01_cruzamento", Vector2i(20, 12), {"arco_fio": 1, "agulha_fio": 20})
+	var n: Pickup = main.drop_needles(p.global_position, 3, 10.0)
+	await _frames(3)
+	assert_true(is_instance_valid(n), "still there")
+	assert_eq(main.state.item_count("agulha_fio"), 20, "nothing lost or added")
+	main.state.apply([{"op": "use_item", "item_id": "agulha_fio"}])
+	await _frames(3)
+	assert_true(not is_instance_valid(n), "picked up once there is room")
+	assert_eq(main.state.item_count("agulha_fio"), 20, "19 + 1 (the rest did not fit)")
+
+
+func test_a_charge_never_takes_the_last_point_of_life() -> void:
+	var p := _setup("r01_cruzamento", Vector2i(20, 12), {"carga_bronze": 1})
+	p.health.take_damage(p.health.current - 1)
+	p.health.tick(5.0)
+	var b: Bomb = main.spawn_bomb(p.global_position)
+	b.detonate()
+	assert_eq(p.health.current, 1, "still standing at 1")
+	assert_true(not p.is_dead(), "alive")
+
+
+func test_a_needle_stops_at_a_chest_and_a_weight() -> void:
+	var p := _setup("t04_pesos", Vector2i(8, 10), {"arco_fio": 1})
+	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.RIGHT)
+	for i in 60:
+		if a.advance(1.0 / 60.0):
+			break
+	assert_true(a.global_position.x < main.room.data.tile_center(Vector2i(12, 10)).x, "stopped at the weight, not past it")
+
+
+func test_a_near_miss_by_one_column_still_hits_the_plate() -> void:
+	var p := _setup("t06_marco", Vector2i(18, 8), {"arco_fio": 1})
+	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.UP)
+	for i in 60:
+		if a.advance(1.0 / 60.0):
+			break
+	assert_true(main.state.has_flag("world.plate.t06_marco"), "column 18 counts")
+
+
+func test_the_shop_will_not_sell_hidden_charges() -> void:
+	_setup("v01_praca", Vector2i(10, 12))
+	main.state.apply([{"op": "add_bronze", "amount": 50}])
+	var offer: Dictionary = main.shop.offers.filter(func(o: Dictionary) -> bool: return o["id"] == "tres_cargas")[0]
+	assert_true(not main.shop.buy(main.state, offer), "not before the first charges")
+	assert_eq(main.state.bronze, 50, "nothing spent")
+
+
+func test_chest_text_names_amounts_and_extras() -> void:
+	var p := _setup("r04_adega", Vector2i(12, 6))
+	p.motor.facing = Vector2.UP
+	assert_eq(main.interact(), "chest", "opened")
+	assert_true(main.hud._toast.text.contains("Recebeu Arco de Fio e 10 Agulhas de Fio"), main.hud._toast.text)
+	assert_eq(main.state.item_count("agulha_fio"), 10, "ten needles")

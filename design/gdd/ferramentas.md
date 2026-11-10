@@ -41,8 +41,9 @@ a placa alta na antecâmara viram convites para voltar.
 - As Cargas continuam na troca mesmo com 0 (flag `gear.cargas`), para o
   jogador lembrar que pode comprar mais.
 - Usar o arco ou as cargas sem munição avisa onde conseguir mais.
-- Nenhuma ferramenta funciona enquanto Yggnus ataca, esquiva, defende,
-  bebe, usa o gancho ou está atordoado.
+- Nenhuma ferramenta funciona enquanto Yggnus ataca, esquiva, bebe, usa o
+  gancho ou está atordoado. Usar uma ferramenta abaixa o escudo, como o
+  gancho. Durante a preparação do arco (0,18 s), Yggnus fica ocupado.
 
 ### Arco de Fio
 
@@ -50,14 +51,17 @@ a placa alta na antecâmara viram convites para voltar.
   Alcance 224 px.
 - A agulha voa reto na direção em que Yggnus olha. Passa por cima de vãos.
 - Para no primeiro inimigo (fere), na primeira **placa** (aciona) ou na
-  primeira parede, pote ou arbusto (para sem quebrar).
+  primeira parede, pote, arbusto, baú, pessoa, marco, sino, argola ou peso
+  (para sem quebrar).
 - Agulha que para numa parede ou chega ao fim do alcance cai no chão e
   pode ser recolhida por 10 s (kit: "agulhas sem alvo podem ser
   recuperadas"). Agulha que acerta alguma coisa é gasta.
 - Escudo do guarda bloqueia agulha de frente, como bloqueia a espada.
 - Igris não é ferido por agulhas: elas batem e caem.
-- **Placa** (entidade `plate`): a primeira agulha liga a flag `sets_flag`
-  da placa para sempre. A espada não aciona a placa.
+- **Placa** (entidade `plate`): a primeira agulha que chega à linha da
+  placa a até 16 px do centro dela (a coluna da placa e um pouco das
+  vizinhas) liga a flag `sets_flag` da placa para sempre. A espada não
+  aciona a placa.
 - **Recipiente de agulhas** (entidade `refill`): examinar completa as
   agulhas até `amount` (10), quantas vezes quiser. Fica antes de cada
   placa (kit: reposição fixa antes dos desafios).
@@ -68,7 +72,8 @@ a placa alta na antecâmara viram convites para voltar.
   frente for parede, aos pés dele). No máximo 2 cargas ao mesmo tempo.
 - Pavio 1,6 s, piscando mais rápido no fim. A explosão tem raio 28 px.
 - Dentro do raio: inimigos levam 3 de dano (o escudo não bloqueia),
-  potes e arbustos quebram, e Yggnus leva 1 de dano se estiver perto.
+  potes e arbustos quebram, e Yggnus leva 1 de dano se estiver perto, mas
+  a própria carga nunca tira o último ponto de vida.
 - **Parede rachada** (porta com `"cracked": true`): se a explosão alcança o
   arco da porta (raio + 12 px), a parede desmorona, a flag do portão da
   porta é ligada e a passagem fica aberta para sempre.
@@ -90,7 +95,7 @@ a placa alta na antecâmara viram convites para voltar.
 | Coisa | Sala | Detalhe |
 |---|---|---|
 | Lamparina de Óleo | Bomba d'água (`r02_bomba`) | baú em (5, 20) |
-| Tochas | Bomba d'água | (28, 10) e (28, 14), abrem a porta leste (`world.torches.r02_bomba`) |
+| Tochas | Bomba d'água | (30, 10) e (30, 14), abrem a porta leste (`world.torches.r02_bomba`) |
 | 3 Cargas de Bronze | Poço antigo (`r03_poco`, novo, escuro) | baú |
 | Parede rachada | Cruzamento (`r01_cruzamento`) | porta norte (`world.cracked.r01_adega`) |
 | Arco de Fio + 10 agulhas | Adega escondida (`r04_adega`, nova) | baú, com recipiente de agulhas |

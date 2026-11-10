@@ -65,7 +65,7 @@ func refusal(state: GameState, offer: Dictionary) -> String:
 
 ## Buys [param offer] in one transaction. Returns true when delivered.
 func buy(state: GameState, offer: Dictionary) -> bool:
-	if not refusal(state, offer).is_empty():
+	if not for_state(state).has(offer) or not refusal(state, offer).is_empty():
 		return false
 	var effects: Array = [{"op": "spend_bronze", "amount": int(offer["price"])}]
 	effects.append_array(offer["effects"])

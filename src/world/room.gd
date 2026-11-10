@@ -47,6 +47,8 @@ signal breakable_broken(breakable: Breakable)
 var dark_ambient := Color("2a2638")
 ## Torches of this visit (the Lamparina lights them).
 var torches: Array[Torch] = []
+## Reach of a lit torch's light.
+var torch_light_radius := 104.0
 
 const TILES_PATH := "res://assets/art/cenario/tiles.png"
 const OBJECTS_PATH := "res://assets/art/cenario/objetos.png"
@@ -422,6 +424,7 @@ func _build_torches() -> void:
 		var t: Array = e.get("tile", [0, 0])
 		var torch := Torch.new()
 		torch.room = self
+		torch.light_radius = torch_light_radius
 		torch.entity = e
 		torch.name = "Torch_%s" % str(e.get("id", "")).replace(".", "_")
 		torch.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))

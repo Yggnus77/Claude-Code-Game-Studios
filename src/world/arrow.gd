@@ -44,8 +44,9 @@ func advance(delta: float) -> bool:
 		return true
 	var target := minf(max_range, travelled + speed * delta)
 	while travelled < target:
-		travelled = minf(target, travelled + STEP)
-		var at := global_position + direction * STEP
+		var step := minf(STEP, target - travelled)
+		travelled += step
+		var at := global_position + direction * step
 		var hit: Dictionary = probe.call(at)
 		if not hit.is_empty():
 			_stop(hit, global_position)

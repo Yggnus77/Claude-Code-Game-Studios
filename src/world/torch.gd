@@ -7,6 +7,8 @@ extends Node2D
 const LIGHT_COLOR := Color("ffa850")
 
 var room: Room
+## Reach of the torch's light when lit (ferramentas.json lamparina.torch_light_radius).
+var light_radius := 104.0
 ## The map entity this torch comes from.
 var entity: Dictionary = {}
 var lit := false
@@ -19,7 +21,7 @@ func _ready() -> void:
 	_light.texture = Room.light_texture()
 	_light.color = LIGHT_COLOR
 	_light.position = Vector2(0, -18)
-	_light.texture_scale = 104.0 * 2.0 / 128.0
+	_light.texture_scale = light_radius * 2.0 / 128.0
 	add_child(_light)
 	set_lit(lit)
 

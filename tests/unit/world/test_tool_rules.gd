@@ -80,3 +80,23 @@ func test_a_broken_file_keeps_the_flask_and_hook() -> void:
 	var t := ToolRules.load_from("res://does/not/exist.json")
 	assert_eq(t.order, ["frasco", "gancho"] as Array[String], "default order")
 	assert_true(t.owns("gancho", _state({"gancho_retorno": 1})), "the hook still works")
+
+
+func test_a_needle_flies_its_real_speed_and_range() -> void:
+	var root := Node2D.new()
+	tree.root.add_child(root)
+	var a := Arrow.new()
+	a.direction = Vector2.RIGHT
+	a.speed = 260.0
+	a.max_range = 224.0
+	root.add_child(a)
+	a.set_physics_process(false)
+	for i in 30:
+		a.advance(1.0 / 60.0)
+	assert_near(a.position.x, 130.0, 0.5, "130 px after 0.5 s at 260 px/s")
+	assert_near(a.travelled, a.position.x, 0.01, "counted distance = distance moved")
+	var frames := 30
+	while not a.advance(1.0 / 60.0):
+		frames += 1
+	assert_true(frames >= 50 and frames <= 53, "stops after ~0.86 s (%d frames)" % frames)
+	root.queue_free()

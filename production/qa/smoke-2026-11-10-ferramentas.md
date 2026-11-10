@@ -26,7 +26,22 @@ masmorras → itens). Desenho: `design/gdd/ferramentas.md`.
 
 ## Verificação
 
-- Testes: 254 passaram, 0 falharam (`tests/unit/world/test_tool_rules.gd`,
+- Testes: 262 passaram, 0 falharam (`tests/unit/world/test_tool_rules.gd`,
   `tests/integration/world/test_tools.gd`, mais os antigos).
+- Revisão GDScript e QA: 13 achados corrigidos. Os 8 testes de regressão
+  falharam no código antigo antes da correção:
+  - a agulha voava quase o dobro da velocidade e do alcance;
+  - durante a preparação do arco ainda dava para atacar, esquivar ou
+    lançar o gancho;
+  - agulhas tocadas com a aljava cheia sumiam;
+  - a agulha atravessava baús, pessoas, sinos e o peso;
+  - errar a placa por uma coluna não contava;
+  - a carga podia matar o próprio Yggnus;
+  - a loja vendia cargas escondidas;
+  - o texto dos baús não dizia a quantidade nem as agulhas que vêm junto.
+  Também corrigidos, sem teste próprio: agulha caída nunca fica num vão,
+  ferramentas válidas no save lidas do `ferramentas.json`, números da tocha
+  e da placa no JSON, dica de troca de item nas quatro ferramentas,
+  coordenadas das tochas no GDD e foto da parede rachada refeita.
 - Imagens: `production/qa/evidence/ferramentas/` (01–18, do baú da
   lamparina à loja).

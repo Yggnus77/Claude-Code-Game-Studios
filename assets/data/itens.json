@@ -274,6 +274,7 @@
     {
       "id": "carga_bronze",
       "name": "Carga de Bronze",
+      "plural": "Cargas de Bronze",
       "type": "consumivel",
       "stack_limit": 9,
       "source": "shop",
@@ -302,6 +303,7 @@
     {
       "id": "agulha_fio",
       "name": "Agulha de Fio",
+      "plural": "Agulhas de Fio",
       "type": "municao",
       "stack_limit": 20,
       "source": "refill",

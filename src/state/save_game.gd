@@ -12,7 +12,6 @@ extends RefCounted
 ## or the middle of a boss fight. Missions, doors and chests have no fields
 ## of their own: their state lives in the flags and receipts.
 
-const TOOLS := ["frasco", "gancho", "arco", "cargas", "lamparina"]
 const MAX_STACK := 999
 const MAX_RESERVE := 9999999
 const MAX_FRAGMENTS := 64
@@ -23,6 +22,8 @@ var rooms: Array = []
 var item_ids: Array = []
 ## Fragment ids a save may hold (recompensas-mundo.json). Empty accepts any.
 var fragment_ids: Array = []
+## Tool ids the item button may hold (ferramentas.json "order").
+var tools: Array = ToolRules.load_from().order
 ## Loads a room by id, to check the entry tile. Never given a path from
 ## the save: the id must be in [member rooms] first.
 var room_loader: Callable = func(id: String) -> RoomData: return RoomData.load_room(id)
@@ -141,7 +142,7 @@ func validate(doc: Dictionary) -> Array:
 		bad.append("espaços de frasco inválidos")
 	if not _int_in(p.get("resonance_max"), 1, 9999):
 		bad.append("ressonância inválida")
-	if not TOOLS.has(p.get("equipped_tool")):
+	if not tools.has(p.get("equipped_tool")):
 		bad.append("item do botão desconhecido")
 	if not p.get("equipped_relic", "") is String:
 		bad.append("relíquia inválida")

@@ -25,6 +25,8 @@ var amount := 1
 var kind := KIND_BRONZE
 var lifetime := LIFETIME
 var target: Node2D
+## False keeps it on the ground when touched (a full quiver).
+var can_collect: Callable = func() -> bool: return true
 var _age := 0.0
 
 
@@ -44,7 +46,7 @@ func _physics_process(delta: float) -> void:
 	if _age >= lifetime:
 		queue_free()
 		return
-	if target and is_instance_valid(target) and global_position.distance_to(target.global_position) <= REACH:
+	if target and is_instance_valid(target) and global_position.distance_to(target.global_position) <= REACH and can_collect.call():
 		collected.emit(self)
 		queue_free()
 	queue_redraw()
