@@ -257,7 +257,7 @@ def back(p):
         _part(c, F.BRACO_D, p["ra"][0], b + p["ra"][1], x0=23)
     _part(c, CACHECOL_COSTAS, dy=b)
     _part(c, CABECA_COSTAS, dy=b)
-    if k is None or k in ("hit_r", "hit_l", "hit_down", "rest"):
+    if k is None or k in ("hit_r", "hit_l", "hit_down", "rest", "arm"):
         for i in range(7):           # bainha cruzando as costas
             c.put(19 + i // 2, 31 + b + i, "#4f2f20")
     if raised:
@@ -292,10 +292,11 @@ def side(p):
         head[15] = (9, "KHHSsSSSKKSSK")
         head[16] = (9, "KHHHSSSSSSSSK")
     _part(c, head, dy=b)
-    if k in ("hit_r", "hit_l", "hit_down", "rest"):
+    if k in ("hit_r", "hit_l", "hit_down", "rest", "arm"):
         arm = {26: "KBCCCCcK", 27: "KBCCCcFK", 28: "KccccfSK", 29: ".KKKKKK."}
         _part(c, arm, 0, b, x0=14)
-        sword(c, 22, 27 + b, 1, 0, 9)
+        if k != "arm":               # "arm": o jogo desenha a lâmina grande
+            sword(c, 22, 27 + b, 1, 0, 9)
     elif k in ("wind_r", "wind_l", "wind_up"):
         _part(c, {20: "KSSK", 21: "KSsK", 22: "KCcK", 23: "KCcK", 24: "KCcK", 25: "KBcK", 26: "KBcK", 27: ".KK."}, 0, b, x0=12)
     else:

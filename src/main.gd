@@ -216,7 +216,8 @@ func _ready() -> void:
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
 	hud.dungeon_view = dungeon_map_view
-	hud.key_line = dungeon_key_line
+	hud.key_view = dungeon_key_view
+	hud.hint_state = func() -> Dictionary: return {"sword": player != null and player.has_sword, "tools": _owned_tools.size() > 1}
 	hud.bind_state(state)
 	hud.inventory_extra = _inventory_lines
 	hud.relic_cycle = cycle_relic
@@ -613,7 +614,8 @@ func _refresh_story() -> void:
 		equipped = ToolRules.FLASK
 	if hud:
 		hud.set_objective(prologue.objective(state, room_id))
-		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1)
+		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1, equipped)
+		hud.refresh_hint()
 
 
 ## Adds enemy [param kind] on [param tile]. Returns it, or null if unknown.
@@ -1704,6 +1706,15 @@ func dungeon_map_view() -> Dictionary:
 
 
 ## "Chaves 1 · Chave Grande" for the HUD while inside a dungeon.
+## Keys of the current dungeon for the HUD's counters ({} outside one).
+func dungeon_key_view() -> Dictionary:
+	var d := dungeons.dungeon_of(room_id)
+	if d.is_empty():
+		return {}
+	var v := dungeons.map_view(d, state, room_id)
+	return {"small_keys": int(v["small_keys"]), "boss_key": bool(v["boss_key"])}
+
+
 func dungeon_key_line() -> String:
 	var d := dungeons.dungeon_of(room_id)
 	if d.is_empty():

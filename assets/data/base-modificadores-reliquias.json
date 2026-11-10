@@ -9,8 +9,8 @@
       "return_cooldown": 0.35
     },
     "player": {
-      "knockback_max": 18,
-      "speed": 110
+      "knockback_max": 30,
+      "speed": 100
     },
     "exploration": {
       "unique_pickup_sense_radius": 0,
@@ -24,7 +24,7 @@
       }
     },
     "guard": {
-      "perfect_window": 0.11
+      "perfect_window": 0
     }
   },
   "rule": "Rebuild current parameters from base, then apply exactly one active relic. Never modify base in place."

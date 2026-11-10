@@ -51,8 +51,10 @@ func test_distance_matches_speed() -> void:
 	var start := p.global_position
 	await _walk(p, Vector2.RIGHT, 60)
 	var moved := p.global_position.x - start.x
-	# 1 s of input: accelerating costs 110²/(2·1400) ≈ 4.3 px.
-	assert_near(moved, 110.0 - 4.32, 1.5, "distance walked in one second of physics")
+	# 1 s of input: accelerating costs speed²/(2·acceleration) px
+	# (100²/(2·6000) ≈ 0.8 px with combate.json).
+	var speed := p.motor.speed
+	assert_near(moved, speed - speed * speed / (2.0 * p.motor.acceleration), 1.5, "distance walked in one second of physics")
 	assert_near(p.global_position.y, start.y, 0.01, "no vertical drift")
 
 

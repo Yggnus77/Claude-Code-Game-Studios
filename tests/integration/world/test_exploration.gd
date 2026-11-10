@@ -48,7 +48,8 @@ func test_the_sword_cuts_a_bush_and_it_drops_life() -> void:
 	assert_true(bush.is_broken, "cut")
 	assert_eq(bush.collision_layer, 0, "the stub does not block")
 	var hearts := tree.get_nodes_in_group("pickups").filter(func(n: Node) -> bool: return n is Pickup and (n as Pickup).kind == Pickup.KIND_LIFE)
-	assert_eq(hearts.size(), 1, "a life drop")
+	# The wide swing also cuts the bush beside it (jogabilidade-classica §3.1).
+	assert_true(hearts.size() >= 1, "a life drop (%d)" % hearts.size())
 	var before := p.health.current
 	p.respawn_at(main.room.data.tile_center(Vector2i(1, 17)), false)
 	await _frames(3)

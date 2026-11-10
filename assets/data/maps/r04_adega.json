@@ -47,14 +47,14 @@
   ],
   "entities": [
     {
-      "id": "r04_adega.arco",
+      "id": "r04_adega.tesouro",
       "kind": "chest",
       "tile": [
         12,
         5
       ],
-      "trigger_id": "chest_arco_fio",
-      "persistent_receipt": "unique.r04_adega.arco"
+      "trigger_id": "loot_adega",
+      "persistent_receipt": "unique.r04_adega.tesouro"
     },
     {
       "id": "r04_adega.agulhas",

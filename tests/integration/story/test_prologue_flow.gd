@@ -69,7 +69,7 @@ func test_new_game_starts_unarmed() -> void:
 	assert_true(not p.has_sword and not p.has_shield, "no sword and no shield")
 	p.request_attack()
 	await _frames(2)
-	assert_true(not p.combo.is_busy(), "attack press does nothing")
+	assert_true(not p.sword.is_busy(), "attack press does nothing")
 	assert_true(main.hud.objective_text().is_empty(), "no objective before the opening scene")
 
 
@@ -141,11 +141,11 @@ func test_shield_stops_paper_from_the_front() -> void:
 	main.state.apply([{"op": "grant_unique", "item_id": "escudo_bronze", "quantity": 1, "receipt_id": "scene.p05.escudo_bronze"}])
 	p.respawn_at(main.room.data.tile_center(Vector2i(12, 8)))
 	p.motor.facing = Vector2.UP
-	p.guard_override = true
+	# The shield is passive: facing the paper is enough.
 	main.invasion._throw_left = 0.0
 	await _frames(90)
 	assert_eq(p.health.current, p.health.maximum, "guarded: no damage")
-	p.guard_override = false
+	p.motor.facing = Vector2.DOWN
 	main.invasion._throw_left = 0.0
 	await _frames(90)
 	assert_true(p.health.current < p.health.maximum, "unguarded: the paper hurts")

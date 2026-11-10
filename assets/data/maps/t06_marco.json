@@ -79,6 +79,16 @@
   ],
   "entities": [
     {
+      "id": "t06_marco.arco",
+      "kind": "chest",
+      "tile": [
+        18,
+        15
+      ],
+      "trigger_id": "chest_arco_fio",
+      "persistent_receipt": "unique.t06_marco.arco"
+    },
+    {
       "id": "t06_marco.marco_preboss",
       "kind": "checkpoint",
       "tile": [

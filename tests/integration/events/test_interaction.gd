@@ -81,6 +81,7 @@ func test_scene_pauses_world_and_one_box_only() -> void:
 func test_scene_waits_for_dodge_to_end() -> void:
 	var p := _setup("v00_oficina", ["seen.p00"])
 	p.input_override = Vector2.RIGHT
+	p.has_dodge = true  # the dash of a later item
 	p.request_dodge()
 	await _frames(3)
 	assert_true(p.dodge.is_dodging(), "dodging")

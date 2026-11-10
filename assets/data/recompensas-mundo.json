@@ -39,7 +39,7 @@
     },
     {
       "id": "chest_arco_fio",
-      "entity": "r04_adega.arco",
+      "entity": "t06_marco.arco",
       "item": "arco_fio",
       "quantity": 1,
       "receipt": "reward.arco_fio",
@@ -49,6 +49,13 @@
           "quantity": 10
         }
       ]
+    },
+    {
+      "id": "loot_adega",
+      "entity": "r04_adega.tesouro",
+      "bronze": 50,
+      "receipt": "loot.r04_adega.tesouro",
+      "quantity": 1
     },
     {
       "id": "loot_mirante",

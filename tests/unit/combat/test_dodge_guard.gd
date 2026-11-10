@@ -47,8 +47,20 @@ func test_guard_cone_front_not_back() -> void:
 	assert_true(not g.covers(Vector2.RIGHT, Vector2.LEFT), "back is not covered")
 
 
-func test_perfect_window_and_retrigger() -> void:
+func test_the_data_shield_is_passive() -> void:
+	# jogabilidade-classica.md §3.3: no perfect block, no retrigger wait, no slow walk.
 	var g := Guard.new(_cfg().guard())
+	g.set_held(true)
+	assert_true(g.is_up() and not g.is_perfect(), "up, never perfect")
+	g.set_held(false)
+	g.set_held(true)
+	assert_true(g.is_up(), "back up on the next step")
+	assert_near(g.speed_factor, 1.0, 0.0001, "walking with it costs no speed")
+
+
+func test_perfect_window_and_retrigger() -> void:
+	# The kit's held guard, still supported by the class.
+	var g := Guard.new({"perfect_window": 0.11, "minimum_retrigger": 0.25})
 	g.set_held(true)
 	assert_true(g.is_perfect(), "perfect right after pressing")
 	g.tick(0.12)

@@ -1,6 +1,7 @@
 extends SceneTree
 ## Runs every tests/**/test_*.gd file. Exit code 0 when all pass, 1 otherwise.
 ## Usage: godot --headless --path . -s res://tests/run_tests.gd
+## TEST_ONLY=<text> runs only the files whose name contains that text.
 ## A test that raises an engine or script error fails, even if its own
 ## assertions passed (a runtime error aborts the test function silently).
 
@@ -22,6 +23,9 @@ func _run() -> void:
 	var errors := ErrorCounter.new()
 	OS.add_logger(errors)
 	var files := _collect("res://tests")
+	var only := OS.get_environment("TEST_ONLY")
+	if not only.is_empty():
+		files = PackedStringArray(Array(files).filter(func(f: String) -> bool: return f.get_file().contains(only)))
 	files.sort()
 	var passed := 0
 	var failed := 0

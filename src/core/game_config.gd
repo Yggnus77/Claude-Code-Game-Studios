@@ -110,14 +110,17 @@ func tile_size() -> int:
 	return int(data.get("tile_size", 16))
 
 
-## Three-hit combo timings (combate.json "combo").
-func combo() -> Array:
-	return data.get("combo", [])
+## The classic sword's numbers (combate.json "sword";
+## design/gdd/jogabilidade-classica.md §7).
+func sword() -> Dictionary:
+	return data.get("sword", {})
 
 
-## Per-hit damage for [param weapon_id] (combate.json "weapons").
-func weapon_damage(weapon_id: String) -> Array:
-	return data.get("weapons", {}).get(weapon_id, [])
+## Damage of one swing of [param weapon_id] (combate.json "weapons"), 1
+## when unknown.
+func weapon_damage(weapon_id: String) -> int:
+	var v: Variant = data.get("weapons", {}).get(weapon_id, 1)
+	return int(v) if v is float or v is int else 1
 
 
 func dodge() -> Dictionary:

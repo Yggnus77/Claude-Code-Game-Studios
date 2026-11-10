@@ -1,16 +1,31 @@
 class_name Hud
 extends CanvasLayer
-## Life display: amber bar plus the number, which is the rule's source of truth
-## (design/kit/auditoria-e-decisoes.md item 5). Placeholder art.
+## The game's heads-up display (design/gdd/jogabilidade-classica.md §3.6):
+## hearts top right (half a heart = 1 point of life), the equipped item's
+## box and the Bronze, key and flask counters top left, the objective, the
+## toasts, the inventory and a key hint that lists only what the player
+## already has.
 
 const COLOR_BACK := Color("1a1c22")
 const COLOR_LIFE := Color("e0a030")
-const COLOR_EMPTY := Color("4a3a24")
+const COLOR_TEXT := Color("f2e6c4")
+## Hearts per row before a second row starts.
+const HEARTS_PER_ROW := 10
+## Right edge of the hearts and the objective.
+const RIGHT_EDGE := 632.0
+## Hearts and the item drawing are drawn this many times their pixel size,
+## so they read at a glance on the 640×360 screen.
+const ICON_SCALE := 2.0
 
-var _bar: Control
-var _label: Label
+var _hearts: Control
+var _life_caption: Label
 var _banner: Label
-var _bronze: Label
+## Bronze, keys, flasks and bread, drawn with icons.
+var _counters: Control
+## The box with the equipped item's drawing.
+var _item_box: Control
+var _item_tool := "frasco"
+var _counts := {}
 var _toast: Label
 var _toast_left := 0.0
 var _saved: Label
@@ -23,8 +38,11 @@ var _inventory_text: Label
 var _dungeon_map: DungeonMapView
 ## Returns the dungeon map view for the current room ({} outside dungeons).
 var dungeon_view: Callable = func() -> Dictionary: return {}
-## One line about keys for the top-left status, "" outside dungeons.
-var key_line: Callable = func() -> String: return ""
+## Keys of the current dungeon: {"small_keys": n, "boss_key": bool}, or {}
+## outside dungeons.
+var key_view: Callable = func() -> Dictionary: return {}
+## What the key hint may list: {"sword": bool, "tools": bool}.
+var hint_state: Callable = func() -> Dictionary: return {"sword": true, "tools": true}
 var _hint: Label
 var _inventory_status := ""
 var _inv_state: GameState
@@ -46,15 +64,23 @@ const COLOR_FRAGMENT := Color("6fe0e0")
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 5
-	_bar = Control.new()
-	_bar.position = Vector2(8, 8)
-	_bar.size = Vector2(120, 10)
-	_bar.draw.connect(_draw_bar)
-	add_child(_bar)
-	_label = Label.new()
-	_label.position = Vector2(134, 2)
-	_label.add_theme_font_size_override("font_size", 12)
-	add_child(_label)
+	_life_caption = _small_label("— VIDA —", 8, COLOR_TEXT)
+	_life_caption.size = Vector2(120, 10)
+	_life_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(_life_caption)
+	_hearts = Control.new()
+	_hearts.draw.connect(_draw_hearts)
+	add_child(_hearts)
+	_item_box = Control.new()
+	_item_box.position = Vector2(8, 6)
+	_item_box.size = Vector2(32, 32)
+	_item_box.draw.connect(_draw_item_box)
+	add_child(_item_box)
+	_counters = Control.new()
+	_counters.position = Vector2(46, 7)
+	_counters.size = Vector2(300, 12)
+	_counters.draw.connect(_draw_counters)
+	add_child(_counters)
 	_banner = Label.new()
 	_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_banner.position.y = 40
@@ -62,17 +88,11 @@ func _ready() -> void:
 	_banner.visible = false
 	add_child(_banner)
 	_gauge = Control.new()
-	_gauge.position = Vector2(170, 5)
 	_gauge.size = Vector2(4 * 9, 12)
 	_gauge.draw.connect(_draw_gauge)
 	add_child(_gauge)
-	_bronze = Label.new()
-	_bronze.position = Vector2(8, 18)
-	_bronze.add_theme_font_size_override("font_size", 10)
-	_bronze.add_theme_color_override("font_color", Color("d9a441"))
-	add_child(_bronze)
 	_objective = Label.new()
-	_objective.position = Vector2(232, 4)
+	_objective.position = Vector2(RIGHT_EDGE - 400.0, 40)
 	_objective.size = Vector2(400, 16)
 	_objective.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_objective.add_theme_font_size_override("font_size", 10)
@@ -80,10 +100,8 @@ func _ready() -> void:
 	_objective.add_theme_color_override("font_outline_color", Color.BLACK)
 	_objective.add_theme_constant_override("outline_size", 4)
 	add_child(_objective)
-	_item = Label.new()
-	_item.position = Vector2(8, 30)
-	_item.add_theme_font_size_override("font_size", 9)
-	_item.add_theme_color_override("font_color", Color("cfd6e0"))
+	_item = _small_label("", 9, Color("cfd6e0"))
+	_item.position = Vector2(46, 22)
 	add_child(_item)
 	_toast = Label.new()
 	# Two-line barks grow upward from the same baseline.
@@ -133,7 +151,34 @@ func _ready() -> void:
 	_hint.modulate = Color(1, 1, 1, 0.7)
 	_hint.position = Vector2(6, 342)
 	add_child(_hint)
+	_layout_life()
 	refresh_hint()
+
+
+## A label with an outline, readable over any floor.
+func _small_label(text: String, font_size: int, color: Color) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", font_size)
+	l.add_theme_color_override("font_color", color)
+	l.add_theme_color_override("font_outline_color", Color.BLACK)
+	l.add_theme_constant_override("outline_size", 3)
+	return l
+
+
+## Places the hearts, their caption and the fragment gauge at the top right
+## for the current maximum life.
+func _layout_life() -> void:
+	var hearts := HudIcons.heart_fills(_current, _maximum).size()
+	var per_row := mini(hearts, HEARTS_PER_ROW)
+	var rows := ceili(hearts / float(HEARTS_PER_ROW))
+	var width := per_row * (HudIcons.HEART_SIZE.x + 1.0) * ICON_SCALE
+	_hearts.size = Vector2(width, rows * (HudIcons.HEART_SIZE.y + 1.0) * ICON_SCALE)
+	_hearts.position = Vector2(RIGHT_EDGE - width, 14)
+	_life_caption.position = Vector2(RIGHT_EDGE - width * 0.5 - 60.0, 3)
+	_gauge.position = Vector2(RIGHT_EDGE - _gauge.size.x, _hearts.position.y + _hearts.size.y + 2.0)
+	_objective.position.y = _gauge.position.y + 12.0
+	_hearts.queue_redraw()
 
 
 ## Rewrites the key hint at the bottom from the current bindings.
@@ -144,9 +189,19 @@ func refresh_hint() -> void:
 	var walk := "/".join([k.call("move_up"), k.call("move_left"), k.call("move_down"), k.call("move_right")])
 	if walk == "W/A/S/D":
 		walk = "WASD"
-	_hint.text = "%s andar · %s espada · %s examinar · %s item · %s troca · %s esquiva · %s defesa · %s inventário · 1-4 inimigo · %s reinicia" % [
-		walk, k.call("attack"), k.call("interact"), k.call("item"), k.call("quick_swap"), k.call("dodge"),
-		k.call("guard"), k.call("map"), k.call("reset_room")]
+	# Only what the player already has (jogabilidade-classica.md §3.6).
+	var has: Dictionary = hint_state.call()
+	var parts := PackedStringArray(["%s andar" % walk])
+	if has.get("sword", false):
+		parts.append("%s espada (segure: giro)" % k.call("attack"))
+	parts.append("%s examinar" % k.call("interact"))
+	if has.get("tools", false):
+		parts.append("%s item · %s troca" % [k.call("item"), k.call("quick_swap")])
+	else:
+		parts.append("%s frasco" % k.call("item"))
+	parts.append("%s inventário" % k.call("map"))
+	parts.append("%s reinicia a sala" % k.call("reset_room"))
+	_hint.text = " · ".join(parts)
 	# Long key names must not push the hint off the screen.
 	for size in [9, 8, 7]:
 		_hint.add_theme_font_size_override("font_size", size)
@@ -163,8 +218,12 @@ func bind(health: Health) -> void:
 func set_life(current: int, maximum: int) -> void:
 	_current = current
 	_maximum = maxi(1, maximum)
-	_label.text = "%d/%d" % [current, maximum]
-	_bar.queue_redraw()
+	_layout_life()
+
+
+## Life shown now, as "current/maximum" (for tests and the inventory).
+func life_text() -> String:
+	return "%d/%d" % [_current, _maximum]
 
 
 ## The inventory pauses the game, so the node that opened it (main) stops
@@ -252,14 +311,73 @@ func refresh_status(state: GameState) -> void:
 
 
 func _show_bronze(state: GameState) -> void:
-	_bronze.text = "Bronze %d/%d" % [state.bronze, state.wallet_capacity] + ("  (reserva %d)" % state.bronze_reserve if state.bronze_reserve > 0 else "")
-	if not state.flasks().is_empty():
-		_bronze.text += "   Frascos %d/%d" % [state.full_flask_count(), state.flasks().size()]
-	if state.item_count("pao_porto") > 0:
-		_bronze.text += "   Pão %d" % state.item_count("pao_porto")
-	var keys := str(key_line.call())
+	_counts = {
+		"bronze": state.bronze,
+		"reserve": state.bronze_reserve,
+		"flasks": state.flasks().size(),
+		"full_flasks": state.full_flask_count(),
+		"bread": state.item_count("pao_porto"),
+		"keys": key_view.call(),
+	}
+	_counters.queue_redraw()
+	_item_box.queue_redraw()
+
+
+## The counters line as text (for tests): "Bronze 12 · Chaves 1 ...".
+func counters_text() -> String:
+	var parts := PackedStringArray(["Bronze %d" % int(_counts.get("bronze", 0))])
+	var keys: Dictionary = _counts.get("keys", {})
 	if not keys.is_empty():
-		_bronze.text += "   " + keys
+		parts.append("Chaves %d" % int(keys.get("small_keys", 0)))
+		if keys.get("boss_key", false):
+			parts.append("Chave Grande")
+	if int(_counts.get("flasks", 0)) > 0:
+		parts.append("Frascos %d/%d" % [int(_counts.get("full_flasks", 0)), int(_counts.get("flasks", 0))])
+	if int(_counts.get("bread", 0)) > 0:
+		parts.append("Pão %d" % int(_counts.get("bread", 0)))
+	return " · ".join(parts)
+
+
+func _draw_counters() -> void:
+	var font := ThemeDB.fallback_font
+	var x := 4.0
+	var draw_num := func(text: String, at: float) -> float:
+		_counters.draw_string_outline(font, Vector2(at, 10), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, Color.BLACK)
+		_counters.draw_string(font, Vector2(at, 10), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, COLOR_TEXT)
+		return at + font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+	HudIcons.coin(_counters, Vector2(x, 6))
+	var reserve := int(_counts.get("reserve", 0))
+	x = draw_num.call("%d" % int(_counts.get("bronze", 0)) + (" (+%d)" % reserve if reserve > 0 else ""), x + 7.0) + 10.0
+	var keys: Dictionary = _counts.get("keys", {})
+	if not keys.is_empty():
+		HudIcons.key(_counters, Vector2(x, 6))
+		x = draw_num.call("%d" % int(keys.get("small_keys", 0)), x + 6.0) + 6.0
+		if keys.get("boss_key", false):
+			HudIcons.key(_counters, Vector2(x + 2.0, 6), true)
+			x += 14.0
+		x += 4.0
+	if int(_counts.get("flasks", 0)) > 0:
+		_counters.draw_set_transform(Vector2(x, 6), 0.0, Vector2(0.6, 0.6))
+		HudIcons.flask(_counters, Vector2.ZERO, int(_counts.get("full_flasks", 0)) > 0)
+		_counters.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		x = draw_num.call("%d/%d" % [int(_counts.get("full_flasks", 0)), int(_counts.get("flasks", 0))], x + 6.0) + 10.0
+	if int(_counts.get("bread", 0)) > 0:
+		draw_num.call("Pão %d" % int(_counts.get("bread", 0)), x)
+
+
+func _draw_item_box() -> void:
+	var r := Rect2(Vector2.ZERO, _item_box.size)
+	_item_box.draw_rect(r.grow(1), Color.BLACK)
+	_item_box.draw_rect(r, Color(0.08, 0.07, 0.1, 0.85))
+	_item_box.draw_rect(r, COLOR_LIFE, false, 1.0)
+	_item_box.draw_rect(r.grow(-2), Color(COLOR_LIFE, 0.45), false, 1.0)
+	# The drawing at 1.5×, centred in the box.
+	_item_box.draw_set_transform(r.get_center(), 0.0, Vector2(1.5, 1.5))
+	if _item_tool == "frasco":
+		HudIcons.flask(_item_box, Vector2(0, 1), int(_counts.get("full_flasks", 0)) > 0)
+	else:
+		HudIcons.tool(_item_box, _item_tool, Vector2.ZERO)
+	_item_box.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func is_inventory_open() -> bool:
@@ -321,9 +439,12 @@ func set_objective(text: String) -> void:
 	_objective.text = "► " + text if not text.is_empty() else ""
 
 
-## Shows the item on the item button.
-func set_item(item_name: String, can_swap: bool = false) -> void:
-	_item.text = "Item (L): %s" % item_name + (" · Q troca" if can_swap else "")
+## Shows the item on the item button: [param label] ("Arco 12") beside the
+## box with the drawing of [param tool_id].
+func set_item(label: String, can_swap: bool = false, tool_id: String = "frasco") -> void:
+	_item.text = label + ("  ·  %s troca" % DialogueBox._key("quick_swap") if can_swap else "")
+	_item_tool = tool_id
+	_item_box.queue_redraw()
 
 
 ## The objective text on screen (for tests).
@@ -336,11 +457,12 @@ func show_banner(text: String) -> void:
 	_banner.visible = not text.is_empty()
 
 
-func _draw_bar() -> void:
-	var size := _bar.size
-	_bar.draw_rect(Rect2(Vector2(-2, -2), size + Vector2(4, 4)), COLOR_BACK)
-	_bar.draw_rect(Rect2(Vector2.ZERO, size), COLOR_EMPTY)
-	_bar.draw_rect(Rect2(Vector2.ZERO, Vector2(size.x * _current / _maximum, size.y)), COLOR_LIFE)
-	for i in range(1, _maximum):
-		var x := size.x * i / _maximum
-		_bar.draw_line(Vector2(x, 0), Vector2(x, size.y), COLOR_BACK, 1.0)
+func _draw_hearts() -> void:
+	var fills := HudIcons.heart_fills(_current, _maximum)
+	var step := HudIcons.HEART_SIZE + Vector2.ONE
+	_hearts.draw_set_transform(Vector2.ZERO, 0.0, Vector2(ICON_SCALE, ICON_SCALE))
+	for i in fills.size():
+		var col := i % HEARTS_PER_ROW
+		var row := i / HEARTS_PER_ROW
+		HudIcons.heart(_hearts, Vector2(col * step.x, row * step.y), fills[i])
+	_hearts.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
