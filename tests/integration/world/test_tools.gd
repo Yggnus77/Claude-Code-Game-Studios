@@ -163,7 +163,7 @@ func test_placing_a_charge_spends_one_and_it_goes_off_after_the_fuse() -> void:
 
 
 func test_the_merchant_sells_charges_only_after_the_first() -> void:
-	_setup("v01_praca", Vector2i(10, 12))
+	_setup("v01_praca", Vector2i(6, 12))
 	var ids := func() -> Array: return main.shop.for_state(main.state).map(func(o: Dictionary) -> String: return str(o["id"]))
 	assert_true(not ids.call().has("tres_cargas"), "hidden at first")
 	main.state.apply(main.config.reward_effects("chest_cargas_poco"))
@@ -279,7 +279,7 @@ func test_a_near_miss_by_one_column_still_hits_the_plate() -> void:
 
 
 func test_the_shop_will_not_sell_hidden_charges() -> void:
-	_setup("v01_praca", Vector2i(10, 12))
+	_setup("v01_praca", Vector2i(6, 12))
 	main.state.apply([{"op": "add_bronze", "amount": 50}])
 	var offer: Dictionary = main.shop.offers.filter(func(o: Dictionary) -> bool: return o["id"] == "tres_cargas")[0]
 	assert_true(not main.shop.buy(main.state, offer), "not before the first charges")

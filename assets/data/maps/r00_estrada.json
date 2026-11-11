@@ -42,8 +42,8 @@
       ],
       "target_room": "v01_praca",
       "target_tile": [
-        37,
-        12
+        18,
+        1
       ],
       "gate": "seen.p07",
       "unlock_persistent_flag": "open.door.v01_praca.r00_estrada",

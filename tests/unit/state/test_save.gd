@@ -42,7 +42,7 @@ func _progress() -> GameState:
 	return s
 
 
-func _doc(s: GameState, room := "v01_praca", entry := Vector2i(2, 12), life := 5) -> Dictionary:
+func _doc(s: GameState, room := "v01_praca", entry := Vector2i(11, 7), life := 5) -> Dictionary:
 	return SaveGame.capture(s, {"room": room, "entry": entry, "life": life, "tool": "gancho", "playtime": 90, "slot": 1})
 
 
@@ -63,7 +63,7 @@ func test_round_trip_keeps_every_saved_value() -> void:
 	var loaded: GameState = back["state"]
 	assert_eq(loaded.to_dict(), s.to_dict(), "same progress")
 	assert_eq(back["room"], "v01_praca", "room")
-	assert_eq(back["entry"], Vector2i(2, 12), "safe entry")
+	assert_eq(back["entry"], Vector2i(11, 7), "safe entry")
 	assert_eq(back["life"], 5, "life")
 	assert_eq(back["tool"], "gancho", "item button")
 	assert_eq(back["playtime"], 90, "play time")
@@ -165,7 +165,7 @@ func test_validation_refuses_unknown_ids_and_limits() -> void:
 	var cases := {
 		"path instead of room": func(d: Dictionary) -> void: d["current_room"] = "../../../etc/passwd",
 		"unknown room": func(d: Dictionary) -> void: d["current_room"] = "x99",
-		"entry inside a wall": func(d: Dictionary) -> void: d["safe_entry"] = [0, 0],
+		"entry outside the room": func(d: Dictionary) -> void: d["safe_entry"] = [99, 0],
 		"Bronze above the purse": func(d: Dictionary) -> void: d["player"]["bronze"] = 9999,
 		"unknown item": func(d: Dictionary) -> void: d["inventory"]["espada_lendaria"] = 1,
 		"negative stack": func(d: Dictionary) -> void: d["inventory"]["frasco_01"] = -2,

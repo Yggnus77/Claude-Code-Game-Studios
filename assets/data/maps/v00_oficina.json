@@ -35,8 +35,8 @@
       ],
       "target_room": "v01_praca",
       "target_tile": [
-        2,
-        12
+        11,
+        6
       ],
       "gate": null,
       "unlock_persistent_flag": "open.door.v00_oficina.v01_praca",

@@ -39,12 +39,12 @@ func _face(p: Player, tile: Vector2i) -> void:
 
 func test_chest_gives_bronze_once() -> void:
 	var p := _setup("v01_praca")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(5, 14))
 	assert_eq(main.interact(), "chest", "opens the travel reserve")
 	assert_eq(main.state.bronze, 10, "10 Bronze")
 	assert_eq(main.interact(), "chest_empty", "second press finds it empty")
 	main.load_room("v01_praca")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(5, 14))
 	assert_eq(main.interact(), "chest_empty", "still empty after re-entering the room")
 	assert_eq(main.state.bronze, 10, "no duplicate Bronze")
 
@@ -59,7 +59,7 @@ func test_key_chest_gives_key_once() -> void:
 
 func test_clue_sets_flag_once() -> void:
 	var p := _setup("v01_praca", ["seen.t11"])
-	_face(p, Vector2i(21, 7))
+	_face(p, Vector2i(33, 10))
 	assert_eq(main.interact(), "clue", "clue recorded")
 	assert_true(main.state.has_flag("clue.m01.recibo_mercado"), "flag set")
 	assert_eq(main.interact(), "nothing", "second read does nothing new")

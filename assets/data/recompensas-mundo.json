@@ -107,8 +107,8 @@
       "scope": "prototype",
       "room": "v01_praca",
       "tile": [
-        31,
-        8
+        33,
+        21
       ],
       "requires_item": "gancho_retorno"
     },

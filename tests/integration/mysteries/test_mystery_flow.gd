@@ -55,15 +55,15 @@ func _face(p: Player, tile: Vector2i) -> void:
 func test_troco_from_first_talk_to_the_seal() -> void:
 	var p := _setup("v01_praca")
 	await _skip_scenes()
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	assert_eq(main.interact(), "scene", "the merchant starts the mystery")
 	assert_eq(await _skip_scenes(), ["x01a"], "x01a")
-	_face(p, Vector2i(21, 7))
+	_face(p, Vector2i(33, 10))
 	assert_eq(main.interact(), "clue", "market receipt")
 	_face(p, Vector2i(25, 15))
 	assert_eq(main.interact(), "clue", "delivery stamp")
 	main.state.apply([{"op": "set_flag", "flag": "clue.m01.via_cais", "value": true}])
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	assert_eq(main.interact(), "scene", "all clues: comparison")
 	assert_eq(await _skip_scenes(), ["x01b"], "x01b")
 	var bronze: int = main.state.bronze
@@ -79,7 +79,7 @@ func test_troco_from_first_talk_to_the_seal() -> void:
 	await _skip_scenes()
 	assert_eq(main.state.bronze, bronze + 30, "the reward is unique")
 	assert_eq(main.state.item_count("selo_restaurador"), 1, "one seal")
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	assert_eq(main.interact(), "shop", "solved: the merchant sells again")
 	main.shop_panel.close()
 
@@ -143,12 +143,12 @@ func test_no_swap_after_a_kill_with_an_enemy_near_or_in_a_boss_attempt() -> void
 
 func test_pressing_again_never_gives_clues() -> void:
 	var p := _setup("v01_praca", ["seen.x01a"])
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	var flags_before: int = main.state.flags.size()
 	for i in 6:
 		main.interact()
 		main.shop_panel.close()
-	_face(p, Vector2i(21, 7))
+	_face(p, Vector2i(33, 10))
 	main.interact()
 	main.interact()
 	assert_eq(main.state.flags.size(), flags_before + 1, "only the clue actually examined")

@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import gerar_cenario  # noqa: E402
 import gerar_inimigos  # noqa: E402
 import gerar_interface  # noqa: E402
+import gerar_salas  # noqa: E402
 import gerar_yggnus  # noqa: E402
 
 if __name__ == "__main__":
@@ -15,3 +16,4 @@ if __name__ == "__main__":
     gerar_cenario.main()
     gerar_inimigos.main()
     gerar_interface.main()
+    gerar_salas.main()

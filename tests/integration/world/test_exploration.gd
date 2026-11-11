@@ -36,8 +36,8 @@ func _breakable_at(at: Vector2i) -> Breakable:
 
 
 func test_the_sword_cuts_a_bush_and_it_drops_life() -> void:
-	var p := _setup("v01_praca", Vector2i(1, 18))
-	var bush := _breakable_at(Vector2i(1, 17))
+	var p := _setup("v01_praca", Vector2i(3, 15))
+	var bush := _breakable_at(Vector2i(3, 14))
 	assert_true(bush != null, "a bush above")
 	main.drop_roll = func() -> float: return 0.8  # vida_1 in the bush table
 	p.health.take_damage(2)
@@ -51,22 +51,22 @@ func test_the_sword_cuts_a_bush_and_it_drops_life() -> void:
 	# The wide swing also cuts the bush beside it (jogabilidade-classica §3.1).
 	assert_true(hearts.size() >= 1, "a life drop (%d)" % hearts.size())
 	var before := p.health.current
-	p.respawn_at(main.room.data.tile_center(Vector2i(1, 17)), false)
+	p.respawn_at(main.room.data.tile_center(Vector2i(3, 14)), false)
 	await _frames(3)
 	assert_eq(p.health.current, before + 1, "walking over it heals 1")
 
 
 func test_a_bush_blocks_until_cut_and_grows_back() -> void:
-	var p := _setup("v01_praca", Vector2i(1, 18))
+	var p := _setup("v01_praca", Vector2i(3, 15))
 	p.input_override = Vector2.UP
 	await _frames(30)
 	p.input_override = Vector2.ZERO
-	var bush_y: float = main.room.data.tile_center(Vector2i(1, 17)).y
+	var bush_y: float = main.room.data.tile_center(Vector2i(3, 14)).y
 	assert_true(p.global_position.y > bush_y + 8.0, "stopped by the bush")
-	_breakable_at(Vector2i(1, 17)).break_open()
-	main.load_room("v01_praca", Vector2i(1, 18))
+	_breakable_at(Vector2i(3, 14)).break_open()
+	main.load_room("v01_praca", Vector2i(3, 15))
 	await _frames(1)
-	var again := _breakable_at(Vector2i(1, 17))
+	var again := _breakable_at(Vector2i(3, 14))
 	assert_true(again != null and not again.is_broken, "whole again on the next visit")
 
 
@@ -174,3 +174,43 @@ func test_the_boss_door_needs_the_big_key() -> void:
 	main.load_room("r01_cruzamento", Vector2i(5, 12))
 	assert_true(not main.hud.counters_text().contains("Chave"), "no keys outside the tower")
 	assert_true(main.dungeon_map_view().is_empty(), "no map outside")
+
+
+func _door_by_id(id: String) -> Dictionary:
+	for d: Dictionary in main.room.data.doors:
+		if str(d["id"]) == id:
+			return d
+	return {}
+
+
+func test_leaving_the_workshop_lands_on_the_square_door_steps() -> void:
+	# salas-pintadas.md §8.4: the painted square's workshop door is the
+	# wooden door at the top left; arriving must not send Yggnus back.
+	var p := _setup("v00_oficina", Vector2i(20, 9))
+	await main._go_through(_door_by_id("door.v00_oficina.v01_praca"))
+	await _frames(20)
+	assert_eq(main.room_id, "v01_praca", "in the square")
+	assert_eq(p.global_position, main.room.data.tile_center(Vector2i(11, 6)), "on the steps of the wooden door")
+	p.input_override = Vector2.DOWN
+	await _frames(20)
+	p.input_override = Vector2.ZERO
+	assert_eq(main.room_id, "v01_praca", "walking off the steps stays in the square")
+	assert_true(p.global_position.y > main.room.data.tile_center(Vector2i(11, 6)).y + 8.0, "and walks into the square")
+
+
+func test_the_square_road_is_barred_until_p07_then_leads_to_the_road() -> void:
+	var p := _setup("v01_praca", Vector2i(20, 3))
+	p.input_override = Vector2.UP
+	await _frames(40)
+	p.input_override = Vector2.ZERO
+	assert_eq(main.room_id, "v01_praca", "barred before p07")
+	main.state.apply([{"op": "set_flag", "flag": "seen.p07", "value": true}])
+	p.respawn_at(main.room.data.tile_center(Vector2i(21, 3)), false)
+	await _frames(2)
+	p.input_override = Vector2.UP
+	for i in 120:
+		await tree.physics_frame
+		if main.room_id != "v01_praca":
+			break
+	p.input_override = Vector2.ZERO
+	assert_eq(main.room_id, "r00_estrada", "the far column of the wide way out still leads on")
