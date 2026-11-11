@@ -102,6 +102,10 @@ Ao levar dano: recuo de `knockback` px em `hitstun` s e invencibilidade de
 
 ### 3.6 HUD
 
+> Substituído em 2026-11-11 por `telas-e-mochila.md` §3.4 (painel com vida
+> em segmentos, botões de ação e caixa do objetivo, no estilo das telas de
+> referência do jogador). A regra "mostrar só o que o jogador tem" continua.
+
 - Canto superior esquerdo: caixa do item equipado (desenho do item e
   munição), depois Bronze, chaves (em masmorra) e frascos.
 - Canto superior direito: "VIDA" e os corações; abaixo, os quatro losangos

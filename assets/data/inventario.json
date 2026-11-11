@@ -1,0 +1,148 @@
+{
+ "_doc": "Textos da mochila do inventário (design/gdd/telas-e-mochila.md §3.3). 'order' decide a ordem dos bolsos por tipo de item (itens.json 'type'); 'tabs' agrupa os tipos nas abas (troca com o botão de troca; 'items' acrescenta itens e 'exclude' tira; 'needs' esconde a aba até o jogador ter um item do tipo ('owns_type') ou o espaço de relíquia ('relic_slot')); 'categories' dá o nome de cada tipo; 'descriptions' descreve cada item.",
+ "order": [
+  "arma",
+  "escudo",
+  "ferramenta",
+  "municao",
+  "frasco",
+  "consumivel",
+  "artefato",
+  "magia",
+  "melhoria",
+  "bolsa",
+  "chave",
+  "chave_chefe",
+  "mapa",
+  "bussola",
+  "missao",
+  "reliquia",
+  "recurso_unico"
+ ],
+ "tabs": [
+  {
+   "name": "Todos",
+   "types": []
+  },
+  {
+   "name": "Equipamento",
+   "types": [
+    "arma",
+    "escudo",
+    "artefato",
+    "melhoria",
+    "bolsa"
+   ],
+   "exclude": [
+    "arco_fio"
+   ]
+  },
+  {
+   "name": "Ferramentas",
+   "types": [
+    "ferramenta",
+    "municao"
+   ],
+   "items": [
+    "arco_fio"
+   ]
+  },
+  {
+   "name": "Consumíveis",
+   "types": [
+    "frasco",
+    "consumivel"
+   ]
+  },
+  {
+   "name": "Magias",
+   "types": [
+    "magia"
+   ],
+   "needs": "owns_type"
+  },
+  {
+   "name": "Missão",
+   "types": [
+    "chave",
+    "chave_chefe",
+    "mapa",
+    "bussola",
+    "missao",
+    "recurso_unico"
+   ]
+  },
+  {
+   "name": "Relíquias",
+   "types": [
+    "reliquia"
+   ],
+   "needs": "relic_slot"
+  }
+ ],
+ "categories": {
+  "arma": "Arma",
+  "escudo": "Escudo",
+  "ferramenta": "Ferramenta",
+  "municao": "Munição",
+  "frasco": "Frasco",
+  "consumivel": "Consumível",
+  "artefato": "Artefato",
+  "magia": "Poder da Matrix",
+  "melhoria": "Melhoria",
+  "bolsa": "Bolsa",
+  "chave": "Chave",
+  "chave_chefe": "Chave grande",
+  "mapa": "Mapa",
+  "bussola": "Bússola",
+  "missao": "Peça de missão",
+  "reliquia": "Relíquia",
+  "recurso_unico": "Recurso"
+ },
+ "descriptions": {
+  "espada_oficina": "Bronze e aço gastos, lâmina curta de quem conserta relógios. Toque para golpear em arco; segure e solte para girar.",
+  "espada_diapasao": "Guarda ressonante que vibra perto de alvos metálicos.",
+  "lamina_ancora": "Aço índigo com encaixe para um pequeno componente de memória. Alcança matéria e ecos.",
+  "arco_fio": "Dispara Agulhas de Fio para onde Yggnus olha. Acerta placas de longe.",
+  "escudo_bronze": "Fica sempre erguido quando Yggnus anda ou está parado e bloqueia golpes leves que vêm de frente.",
+  "escudo_ressonante": "Redireciona pulsos quando a defesa é feita no instante certo.",
+  "lamparina_oleo": "Ilumina salas escuras e acende tochas apagadas.",
+  "gancho_retorno": "Fixa em argolas e puxa Yggnus por cima de buracos. Também puxa pesos marcados.",
+  "luvas_lastro": "Empurram e puxam pesos marcados.",
+  "lanterna_lembrancas": "Uma luz que reage à Matrix e revela letras apagadas.",
+  "botas_travessia": "Vencem pequenos vãos indicados no caminho.",
+  "agulha_fio": "Munição do Arco de Fio. As que erram ficam no chão e podem ser recolhidas.",
+  "carga_bronze": "Carga explosiva de bronze. Derruba paredes rachadas. Afaste-se antes de estourar!",
+  "frasco_01": "Guarda um remédio que devolve vida. Encha nos pontos de descanso.",
+  "frasco_02": "Um segundo frasco, recompensa da bomba d’água.",
+  "frasco_03": "Frasco dado por Morina.",
+  "frasco_04": "Frasco do posto de salvamento reconstruído.",
+  "pao_porto": "Recupera 1 de vida fora de combate.",
+  "essencia_ressonancia": "Recupera 30 de energia.",
+  "po_revelacao": "Destaca trilhas opcionais.",
+  "matrix": "Um prisma azul-esverdeado preso por um mecanismo de bronze. Permite ler vestígios de memória.",
+  "pulso_eco": "Um pulso de ressonância em volta de Yggnus.",
+  "fio_ancora": "Fios de memória que formam pontes e prendem inimigos.",
+  "acorde_vivo": "Notas que respondem às máquinas antigas.",
+  "veu_protecao": "Um véu que protege por alguns instantes.",
+  "ampliador_01": "Aumenta a energia máxima de 60 para 90.",
+  "ampliador_02": "Aumenta a energia máxima para 120.",
+  "bolsa_reforcada": "Cabe mais Bronze.",
+  "bolsa_navegante": "Bolsa de couro de marinheiro. Cabe ainda mais Bronze.",
+  "key_ak_base": "Abre uma porta trancada da torre de Akurame.",
+  "chave_chefe_akurame": "A chave grande da torre. Abre a porta da câmara de Igris.",
+  "mapa_akurame": "Mostra todas as salas da torre de Akurame.",
+  "bussola_akurame": "Marca no mapa onde estão os baús e o chefe da torre.",
+  "peca_bomba_a": "Uma engrenagem que falta na bomba d’água.",
+  "peca_bomba_b": "O eixo da bomba d’água.",
+  "ancora_fragmento": "Quatro fragmentos formam mais um coração de vida.",
+  "selo_restaurador": "Relíquia. Equipe na mochila; só uma por vez.",
+  "mola_retorno": "Relíquia. Equipe na mochila; só uma por vez.",
+  "fivela_lastro": "Relíquia. Equipe na mochila; só uma por vez.",
+  "bussola_aurelis": "Relíquia. Equipe na mochila; só uma por vez.",
+  "lente_mare": "Relíquia. Equipe na mochila; só uma por vez.",
+  "afinador_eco": "Relíquia. Equipe na mochila; só uma por vez.",
+  "broche_vigilia": "Relíquia. Alarga a cobertura do escudo.",
+  "anel_calibracao": "Relíquia. Equipe na mochila; só uma por vez."
+ }
+}

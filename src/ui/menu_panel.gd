@@ -3,6 +3,8 @@ extends PanelContainer
 ## A small keyboard and gamepad menu: title, optional message, options and a
 ## key hint. Up/down move; interact, attack or accept confirm. The owner
 ## handles going back (the pause action), so each screen decides what it means.
+## Drawn like the user's reference screens (design/gdd/telas-e-mochila.md
+## §3.2): a dark navy panel, the picked row in a teal frame with a ▸.
 
 signal chosen(index: int)
 
@@ -14,6 +16,10 @@ var selected := 0
 var options: PackedStringArray = []
 ## Most options shown at once (0: all); a longer list scrolls with the cursor.
 var max_rows := 0
+## Where the panel's top-left goes; (-1, -1) keeps it centred on screen.
+var anchor := Vector2(-1, -1)
+## Least width of the option rows.
+var row_width := 220.0
 var _title: Label
 var _message: Label
 var _list: VBoxContainer
@@ -22,30 +28,37 @@ var _opened_at := -1.0
 
 
 func _init() -> void:
-	var style := StyleBoxFlat.new()
-	style.bg_color = DialogueBox.COLOR_PANEL
-	style.border_color = DialogueBox.COLOR_EDGE
-	style.set_border_width_all(1)
-	style.set_content_margin_all(10)
-	add_theme_stylebox_override("panel", style)
+	add_theme_stylebox_override("panel", UiArt.panel_style(12.0))
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 4)
+	box.add_theme_constant_override("separation", 5)
 	add_child(box)
 	_title = Label.new()
 	_title.add_theme_font_size_override("font_size", 14)
-	_title.add_theme_color_override("font_color", DialogueBox.COLOR_EDGE)
+	_title.add_theme_color_override("font_color", UiArt.CREAM)
 	box.add_child(_title)
 	_message = Label.new()
 	_message.add_theme_font_size_override("font_size", 10)
 	_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_message.custom_minimum_size = Vector2(380, 0)
+	_message.add_theme_color_override("font_color", UiArt.DIM)
 	box.add_child(_message)
 	_list = VBoxContainer.new()
+	_list.add_theme_constant_override("separation", 2)
 	box.add_child(_list)
 	_hint = Label.new()
 	_hint.add_theme_font_size_override("font_size", 8)
-	_hint.modulate = Color(1, 1, 1, 0.6)
+	_hint.add_theme_color_override("font_color", UiArt.ACCENT)
 	box.add_child(_hint)
+
+
+## Draws the panel box (true) or only the rows over the screen behind.
+func set_framed(framed: bool) -> void:
+	if framed:
+		add_theme_stylebox_override("panel", UiArt.panel_style(12.0))
+	else:
+		var none := StyleBoxEmpty.new()
+		none.set_content_margin_all(4.0)
+		add_theme_stylebox_override("panel", none)
 
 
 ## Shows [param title], [param message] and [param choices], with
@@ -55,6 +68,7 @@ func _init() -> void:
 func show_menu(title: String, message: String, choices: PackedStringArray, start: int = 0, back: String = "", rows: int = 0) -> void:
 	max_rows = rows
 	_title.text = title
+	_title.visible = not title.is_empty()
 	_message.text = message
 	_message.visible = not message.is_empty()
 	options = choices
@@ -69,7 +83,7 @@ func show_menu(title: String, message: String, choices: PackedStringArray, start
 	visible = true
 	# Shrink to the new content, then keep the panel centred on screen.
 	reset_size()
-	position = (Vector2(640, 360) - size) * 0.5
+	position = anchor if anchor.x >= 0.0 else (Vector2(640, 360) - size) * 0.5
 
 
 ## Confirms the highlighted option (also used by tests).
@@ -109,11 +123,22 @@ func _render() -> void:
 		# Both marks always take their line, so the panel keeps its size.
 		_list.add_child(_more_label("↑ mais %d" % first if first > 0 else ""))
 	for i in range(first, last):
+		var row := PanelContainer.new()
+		var picked := i == selected
+		if picked:
+			row.add_theme_stylebox_override("panel", UiArt.select_style(2.0))
+		else:
+			var plain := StyleBoxEmpty.new()
+			plain.set_content_margin_all(3.0)
+			plain.content_margin_left = 6.0
+			row.add_theme_stylebox_override("panel", plain)
+		row.custom_minimum_size = Vector2(row_width, 0)
 		var l := Label.new()
 		l.add_theme_font_size_override("font_size", 11)
-		l.text = ("> " if i == selected else "   ") + options[i]
-		l.modulate = Color.WHITE if i == selected else Color(1, 1, 1, 0.6)
-		_list.add_child(l)
+		l.text = ("▸ " if picked else "   ") + options[i]
+		l.add_theme_color_override("font_color", Color.WHITE if picked else UiArt.TEXT.darkened(0.15))
+		row.add_child(l)
+		_list.add_child(row)
 	if scrolls:
 		_list.add_child(_more_label("↓ mais %d" % (options.size() - last) if last < options.size() else ""))
 

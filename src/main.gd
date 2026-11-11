@@ -219,8 +219,10 @@ func _ready() -> void:
 	hud.key_view = dungeon_key_view
 	hud.hint_state = func() -> Dictionary: return {"sword": player != null and player.has_sword, "tools": _owned_tools.size() > 1, "flask": not state.flasks().is_empty()}
 	hud.bind_state(state)
-	hud.inventory_extra = _inventory_lines
-	hud.relic_cycle = cycle_relic
+	hud.inventory_extra = func() -> PackedStringArray: return _inventory_lines(false)
+	hud.item_action = use_from_backpack
+	hud.item_detail = func(id: String) -> String: return ("Efeito: " + _relic_effect_text(id)) if relics.relics.has(id) else ""
+	hud.is_equipped = func(id: String) -> bool: return id == state.equipped_relic or (tools.item_of(equipped) == id and not id.is_empty()) or (equipped == ToolRules.FLASK and id.begins_with(GameState.FLASK_PREFIX))
 	state.changed.connect(func() -> void: if room: room.queue_redraw())
 	state.changed.connect(_refresh_story)
 	state.changed.connect(_queue_save)
@@ -528,6 +530,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 			if enemy:
 				enemy.set_meta("entity", entity)
 	if hud:
+		hud.set_area(id, data.display_name)
 		hud.refresh_status(state)  # the key line depends on the room
 	_build_bells()
 	_build_igris()
@@ -613,7 +616,7 @@ func _refresh_story() -> void:
 		equipped = ToolRules.FLASK
 	if hud:
 		hud.set_objective(prologue.objective(state, room_id))
-		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1, equipped)
+		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1, equipped, tools.item_of(equipped))
 		hud.refresh_hint()
 
 
@@ -1445,8 +1448,10 @@ func answer_mystery(mystery_id: String, index: int) -> int:
 	return result
 
 
-## Inventory lines for the relic slot and the mysteries in progress.
-func _inventory_lines() -> PackedStringArray:
+## Inventory lines for the ammo, the relic slot and the mysteries in
+## progress. [param effects] adds each relic's effect (the backpack shows
+## only the picked relic's, so its panel keeps its size).
+func _inventory_lines(effects: bool = true) -> PackedStringArray:
 	var lines := PackedStringArray()
 	var gear := PackedStringArray()
 	for tool in _owned_tools:
@@ -1460,7 +1465,8 @@ func _inventory_lines() -> PackedStringArray:
 		lines.append("")
 		lines.append("RELÍQUIA (uma por vez): %s" % (config.item_name(state.equipped_relic) if not state.equipped_relic.is_empty() else "nenhuma"))
 		for relic: String in _owned_relics():
-			lines.append("%s %s: %s" % ["»" if relic == state.equipped_relic else "·", config.item_name(relic), _relic_effect_text(relic)])
+			if effects:
+				lines.append("%s %s: %s" % ["»" if relic == state.equipped_relic else "·", config.item_name(relic), _relic_effect_text(relic)])
 	var shown := false
 	for q: MysteryQuest in mysteries.values():
 		var st := q.step(state)
@@ -1502,21 +1508,49 @@ func _num(v: Variant) -> String:
 	return str(int(f)) if is_equal_approx(f, roundf(f)) else str(snappedf(f, 0.01)).replace(".", ",")
 
 
-## K in the inventory: puts the next owned relic in the slot (then none).
-## Not in combat and never during a boss attempt. Returns a status line.
+## Puts the next owned relic in the slot (then none); the backpack equips a
+## chosen one with [method use_from_backpack]. Not in combat and never
+## during a boss attempt. Returns a status line.
 func cycle_relic() -> String:
 	if not state.has_flag(GameState.RELIC_SLOT_FLAG):
 		return "Ainda não há espaço de relíquia."
-	if in_combat():
-		playtest.refuse(session_time(), "trocar a relíquia em combate")
-		return "Não dá para trocar a relíquia em combate."
 	var owned := _owned_relics()
 	var order: Array[String] = [""]
 	order.append_array(owned)
 	var next := order[(order.find(state.equipped_relic) + 1) % order.size()]
-	if not state.apply([{"op": "equip_relic", "relic_id": next}]):
-		return "Não foi possível trocar."
-	return "Relíquia: %s." % (config.item_name(next) if not next.is_empty() else "nenhuma")
+	# The same path as the backpack: equipping the one in the slot again
+	# takes it off.
+	return use_from_backpack(next if not next.is_empty() else state.equipped_relic)
+
+
+## Interact on an item in the backpack (design/gdd/telas-e-mochila.md
+## §3.3): a tool, its ammo or a flask goes on the item button; a relic goes
+## in the relic slot (or comes out of it), with the same rules as before.
+## Returns the status line the backpack shows.
+func use_from_backpack(item_id: String) -> String:
+	var tool := ""
+	for t: String in _owned_tools:
+		if tools.item_of(t) == item_id or tools.ammo_of(t) == item_id:
+			tool = t
+	if item_id.begins_with(GameState.FLASK_PREFIX) and _owned_tools.has(ToolRules.FLASK):
+		tool = ToolRules.FLASK
+	if not tool.is_empty():
+		equipped = tool
+		_refresh_story()
+		_queue_save()
+		return "%s no botão de item (%s)." % [tools.label(tool, state).split(" ")[0], DialogueBox._key("item")]
+	if str(config.items.get(item_id, {}).get("type", "")) == "reliquia":
+		if not state.has_flag(GameState.RELIC_SLOT_FLAG):
+			return "Ainda não há espaço de relíquia."
+		if in_combat():
+			playtest.refuse(session_time(), "trocar a relíquia em combate")
+			return "Não dá para trocar a relíquia em combate."
+		var next := "" if state.equipped_relic == item_id else item_id
+		if not state.apply([{"op": "equip_relic", "relic_id": next}]):
+			return "Não foi possível trocar."
+		_queue_save()
+		return "Relíquia: %s." % (config.item_name(next) if not next.is_empty() else "nenhuma")
+	return ""
 
 
 ## True during a boss attempt or with a living enemy near Yggnus

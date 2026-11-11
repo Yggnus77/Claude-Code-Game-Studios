@@ -171,6 +171,7 @@ func test_title_screen_starts_and_continues_slots() -> void:
 	var got := []
 	title.start.connect(func(slot: int, doc: Dictionary) -> void: got.append([slot, doc]))
 	main.add_child(title)
+	title.show_slots(1)
 	title.menu.confirm()  # slot 1, empty
 	assert_eq(got.size(), 1, "an empty slot starts at once")
 	assert_eq(got[0][0], 1, "slot 1")
@@ -196,6 +197,7 @@ func test_title_offers_the_backup_when_the_save_is_damaged() -> void:
 	var title := TitleScreen.new(main.saves)
 	title.describe = main.describe_save
 	main.add_child(title)
+	title.show_slots(1)
 	assert_true(title.menu.options[0].contains("cópia recuperada"), "the row says a copy is used: %s" % title.menu.options[0])
 	title.menu.confirm()
 	assert_true(title.menu.options[0].contains("cópia"), "continue from the copy")

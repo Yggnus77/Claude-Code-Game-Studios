@@ -1,0 +1,75 @@
+{
+ "mochila": {
+  "size": [
+   232,
+   292
+  ],
+  "grid_origin": [
+   32,
+   60
+  ],
+  "cell": 28,
+  "slot": 26,
+  "cols": 6,
+  "rows": 4
+ },
+ "itens": {
+  "size": 24,
+  "cols": 8,
+  "index": {
+   "mapa_akurame": 0,
+   "bussola_akurame": 1,
+   "chave_chefe_akurame": 2,
+   "lamparina_oleo": 3,
+   "espada_oficina": 4,
+   "escudo_bronze": 5,
+   "matrix": 6,
+   "pulso_eco": 7,
+   "gancho_retorno": 8,
+   "espada_diapasao": 9,
+   "luvas_lastro": 10,
+   "escudo_ressonante": 11,
+   "fio_ancora": 12,
+   "lanterna_lembrancas": 13,
+   "acorde_vivo": 14,
+   "lamina_ancora": 15,
+   "veu_protecao": 16,
+   "botas_travessia": 17,
+   "arco_fio": 18,
+   "ampliador_01": 19,
+   "ampliador_02": 20,
+   "frasco_01": 21,
+   "frasco_02": 22,
+   "frasco_03": 23,
+   "frasco_04": 24,
+   "bolsa_reforcada": 25,
+   "bolsa_navegante": 26,
+   "key_ak_base": 27,
+   "pao_porto": 28,
+   "essencia_ressonancia": 29,
+   "carga_bronze": 30,
+   "po_revelacao": 31,
+   "ancora_fragmento": 32,
+   "agulha_fio": 33,
+   "peca_bomba_a": 34,
+   "peca_bomba_b": 35,
+   "selo_restaurador": 36,
+   "mola_retorno": 37,
+   "fivela_lastro": 38,
+   "bussola_aurelis": 39,
+   "lente_mare": 40,
+   "afinador_eco": 41,
+   "broche_vigilia": 42,
+   "anel_calibracao": 43,
+   "frasco_cheio": 44,
+   "bronze": 45,
+   "_generico": 46
+  }
+ },
+ "titulo": {
+  "crystal": [
+   484,
+   90
+  ]
+ }
+}

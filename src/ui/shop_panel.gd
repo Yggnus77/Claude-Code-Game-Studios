@@ -17,12 +17,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 6
 	_panel = PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.06, 0.07, 0.09, 0.94)
-	style.border_color = Color("e0a030")
-	style.set_border_width_all(1)
-	style.set_content_margin_all(8)
-	_panel.add_theme_stylebox_override("panel", style)
+	_panel.add_theme_stylebox_override("panel", UiArt.panel_style(10.0))
 	_panel.position = Vector2(150, 70)
 	_panel.size = Vector2(340, 150)
 	_text = Label.new()
