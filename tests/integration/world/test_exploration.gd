@@ -48,7 +48,8 @@ func test_the_sword_cuts_a_bush_and_it_drops_life() -> void:
 	assert_true(bush.is_broken, "cut")
 	assert_eq(bush.collision_layer, 0, "the stub does not block")
 	var hearts := tree.get_nodes_in_group("pickups").filter(func(n: Node) -> bool: return n is Pickup and (n as Pickup).kind == Pickup.KIND_LIFE)
-	assert_eq(hearts.size(), 1, "a life drop")
+	# The wide swing also cuts the bush beside it (jogabilidade-classica §3.1).
+	assert_true(hearts.size() >= 1, "a life drop (%d)" % hearts.size())
 	var before := p.health.current
 	p.respawn_at(main.room.data.tile_center(Vector2i(1, 17)), false)
 	await _frames(3)
@@ -168,7 +169,8 @@ func test_the_boss_door_needs_the_big_key() -> void:
 	assert_true(main.is_door_open(door), "open with the big key")
 	main._on_room_entered()
 	assert_true(main.state.has_flag("visited.t06_marco"), "the room counts as visited")
-	assert_true(main.dungeon_key_line().contains("Chave Grande"), "the HUD shows it")
+	main.hud.refresh_status(main.state)
+	assert_true(main.hud.counters_text().contains("Chave Grande"), "the HUD shows it: %s" % main.hud.counters_text())
 	main.load_room("r01_cruzamento", Vector2i(5, 12))
-	assert_eq(main.dungeon_key_line(), "", "nothing outside the tower")
+	assert_true(not main.hud.counters_text().contains("Chave"), "no keys outside the tower")
 	assert_true(main.dungeon_map_view().is_empty(), "no map outside")

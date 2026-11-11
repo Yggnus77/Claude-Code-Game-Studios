@@ -52,6 +52,11 @@ POSES = [
     ("fall", pose(bob=5, crouch=3, la=(0, 4), ra=(0, 4))),
     ("fall", "lying"),
     ("tool", pose(tool=True, ra=(1, -1))),
+    # Espada clássica (design/gdd/jogabilidade-classica.md): só o braço; a
+    # lâmina grande é desenhada pelo jogo, girando.
+    ("swing", pose(ra=(1, -4), bob=0)),
+    ("swing", pose(ra=(0, 2), bob=1, blade="arm")),
+    ("hold", pose(ra=(0, 1), blade="arm")),
 ]
 
 

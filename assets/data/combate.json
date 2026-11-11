@@ -12,9 +12,9 @@
   ],
   "tile_size": 16,
   "player": {
-    "speed": 110,
-    "acceleration": 1400,
-    "deceleration": 1800,
+    "speed": 100,
+    "acceleration": 6000,
+    "deceleration": 6000,
     "sprite_frame": [
       32,
       48
@@ -24,51 +24,36 @@
       10
     ],
     "input_buffer": 0.12,
-    "damage_invulnerability": 0.75,
-    "hitstun": 0.18,
-    "knockback": 18,
-    "combo_chain_reset": 0.38,
-    "finisher_cancel": 0.1
+    "damage_invulnerability": 1.0,
+    "hitstun": 0.22,
+    "knockback": 30
   },
-  "combo": [
-    {
-      "startup": 0.09,
-      "active": 0.08,
-      "recovery": 0.16,
-      "damage": 1,
-      "range": 22
-    },
-    {
-      "startup": 0.1,
-      "active": 0.08,
-      "recovery": 0.18,
-      "damage": 1,
-      "range": 23
-    },
-    {
-      "startup": 0.16,
-      "active": 0.1,
-      "recovery": 0.28,
-      "damage": 2,
-      "range": 25
-    }
-  ],
+  "sword": {
+    "_doc": "Espada clássica (design/gdd/jogabilidade-classica.md §3, §7): golpe em arco, carga segurando o botão, giro ao soltar.",
+    "swing_startup": 0.03,
+    "swing_active": 0.12,
+    "swing_recovery": 0.08,
+    "arc_from": -100,
+    "arc_to": 75,
+    "reach": 27,
+    "blade_inner": 5,
+    "hit_pivot": [
+      0,
+      -10
+    ],
+    "charge_time": 0.75,
+    "charge_speed_factor": 0.55,
+    "spin_time": 0.36,
+    "spin_degrees": 380,
+    "spin_reach": 31,
+    "spin_damage_factor": 2,
+    "poke_damage": 1,
+    "poke_interval": 0.35
+  },
   "weapons": {
-    "espada_oficina": [
-      1,
-      1,
-      2
-    ],
-    "espada_diapasao": [
-      2,
-      2,
-      3
-    ],
-    "lamina_ancora": [
-      3,
-      3,
-      4
-    ]
+    "espada_oficina": 1,
+    "espada_diapasao": 2,
+    "lamina_ancora": 3
   },
   "dodge": {
     "duration": 0.22,
@@ -81,9 +66,9 @@
   },
   "guard": {
     "angle_degrees": 100,
-    "speed_factor": 0.45,
-    "perfect_window": 0.11,
-    "minimum_retrigger": 0.25,
+    "speed_factor": 1.0,
+    "perfect_window": 0,
+    "minimum_retrigger": 0,
     "heavy_guard_damage": 1,
     "guard_break": 0.45
   },

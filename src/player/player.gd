@@ -1,8 +1,9 @@
 class_name Player
 extends CharacterBody2D
-## Yggnus: walking (step 1) plus the minimal combat of step 2 — sword combo,
-## dodge, guard, life, damage, invulnerability and knockback.
-## The rules live in pure classes ([PlayerMotor], [SwordCombo], [Dodge],
+## Yggnus: walking plus the classic combat of design/gdd/jogabilidade-classica.md
+## — a wide sword swing, the charged spin, the passive shield, life, damage,
+## invulnerability and knockback. The dodge waits for a later item.
+## The rules live in pure classes ([PlayerMotor], [SwordSwing], [Dodge],
 ## [Guard], [Health], [HitResolver]); this node feeds them input and applies
 ## the result in the physics step only.
 
@@ -14,6 +15,8 @@ signal hook_hit(result: Dictionary)
 signal item_pressed
 ## A sword swing hit something that took the hit.
 signal sword_landed
+## A charged spin started (jogabilidade-classica.md §3.2).
+signal spun
 
 const COLOR_BODY := Color("e8d9b5")
 const COLOR_CLOAK := Color("3d6fa8")
@@ -21,17 +24,17 @@ const COLOR_FACING := Color("f2c14e")
 const COLOR_SWORD := Color("dfe6ee")
 const COLOR_SHIELD := Color("c98b3a")
 const COLOR_PERFECT := Color("7ee0ff")
-## Half width of the sword hit box, across the swing direction.
-const SWORD_HALF_WIDTH := 12.0
-## Distance from the feet to where the blade starts.
-const SWORD_OFFSET := 2.0
+const COLOR_BLADE_EDGE := Color("8f99a6")
+const COLOR_HILT := Color("d9ad4f")
+const COLOR_GRIP := Color("7d4d31")
+const COLOR_OUTLINE := Color("1b1420")
 ## Radius of the feet used when enemies check contact.
 const FEET_RADIUS := 6.0
 const SHEET_PATH := "res://assets/art/personagens/yggnus.png"
 const SHEET_META := "res://assets/art/personagens/yggnus.json"
 
 var motor: PlayerMotor
-var combo: SwordCombo
+var sword: SwordSwing
 var dodge: Dodge
 var guard: Guard
 var health: Health
@@ -49,13 +52,16 @@ var sprite_frame := Vector2(32, 48)
 var read_input := true
 ## Movement input used when [member read_input] is false.
 var input_override := Vector2.ZERO
-## Guard button state used when [member read_input] is false.
-var guard_override := false
+## Sword button held, used when [member read_input] is false (charging).
+var attack_held_override := false
 ## False until the sword is in the inventory: a new game starts unarmed
 ## (plano-implementacao.md Etapa 4); attack presses are ignored.
 var has_sword := true
-## False until the shield is in the inventory: the guard button does nothing.
+## False until the shield is in the inventory: no passive guard.
 var has_shield := true
+## False until an item gives the dash: the dodge button does nothing
+## (jogabilidade-classica.md §1).
+var has_dodge := false
 
 var _hitstun := 0.0
 ## Seconds left drawing the bow (or another tool's start): busy meanwhile.
@@ -69,6 +75,10 @@ var _knockback := Vector2.ZERO
 var _swing_facing := Vector2.DOWN
 var _pending_foot := Vector2(12, 10)
 var _last_outcome_flash := 0.0
+## Seconds left of the flash when the charge fills.
+var _charged_flash := 0.0
+## Enemy instance id -> seconds until the held blade may poke it again.
+var _poke_wait: Dictionary = {}
 var _pull_target := Vector2.ZERO
 ## Sheet drawn by tools/art/gerar_yggnus.py; null keeps the shape placeholder.
 var _sheet: Texture2D
@@ -96,8 +106,7 @@ func configure(config: GameConfig) -> void:
 	var foot: Array = p.get("foot_collision", [12, 10])
 	_pending_foot = Vector2(foot[0], foot[1])
 	var buffer := float(p.get("input_buffer", 0.12))
-	combo = SwordCombo.new(config.combo(), config.weapon_damage("espada_oficina"), buffer,
-		float(p.get("combo_chain_reset", 0.38)), float(p.get("finisher_cancel", 0.10)))
+	sword = SwordSwing.new(config.sword(), config.weapon_damage("espada_oficina"), buffer)
 	dodge = Dodge.new(config.dodge(), buffer)
 	guard = Guard.new(config.guard())
 	healing = Healing.new(config.data.get("healing", {}))
@@ -141,13 +150,14 @@ func set_camera_limits(size_px: Vector2i, top: int = 0) -> void:
 
 ## Queues a sword press (same as the attack action).
 func request_attack() -> void:
-	if combo and has_sword and _tool_lock <= 0.0:
-		combo.request()
+	if sword and has_sword and _tool_lock <= 0.0:
+		sword.press()
 
 
-## Queues a dodge press (same as the dodge action).
+## Queues a dodge press (same as the dodge action); nothing until an item
+## gives the dash ([member has_dodge]).
 func request_dodge() -> void:
-	if dodge and _tool_lock <= 0.0:
+	if dodge and has_dodge and _tool_lock <= 0.0:
 		dodge.request()
 
 
@@ -159,7 +169,7 @@ func respawn_at(pos: Vector2, restore_life: bool = true) -> void:
 	velocity = Vector2.ZERO
 	_hitstun = 0.0
 	_tool_lock = 0.0
-	combo.reset()
+	sword.reset()
 	dodge.reset()
 	guard.reset()
 	healing.reset()
@@ -179,6 +189,7 @@ func apply_relic_params(p: Dictionary) -> void:
 	healing.recovery = float(p.get("healing.recovery", healing.recovery))
 	hook.cooldown = float(p.get("hook.return_cooldown", hook.cooldown))
 	guard.perfect_window = float(p.get("guard.perfect_window", guard.perfect_window))
+	guard.half_angle = deg_to_rad(float(p.get("guard.angle_degrees", rad_to_deg(guard.half_angle) * 2.0)) * 0.5)
 	motor.speed = float(p.get("player.speed", motor.speed))
 	_knockback_px = float(p.get("player.knockback_max", _knockback_px))
 
@@ -188,7 +199,7 @@ func apply_relic_params(p: Dictionary) -> void:
 func request_heal() -> bool:
 	if healing == null or is_dead() or health.current >= health.maximum:
 		return false
-	if combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0:
+	if sword.is_busy() or dodge.is_dodging() or _hitstun > 0.0:
 		return false
 	if not healing.start(int(heal_source.call())):
 		return false
@@ -199,7 +210,7 @@ func request_heal() -> bool:
 
 ## Throws the hook where Yggnus faces. False while busy or cooling down.
 func fire_hook() -> bool:
-	if hook == null or is_dead() or combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy() or _tool_lock > 0.0:
+	if hook == null or is_dead() or sword.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or healing.is_busy() or _tool_lock > 0.0:
 		return false
 	if not hook.fire(motor.facing):
 		return false
@@ -237,7 +248,7 @@ func start_pull(target: Vector2) -> void:
 
 ## True while attacking, dodging, healing, hooking or stunned: story scenes wait for this to end.
 func is_busy() -> bool:
-	return combo.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or _tool_lock > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
+	return sword.is_busy() or dodge.is_dodging() or _hitstun > 0.0 or _tool_lock > 0.0 or (healing != null and healing.is_busy()) or (hook != null and hook.is_busy())
 
 
 ## True once life reaches zero, until the respawn.
@@ -265,7 +276,7 @@ func receive_hit(damage: int, from: Vector2, heavy: bool = false, unblockable: b
 
 
 func _start_hitstun(from: Vector2, seconds: float) -> void:
-	combo.cancel()
+	sword.cancel()
 	healing.interrupt()
 	if hook.phase != Hook.Phase.PULL:
 		hook.cancel()
@@ -273,7 +284,7 @@ func _start_hitstun(from: Vector2, seconds: float) -> void:
 	var away := (global_position - from).normalized()
 	if away == Vector2.ZERO:
 		away = -motor.facing
-	# Knockback distance comes from the design (≤ 18 px); walls shorten it.
+	# Knockback distance comes from combate.json; walls shorten it.
 	_knockback = away * (_knockback_px / maxf(seconds, 0.01))
 
 
@@ -296,20 +307,26 @@ func _physics_process(delta: float) -> void:
 	dodge.tick(delta)
 	_tool_lock = maxf(0.0, _tool_lock - delta)
 	guard.tick(delta)
-	if not combo.is_busy():
-		# Buffer and chain-reset clocks run while hooking, dodging, healing or
-		# stunned, so a press is not kept forever (mecanicas §3).
-		combo.tick_idle(delta)
+	# The press buffer ages while hooking, dodging, healing or stunned, so a
+	# press is not kept forever.
+	sword.tick_idle(delta)
 	_last_outcome_flash = maxf(0.0, _last_outcome_flash - delta)
+	_charged_flash = maxf(0.0, _charged_flash - delta)
+	if not sword.is_charging():
+		_poke_wait.clear()
+	else:
+		for key: int in _poke_wait:
+			_poke_wait[key] = float(_poke_wait[key]) - delta
 	if is_dead():
 		velocity = Vector2.ZERO
 		queue_redraw()
 		return
 	var input := input_override
-	var guard_pressed := guard_override
+	var attack_held := attack_held_override
 	if read_input:
 		input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-		guard_pressed = Input.is_action_pressed("guard")
+		attack_held = Input.is_action_pressed("attack")
+	sword.set_held(attack_held and has_sword)
 
 	if _hitstun > 0.0:
 		_hitstun -= delta
@@ -347,9 +364,9 @@ func _physics_process(delta: float) -> void:
 			queue_redraw()
 			return
 		healing.interrupt()
-	# Priority: dodge > guard > attack > movement (mecanicas §3).
-	if dodge.wants_to_start() and combo.can_cancel():
-		combo.cancel()
+	# The dash (a later item) cancels the sword.
+	if dodge.wants_to_start() and not sword.is_swinging():
+		sword.cancel()
 		guard.set_held(false)
 		dodge.start(input if input != Vector2.ZERO else motor.facing)
 	if dodge.is_dodging():
@@ -358,55 +375,73 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 		return
 
-	guard.set_held(guard_pressed and has_shield and not combo.is_busy())
-	if guard.is_up():
-		combo.reset()
-		velocity = motor.step(velocity, input, delta, guard.speed_factor)
+	var event := sword.tick(delta)
+	if event == "swing":
+		_swing_facing = motor.facing
+	elif event == "spin":
+		Fx.dust(get_parent(), global_position - Vector2(0, 1))
+		spun.emit()
+	elif event == "charged":
+		_charged_flash = 0.18
+	if sword.is_swinging():
+		if sword.in_startup() and input != Vector2.ZERO:
+			# The blade can still be aimed during the startup.
+			motor.step(Vector2.ZERO, input, delta)
+			_swing_facing = motor.facing
+		velocity = velocity.move_toward(Vector2.ZERO, motor.deceleration * delta)
+	elif sword.is_charging():
+		# Charging: slow, and Yggnus keeps facing where the blade points.
+		velocity = motor.step(velocity, input, delta, sword.charge_speed_factor)
+		motor.facing = _swing_facing
 	else:
-		combo.tick(delta)
-		if combo.is_busy():
-			if combo.phase == SwordCombo.Phase.STARTUP and input != Vector2.ZERO:
-				# The blade can still be aimed during the startup.
-				motor.step(Vector2.ZERO, input, delta)
-			if combo.phase == SwordCombo.Phase.STARTUP or _swing_facing == Vector2.ZERO:
-				_swing_facing = motor.facing
-			velocity = velocity.move_toward(Vector2.ZERO, motor.deceleration * delta)
-		else:
-			velocity = motor.step(velocity, input, delta)
+		velocity = motor.step(velocity, input, delta)
+	# The shield is passive: up whenever Yggnus is free (§3.3).
+	guard.set_held(has_shield and not sword.is_busy() and _tool_lock <= 0.0)
 	move_and_slide()
-	if combo.is_active():
+	if sword.is_cutting():
 		_apply_sword_hits()
 	queue_redraw()
 
 
-## Hit box of the swing in progress, in global coordinates.
-func sword_rect() -> Rect2:
-	var reach := combo.reach()
-	var f := _swing_facing
-	var along := f * (SWORD_OFFSET + reach * 0.5)
-	var size := Vector2(absf(f.x) * reach + absf(f.y) * SWORD_HALF_WIDTH * 2.0, absf(f.y) * reach + absf(f.x) * SWORD_HALF_WIDTH * 2.0)
-	return Rect2(global_position + along - size * 0.5, size)
+## Whether the blade's last sweep touches a target of [param radius] at
+## [param point] (global coordinates).
+func sword_touches(point: Vector2, radius: float) -> bool:
+	if not sword.is_cutting():
+		return false
+	var arc := sword.sweep()
+	return SwordSwing.sweep_hits(global_position + sword.hit_pivot, _swing_facing.angle(), arc.x, arc.y,
+		sword.blade_inner, sword.current_reach(), point, radius)
 
 
 func _apply_sword_hits() -> void:
-	var box := sword_rect()
+	var poking := sword.is_charging()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if not enemy.has_method("receive_sword_hit"):
 			continue
+		# The held blade only pokes ordinary enemies, each at most once per
+		# poke_interval; bells, Igris and story targets need a real swing.
+		if poking and not enemy is EnemyBase:
+			continue
 		var r: float = enemy.body_radius() if enemy.has_method("body_radius") else 6.0
-		var closest := Vector2(clampf(enemy.global_position.x, box.position.x, box.end.x), clampf(enemy.global_position.y, box.position.y, box.end.y))
-		if closest.distance_to(enemy.global_position) <= r:
-			if enemy.receive_sword_hit(combo.damage(), combo.attack_id, global_position):
+		if not sword_touches(enemy.global_position, r):
+			continue
+		if poking:
+			var key: int = enemy.get_instance_id()
+			if float(_poke_wait.get(key, 0.0)) > 0.0:
+				continue
+			_poke_wait[key] = sword.poke_interval
+			if (enemy as EnemyBase).receive_poke(sword.damage(), global_position):
 				sword_landed.emit()
+		elif enemy.receive_sword_hit(sword.damage(), sword.attack_id, global_position):
+			sword_landed.emit()
 	# Bushes and pots in reach break too (exploração §2).
 	for b in get_tree().get_nodes_in_group("breakables"):
-		var b_closest := Vector2(clampf(b.global_position.x, box.position.x, box.end.x), clampf(b.global_position.y, box.position.y, box.end.y))
-		if b_closest.distance_to(b.global_position) <= b.body_radius():
-			b.receive_sword_hit(combo.damage(), combo.attack_id, global_position)
+		if sword_touches(b.global_position, b.body_radius()):
+			b.receive_sword_hit(sword.damage(), sword.attack_id, global_position)
 
 
 func _on_died() -> void:
-	combo.reset()
+	sword.reset()
 	died.emit()
 
 
@@ -418,10 +453,10 @@ func current_anim() -> String:
 		return "dodge"
 	if _hitstun > 0.0:
 		return "hurt"
-	if combo and combo.is_busy():
-		return ["slash1", "slash2", "slash3"][clampi(combo.stage, 0, 2)]
-	if guard and guard.is_up():
-		return "guard"
+	if sword and sword.is_charging():
+		return "hold"
+	if sword and sword.is_swinging():
+		return "swing"
 	if hook and hook.is_busy():
 		return "tool"
 	if velocity.length() > 4.0:
@@ -429,13 +464,9 @@ func current_anim() -> String:
 	return "idle"
 
 
-## Frame picked by the swing phase, so the pose matches the hit window.
+## Frame picked by the swing phase: arm raised in the startup, out after.
 func _swing_index() -> int:
-	if combo.phase == SwordCombo.Phase.STARTUP:
-		return 0
-	if combo.stage >= 2 and combo.phase == SwordCombo.Phase.RECOVERY:
-		return 2
-	return 1
+	return 0 if sword.in_startup() else 1
 
 
 func _advance_anim(delta: float) -> void:
@@ -464,12 +495,22 @@ func _draw() -> void:
 	var invisible_blink := health != null and health.is_invulnerable() and int(Time.get_ticks_msec() / 60) % 2 == 0
 	var alpha := 0.35 if invisible_blink or (dodge and dodge.is_dodging()) else 1.0
 	var f := motor.facing if motor else Vector2.DOWN
-	if combo and combo.is_busy():
+	var blade := sword != null and sword.is_busy() and not sword.in_startup() and not is_dead()
+	var blade_dir := Vector2.from_angle(_swing_facing.angle() + sword.angle()) if blade else Vector2.ZERO
+	if sword and sword.is_busy():
 		f = _swing_facing
+		if sword.phase == SwordSwing.Phase.SPIN:
+			f = _cardinal(blade_dir)
+	# A blade pointing up is behind Yggnus.
+	var behind := blade and blade_dir.y < -0.35
+	if behind:
+		_draw_blade(blade_dir, alpha)
 	if _sheet and _picker:
 		_draw_sheet(f, alpha)
 	else:
 		_draw_shapes(f, alpha, w, h)
+	if blade and not behind:
+		_draw_blade(blade_dir, alpha)
 	if is_dead():
 		return
 	if hook and hook.distance > 0.0:
@@ -478,29 +519,85 @@ func _draw() -> void:
 		draw_circle(tip, 2.5, Color("f2c14e"))
 	if healing and healing.phase == Healing.Phase.USING:
 		draw_arc(Vector2(0, -h - 4), 4.0, 0, TAU, 10, Color("e05a5a"), 2.0)
-	if guard and guard.is_up():
-		# The covered side, also when the shield itself is hidden (facing up).
-		var perfect := guard.is_perfect() or _last_outcome_flash > 0.0
-		var center := f * 10.0 + Vector2(0, -8)
-		draw_arc(center, 12.0, f.angle() - guard.half_angle, f.angle() + guard.half_angle, 12, COLOR_PERFECT if perfect else Color(COLOR_SHIELD, 0.7), 2.0)
-	if combo and combo.is_active():
-		# The swing's trail covers the real hit box (sword_rect).
-		var box := sword_rect()
-		box.position -= global_position
-		var c := box.get_center()
-		var r := maxf(box.size.x, box.size.y) * 0.5
-		var a := f.angle()
-		# Drawn at chest height (the hit box itself sits at the feet).
-		var o := c - f * r * 0.5 + Vector2(0, -10)
-		# A crescent: wide faint glow, the bright edge, a white core.
-		draw_arc(o, r - 1.5, a - 1.25, a + 1.25, 16, Color(0.7, 0.85, 1.0, 0.22), 6.0)
-		draw_arc(o, r, a - 1.2, a + 1.2, 16, Color(COLOR_SWORD, 0.85), 3.0)
-		draw_arc(o, r, a - 0.8, a + 0.8, 12, Color(1, 1, 1, 0.95), 1.0)
-		draw_arc(o, r - 4.0, a - 0.9, a + 0.9, 12, Color(COLOR_SWORD, 0.3), 2.0)
+	if _last_outcome_flash > 0.0:
+		# A blocked hit: a spark on the shield side.
+		var center := f * 10.0 + Vector2(0, -12)
+		draw_arc(center, 9.0, f.angle() - 0.9, f.angle() + 0.9, 10, COLOR_PERFECT, 2.0)
+
+
+## The nearest of the four directions to [param v].
+static func _cardinal(v: Vector2) -> Vector2:
+	if absf(v.x) > absf(v.y):
+		return Vector2.RIGHT if v.x > 0.0 else Vector2.LEFT
+	return Vector2.DOWN if v.y > 0.0 else Vector2.UP
+
+
+## The sword, big and bright, with the swept trail behind it
+## (jogabilidade-classica.md §1). [param d] is the blade direction.
+func _draw_blade(d: Vector2, alpha: float) -> void:
+	# Drawn from the same pivot the hits use, so what shows is what cuts.
+	var o := sword.hit_pivot
+	var spin := sword.phase == SwordSwing.Phase.SPIN
+	var length := sword.current_reach() - 4.0
+	var a := d.angle()
+	# Trail: a fan behind the blade, fading toward where it started.
+	var span := 0.0
+	if spin:
+		span = minf(sword.angle(), 2.6)
+	elif sword.phase == SwordSwing.Phase.SWING:
+		span = minf(sword.angle() - sword.arc_from, 1.9)
+	if span > 0.05:
+		var steps := 10
+		var pts := PackedVector2Array()
+		var cols := PackedColorArray()
+		var edge := PackedVector2Array()
+		for i in steps + 1:
+			var t := float(i) / steps
+			var ang := a - span * (1.0 - t)
+			pts.append(o + Vector2.from_angle(ang) * (length + 2.0))
+			cols.append(Color(1.0, 1.0, 1.0, 0.7 * t * t * alpha))
+			edge.append(o + Vector2.from_angle(ang) * (length + 1.0))
+		for i in range(steps, -1, -1):
+			var t := float(i) / steps
+			var ang := a - span * (1.0 - t)
+			pts.append(o + Vector2.from_angle(ang) * (length * 0.55))
+			cols.append(Color(0.6, 0.85, 1.0, 0.0))
+		draw_polygon(pts, cols)
+		# A bright edge where the tip passed.
+		for i in range(1, edge.size()):
+			var t := float(i) / steps
+			draw_line(edge[i - 1], edge[i], Color(1, 1, 1, 0.9 * t * alpha), 1.5)
+	var n := d.orthogonal()
+	var base := o + d * 6.0
+	var tip := o + d * length
+	var near_tip := o + d * (length - 4.0)
+	var body := PackedVector2Array([base + n * 1.8, near_tip + n * 1.8, tip, near_tip - n * 1.8, base - n * 1.8])
+	var rim := PackedVector2Array([base + n * 2.8 - d, near_tip + n * 2.8, tip + d * 1.4, near_tip - n * 2.8, base - n * 2.8 - d])
+	draw_colored_polygon(rim, Color(COLOR_OUTLINE, alpha))
+	draw_colored_polygon(body, Color(COLOR_SWORD, alpha))
+	draw_line(base - n * 1.2, near_tip - n * 1.2, Color(COLOR_BLADE_EDGE, alpha), 1.0)
+	draw_line(base + d + n * 0.5, near_tip - d * 2.0 + n * 0.5, Color(1, 1, 1, alpha), 1.0)
+	# Guard, grip and pommel.
+	draw_line(o + d * 1.0, o + d * 5.0, Color(COLOR_OUTLINE, alpha), 3.5)
+	draw_line(o + d * 1.5, o + d * 4.5, Color(COLOR_GRIP, alpha), 2.0)
+	draw_line(o + d * 5.5 + n * 4.5, o + d * 5.5 - n * 4.5, Color(COLOR_OUTLINE, alpha), 3.5)
+	draw_line(o + d * 5.5 + n * 3.5, o + d * 5.5 - n * 3.5, Color(COLOR_HILT, alpha), 2.0)
+	draw_circle(o + d * 0.5, 1.6, Color(COLOR_HILT, alpha))
+	if sword.is_charging():
+		# The tip gathers light while charging and shines when full.
+		var k := clampf(sword.charge / maxf(sword.charge_time, 0.01), 0.0, 1.0)
+		var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.03)
+		if sword.is_charged():
+			var r := 3.5 + 1.5 * pulse + _charged_flash * 12.0
+			draw_line(tip - d * r, tip + d * r, Color(1, 1, 1, 0.9), 1.5)
+			draw_line(tip - n * r, tip + n * r, Color(1, 1, 1, 0.9), 1.5)
+			draw_circle(tip, 2.2, Color("bff4ff"))
+		else:
+			draw_circle(tip, 0.8 + 1.4 * k, Color(1, 1, 1, 0.4 + 0.5 * k))
 
 
 func _draw_sheet(f: Vector2, alpha: float) -> void:
-	var index := _swing_index() if combo and combo.is_busy() else -1
+	var index := _swing_index() if sword and sword.is_swinging() else -1
 	var reg := _picker.region(_anim, _anim_t, f, index)
 	var size := Vector2(_picker.frame_size)
 	var at := -Vector2(_picker.pivot)

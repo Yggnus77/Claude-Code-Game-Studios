@@ -233,7 +233,7 @@ func test_the_bow_draw_keeps_yggnus_busy() -> void:
 	assert_true(p.is_busy(), "busy while drawing")
 	p.request_attack()
 	await _frames(2)
-	assert_true(not p.combo.is_busy(), "no sword swing during the draw")
+	assert_true(not p.sword.is_busy(), "no sword swing during the draw")
 	await _frames(15)
 	assert_true(not p.is_busy(), "free once the needle is off")
 
@@ -287,7 +287,8 @@ func test_the_shop_will_not_sell_hidden_charges() -> void:
 
 
 func test_chest_text_names_amounts_and_extras() -> void:
-	var p := _setup("r04_adega", Vector2i(12, 6))
+	# The bow is the tower's chest item (jogabilidade-classica.md §3.5).
+	var p := _setup("t06_marco", Vector2i(18, 16))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "chest", "opened")
 	assert_true(main.hud._toast.text.contains("Recebeu Arco de Fio e 10 Agulhas de Fio"), main.hud._toast.text)

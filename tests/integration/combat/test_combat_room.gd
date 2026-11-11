@@ -55,7 +55,7 @@ func test_guard_blocks_charge_from_front() -> void:
 	p.motor.facing = Vector2.RIGHT
 	main.spawn_enemy("rastejo_tinta", Vector2i(12, 12))
 	await _frames(20)
-	p.guard_override = true
+	# The shield is passive: up while Yggnus stands (jogabilidade-classica §3.3).
 	var outcomes := []
 	p.hit_taken.connect(func(o: HitResolver.Outcome) -> void: outcomes.append(o))
 	await _frames(100)
@@ -69,6 +69,7 @@ func test_dodge_does_not_cross_wall() -> void:
 	# Row 8: no door there (walking up to a door's arch would go through it).
 	p.respawn_at(data.tile_center(Vector2i(1, 8)) + Vector2(2, 0))
 	p.input_override = Vector2.LEFT
+	p.has_dodge = true  # the dash of a later item
 	p.request_dodge()
 	await _frames(20)
 	assert_true(p.global_position.x >= 16.0 + 5.5, "dodge stops at the wall (x=%.2f)" % p.global_position.x)
@@ -92,7 +93,6 @@ func test_drinking_lowers_the_shield() -> void:
 	p.health.take_damage(2)
 	p.health.tick(5.0)
 	p.motor.facing = Vector2.RIGHT
-	p.guard_override = true
 	await _frames(3)
 	assert_true(p.guard.is_up(), "shield up")
 	assert_true(p.request_heal(), "drinks")
@@ -115,6 +115,7 @@ func test_dodge_after_drinking_travels_full_distance() -> void:
 		await tree.physics_frame
 	var start := p.global_position
 	p.input_override = Vector2.RIGHT
+	p.has_dodge = true  # the dash of a later item
 	p.request_dodge()
 	await _frames(20)
 	p.input_override = Vector2.ZERO
@@ -131,6 +132,6 @@ func test_attack_pressed_while_hooking_expires() -> void:
 	var swung := false
 	for i in 90:
 		await tree.physics_frame
-		if p.combo.is_busy():
+		if p.sword.is_busy():
 			swung = true
 	assert_true(not swung, "the old press does not swing after the hook returns")

@@ -101,6 +101,7 @@ func test_relic_base_matches_combat_data() -> void:
 	assert_true(is_equal_approx(float(base["healing.recovery"]), float(config.data["healing"]["recovery"])), "recovery")
 	assert_true(is_equal_approx(float(base["hook.return_cooldown"]), float(config.data["hook"]["return_cooldown"])), "hook cooldown")
 	assert_true(is_equal_approx(float(base["guard.perfect_window"]), float(config.data["guard"]["perfect_window"])), "perfect window")
+	assert_true(is_equal_approx(float(base["guard.angle_degrees"]), float(config.data["guard"]["angle_degrees"])), "shield cover")
 	assert_true(is_equal_approx(float(base["player.speed"]), float(config.data["player"]["speed"])), "speed")
 	assert_true(is_equal_approx(float(base["player.knockback_max"]), float(config.data["player"]["knockback"])), "knockback")
 

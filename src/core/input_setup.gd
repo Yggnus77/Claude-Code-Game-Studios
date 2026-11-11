@@ -13,9 +13,7 @@ const KEYS := {
 	"move_down": [KEY_S, KEY_DOWN],
 	"attack": [KEY_J],
 	"interact": [KEY_K],
-	"dodge": [KEY_SPACE],
 	"item": [KEY_L],
-	"guard": [KEY_SHIFT],
 	"quick_swap": [KEY_Q],
 	"map": [KEY_TAB],
 	"pause": [KEY_ESCAPE],
@@ -26,6 +24,9 @@ const KEYS := {
 	"spawn_2": [KEY_2],
 	"spawn_3": [KEY_3],
 	"spawn_4": [KEY_4],
+	# The dash of a later item; no key until then, so Space and B stay free
+	# for the player to bind (design/gdd/jogabilidade-classica.md §1).
+	"dodge": [],
 }
 
 const BUTTONS := {
@@ -35,9 +36,7 @@ const BUTTONS := {
 	"move_down": [JOY_BUTTON_DPAD_DOWN],
 	"attack": [JOY_BUTTON_X],
 	"interact": [JOY_BUTTON_A],
-	"dodge": [JOY_BUTTON_B],
 	"item": [JOY_BUTTON_Y],
-	"guard": [JOY_BUTTON_LEFT_SHOULDER],
 	"quick_swap": [JOY_BUTTON_RIGHT_SHOULDER],
 	"map": [JOY_BUTTON_BACK],
 	"pause": [JOY_BUTTON_START],

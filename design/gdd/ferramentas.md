@@ -21,7 +21,9 @@ Três ferramentas novas vão para o botão de item, junto do frasco e do gancho:
 
 Tudo é opcional: o caminho da história do kit não muda. Cada ferramenta
 abre um segredo novo, em cadeia: Lamparina → Poço escuro (Cargas) → Adega
-atrás da parede rachada (Arco) → Mirante da torre atrás da placa.
+atrás da parede rachada (50 Bronze). O Arco fica no baú da antecâmara da
+torre e abre na hora o Mirante atrás da placa (2026-11-10,
+`jogabilidade-classica.md` §3.5: o item da masmorra é usado nela mesma).
 
 ## 2. Fantasia do jogador
 
@@ -98,7 +100,8 @@ a placa alta na antecâmara viram convites para voltar.
 | Tochas | Bomba d'água | (30, 10) e (30, 14), abrem a porta leste (`world.torches.r02_bomba`) |
 | 3 Cargas de Bronze | Poço antigo (`r03_poco`, novo, escuro) | baú |
 | Parede rachada | Cruzamento (`r01_cruzamento`) | porta norte (`world.cracked.r01_adega`) |
-| Arco de Fio + 10 agulhas | Adega escondida (`r04_adega`, nova) | baú, com recipiente de agulhas |
+| 50 Bronze | Adega escondida (`r04_adega`, nova) | baú, com recipiente de agulhas |
+| Arco de Fio + 10 agulhas | Antecâmara da torre (`t06_marco`) | baú em (18, 15) |
 | Placa | Antecâmara (`t06_marco`) | no alto da parede norte, abre a porta norte (`world.plate.t06_marco`) |
 | Recipiente de agulhas | Antecâmara | ao lado da entrada |
 | 60 Bronze | Mirante (`t08_mirante`, novo, faz parte do mapa da torre) | baú |

@@ -68,7 +68,7 @@ func test_soldado_does_not_flinch_while_winding_up() -> void:
 func test_soldado_cut_blocked_from_front() -> void:
 	var p := _setup()
 	p.motor.facing = Vector2.RIGHT
-	p.guard_override = true
+	# The shield is passive: up while Yggnus stands.
 	main.spawn_enemy("soldado_corda", Vector2i(11, 12))
 	await _frames(120)
 	assert_eq(p.health.current, p.health.maximum, "guard from the front blocks the cut")
@@ -108,7 +108,7 @@ func test_guarda_can_be_beaten_without_hook() -> void:
 func test_guarda_slam_breaks_guard() -> void:
 	var p := _setup()
 	p.motor.facing = Vector2.RIGHT
-	p.guard_override = true
+	# The shield is passive: up while Yggnus stands.
 	var outcomes := []
 	p.hit_taken.connect(func(o: HitResolver.Outcome) -> void: outcomes.append(o))
 	main.spawn_enemy("guarda_contrapeso", Vector2i(11, 12))

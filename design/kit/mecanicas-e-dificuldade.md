@@ -1,5 +1,11 @@
 # A LENDA DE YGGNUS — ESPECIFICAÇÃO DE MECÂNICAS E DIFICULDADE
 
+> **Nota (2026-11-11):** o combate de Yggnus (§3–5: combo de três golpes,
+> defesa segurada com janela precisa, esquiva livre e as teclas Espaço/Shift)
+> foi substituído pela jogabilidade clássica de
+> `design/gdd/jogabilidade-classica.md` (golpe em arco, giro carregado,
+> escudo passivo, esquiva só com um item futuro). O restante vale.
+
 Versão 1.1. Esta especificação complementa o roteiro e o atlas; em divergências de regra, prevalece sobre as versões 1.0. Os acontecimentos e decisões da história permanecem iguais. Os números são parâmetros iniciais verificáveis no protótipo, não uma garantia de diversão já comprovada.
 
 ## 1. Meta de experiência

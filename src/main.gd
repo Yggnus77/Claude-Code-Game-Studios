@@ -216,7 +216,8 @@ func _ready() -> void:
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
 	hud.dungeon_view = dungeon_map_view
-	hud.key_line = dungeon_key_line
+	hud.key_view = dungeon_key_view
+	hud.hint_state = func() -> Dictionary: return {"sword": player != null and player.has_sword, "tools": _owned_tools.size() > 1, "flask": not state.flasks().is_empty()}
 	hud.bind_state(state)
 	hud.inventory_extra = _inventory_lines
 	hud.relic_cycle = cycle_relic
@@ -506,6 +507,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 		player.hook_probe = _hook_probe
 		player.hook_hit.connect(_on_hook_hit)
 		player.sword_landed.connect(func() -> void: playtest.first(session_time(), "espada"))
+		player.spun.connect(func() -> void: playtest.first(session_time(), "giro"))
 		player.item_pressed.connect(use_item)
 		if hud:
 			hud.bind(player.health)
@@ -574,8 +576,6 @@ func _on_player_hit(outcome: HitResolver.Outcome) -> void:
 		playtest.hit(session_time(), death_cause())
 	if outcome == HitResolver.Outcome.BLOCKED or outcome == HitResolver.Outcome.PERFECT_BLOCK:
 		playtest.first(session_time(), "defesa")
-	if outcome == HitResolver.Outcome.PERFECT_BLOCK:
-		playtest.first(session_time(), "defesa_precisa")
 	if outcome == HitResolver.Outcome.HIT and invasion != null:
 		dialogue.request(str(invasion.def.get("hint_bark", "")))
 
@@ -613,7 +613,8 @@ func _refresh_story() -> void:
 		equipped = ToolRules.FLASK
 	if hud:
 		hud.set_objective(prologue.objective(state, room_id))
-		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1)
+		hud.set_item(tools.label(equipped, state), _owned_tools.size() > 1, equipped)
+		hud.refresh_hint()
 
 
 ## Adds enemy [param kind] on [param tile]. Returns it, or null if unknown.
@@ -1280,6 +1281,12 @@ func interact() -> String:
 				hud.toast("Vazio.")
 				return "chest_empty"
 			var effects := config.reward_effects(trigger)
+			if not effects.is_empty() and state.has_receipt(str(effects[0].get("receipt_id", ""))):
+				# The reward came from elsewhere in an older version (the bow
+				# was in the cellar): the chest opens empty, it never lies.
+				state.apply([{"op": "add_receipt", "receipt_id": receipt}])
+				hud.toast("Vazio. Você já tem o que estava aqui.")
+				return "chest_empty"
 			if not effects.is_empty():
 				effects.append({"op": "add_receipt", "receipt_id": receipt})
 				if state.apply(effects):
@@ -1703,18 +1710,14 @@ func dungeon_map_view() -> Dictionary:
 	return v
 
 
-## "Chaves 1 · Chave Grande" for the HUD while inside a dungeon.
-func dungeon_key_line() -> String:
+## Keys of the current dungeon for the HUD's counters ({} outside one).
+func dungeon_key_view() -> Dictionary:
 	var d := dungeons.dungeon_of(room_id)
 	if d.is_empty():
-		return ""
+		return {}
 	var v := dungeons.map_view(d, state, room_id)
-	var parts := PackedStringArray()
-	if int(v["small_keys"]) > 0:
-		parts.append("Chaves %d" % int(v["small_keys"]))
-	if v["boss_key"]:
-		parts.append("Chave Grande")
-	return "   ".join(parts)
+	return {"small_keys": int(v["small_keys"]), "boss_key": bool(v["boss_key"])}
+
 
 
 func _go_through(door: Dictionary) -> void:

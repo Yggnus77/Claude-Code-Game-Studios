@@ -68,17 +68,17 @@ func test_choosing_an_action_takes_the_next_key() -> void:
 func test_escape_cancels_a_capture_and_buttons_bind() -> void:
 	var s := _screen()
 	s.show_controls()
-	s.start_capture("dodge")
+	s.start_capture("interact")
 	assert_true(s.capture(_key(KEY_ESCAPE)), "Esc handled")
 	assert_eq(s.page, SettingsScreen.Page.CONTROLS, "back to the list")
-	assert_eq(Controls.key_of("dodge"), KEY_SPACE, "unchanged")
-	s.start_capture("dodge")
+	assert_eq(Controls.key_of("interact"), KEY_K, "unchanged")
+	s.start_capture("interact")
 	var pad := InputEventJoypadButton.new()
 	pad.button_index = JOY_BUTTON_RIGHT_SHOULDER
 	pad.pressed = true
 	assert_true(s.capture(pad), "a button binds")
-	assert_eq(Controls.button_of("dodge"), JOY_BUTTON_RIGHT_SHOULDER, "dodge on RB")
-	assert_eq(Controls.button_of("quick_swap"), JOY_BUTTON_B, "swap got B")
+	assert_eq(Controls.button_of("interact"), JOY_BUTTON_RIGHT_SHOULDER, "examine on RB")
+	assert_eq(Controls.button_of("quick_swap"), JOY_BUTTON_A, "swap got A")
 
 
 func test_restore_defaults() -> void:

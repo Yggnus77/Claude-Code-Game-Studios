@@ -36,7 +36,7 @@ um arquivo `.txt` legível e um `.json` por sessão. No Windows a pasta fica em
 
 - mortes por sala e o que deu o último golpe;
 - golpes recebidos sem morrer, por origem (ajuda a ver se os ataques são percebidos antes do dano);
-- quando a pessoa acertou a espada, defendeu com o escudo, fez uma defesa precisa e atravessou com o
+- quando a pessoa acertou a espada, defendeu com o escudo, carregou e soltou o giro da espada e atravessou com o
   gancho pela primeira vez;
 - cada tentativa contra Igris, com o resultado e a duração;
 - comandos que não fizeram nada (espada antes de tê-la, examinar sem nada à frente, porta fechada,

@@ -493,7 +493,7 @@
         "relic_id": "broche_vigilia"
       },
       "relic_modifiers": {
-        "guard.perfect_window": 0.13
+        "guard.angle_degrees": 140
       },
       "modifier_policy": "Override base only while sole active relic; do not stack. Recompute from base on unequip.",
       "solution": "Examinar a mola carregada, preparar as duas travas e esperar o sinal voluntário de Yame. Igris e a criatura soltam o conjunto em cooperação.",
