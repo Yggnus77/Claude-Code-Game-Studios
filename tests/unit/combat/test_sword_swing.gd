@@ -97,16 +97,16 @@ func test_a_released_button_never_charges() -> void:
 	assert_true(not s.is_busy(), "swing then idle, no charge")
 
 
-func test_the_held_blade_pokes_with_new_ids() -> void:
+func test_the_held_blade_pokes_only_after_a_while() -> void:
 	var s := _sword()
 	s.press()
 	s.set_held(true)
-	_run(s, 0.3)
-	assert_true(s.is_cutting(), "the held blade cuts")
+	_run(s, s.swing_startup + s.swing_active + s.swing_recovery + STEP)
+	assert_true(s.is_charging(), "charging")
+	assert_true(not s.is_cutting(), "no poke right after the swing")
+	_run(s, s.poke_interval)
+	assert_true(s.can_poke() and s.is_cutting(), "pokes after %.2f s" % s.poke_interval)
 	assert_eq(s.damage(), s.poke_damage, "poke damage")
-	var first := s.attack_id
-	_run(s, s.poke_interval + STEP)
-	assert_true(s.attack_id != first, "a new poke after %.2f s" % s.poke_interval)
 
 
 func test_cancel_drops_the_charge() -> void:

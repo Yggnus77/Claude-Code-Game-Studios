@@ -15,6 +15,8 @@ signal hook_hit(result: Dictionary)
 signal item_pressed
 ## A sword swing hit something that took the hit.
 signal sword_landed
+## A charged spin started (jogabilidade-classica.md §3.2).
+signal spun
 
 const COLOR_BODY := Color("e8d9b5")
 const COLOR_CLOAK := Color("3d6fa8")
@@ -22,8 +24,6 @@ const COLOR_FACING := Color("f2c14e")
 const COLOR_SWORD := Color("dfe6ee")
 const COLOR_SHIELD := Color("c98b3a")
 const COLOR_PERFECT := Color("7ee0ff")
-## Where the drawn blade turns, above the feet (chest height).
-const BLADE_PIVOT := Vector2(0, -12)
 const COLOR_BLADE_EDGE := Color("8f99a6")
 const COLOR_HILT := Color("d9ad4f")
 const COLOR_GRIP := Color("7d4d31")
@@ -77,6 +77,8 @@ var _pending_foot := Vector2(12, 10)
 var _last_outcome_flash := 0.0
 ## Seconds left of the flash when the charge fills.
 var _charged_flash := 0.0
+## Enemy instance id -> seconds until the held blade may poke it again.
+var _poke_wait: Dictionary = {}
 var _pull_target := Vector2.ZERO
 ## Sheet drawn by tools/art/gerar_yggnus.py; null keeps the shape placeholder.
 var _sheet: Texture2D
@@ -187,6 +189,7 @@ func apply_relic_params(p: Dictionary) -> void:
 	healing.recovery = float(p.get("healing.recovery", healing.recovery))
 	hook.cooldown = float(p.get("hook.return_cooldown", hook.cooldown))
 	guard.perfect_window = float(p.get("guard.perfect_window", guard.perfect_window))
+	guard.half_angle = deg_to_rad(float(p.get("guard.angle_degrees", rad_to_deg(guard.half_angle) * 2.0)) * 0.5)
 	motor.speed = float(p.get("player.speed", motor.speed))
 	_knockback_px = float(p.get("player.knockback_max", _knockback_px))
 
@@ -309,6 +312,11 @@ func _physics_process(delta: float) -> void:
 	sword.tick_idle(delta)
 	_last_outcome_flash = maxf(0.0, _last_outcome_flash - delta)
 	_charged_flash = maxf(0.0, _charged_flash - delta)
+	if not sword.is_charging():
+		_poke_wait.clear()
+	else:
+		for key: int in _poke_wait:
+			_poke_wait[key] = float(_poke_wait[key]) - delta
 	if is_dead():
 		velocity = Vector2.ZERO
 		queue_redraw()
@@ -372,6 +380,7 @@ func _physics_process(delta: float) -> void:
 		_swing_facing = motor.facing
 	elif event == "spin":
 		Fx.dust(get_parent(), global_position - Vector2(0, 1))
+		spun.emit()
 	elif event == "charged":
 		_charged_flash = 0.18
 	if sword.is_swinging():
@@ -405,13 +414,26 @@ func sword_touches(point: Vector2, radius: float) -> bool:
 
 
 func _apply_sword_hits() -> void:
+	var poking := sword.is_charging()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if not enemy.has_method("receive_sword_hit"):
 			continue
+		# The held blade only pokes ordinary enemies, each at most once per
+		# poke_interval; bells, Igris and story targets need a real swing.
+		if poking and not enemy is EnemyBase:
+			continue
 		var r: float = enemy.body_radius() if enemy.has_method("body_radius") else 6.0
-		if sword_touches(enemy.global_position, r):
-			if enemy.receive_sword_hit(sword.damage(), sword.attack_id, global_position):
+		if not sword_touches(enemy.global_position, r):
+			continue
+		if poking:
+			var key: int = enemy.get_instance_id()
+			if float(_poke_wait.get(key, 0.0)) > 0.0:
+				continue
+			_poke_wait[key] = sword.poke_interval
+			if (enemy as EnemyBase).receive_poke(sword.damage(), global_position):
 				sword_landed.emit()
+		elif enemy.receive_sword_hit(sword.damage(), sword.attack_id, global_position):
+			sword_landed.emit()
 	# Bushes and pots in reach break too (exploração §2).
 	for b in get_tree().get_nodes_in_group("breakables"):
 		if sword_touches(b.global_position, b.body_radius()):
@@ -513,7 +535,8 @@ static func _cardinal(v: Vector2) -> Vector2:
 ## The sword, big and bright, with the swept trail behind it
 ## (jogabilidade-classica.md §1). [param d] is the blade direction.
 func _draw_blade(d: Vector2, alpha: float) -> void:
-	var o := BLADE_PIVOT
+	# Drawn from the same pivot the hits use, so what shows is what cuts.
+	var o := sword.hit_pivot
 	var spin := sword.phase == SwordSwing.Phase.SPIN
 	var length := sword.current_reach() - 4.0
 	var a := d.angle()

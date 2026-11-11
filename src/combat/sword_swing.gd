@@ -28,7 +28,7 @@ var arc_to := deg_to_rad(75.0)
 var reach := 27.0
 var blade_inner := 5.0
 ## Hit pivot relative to the feet.
-var hit_pivot := Vector2(0, -6)
+var hit_pivot := Vector2(0, -10)
 var charge_time := 0.75
 var charge_speed_factor := 0.55
 var spin_time := 0.36
@@ -42,14 +42,13 @@ var input_buffer := 0.12
 var damage_base := 1
 
 var phase: Phase = Phase.IDLE
-## Unique id of the current cut (a new one per swing, spin and poke window).
+## Unique id of the current cut (a new one per swing, charge and spin).
 var attack_id := 0
 ## Seconds the blade has been held charging.
 var charge := 0.0
 var _t := 0.0
 var _held := false
 var _buffer := 0.0
-var _poke_left := 0.0
 var _angle := 0.0
 var _prev_angle := 0.0
 
@@ -111,14 +110,24 @@ func in_startup() -> bool:
 
 
 ## True while the blade cuts: the swing's active part, the spin, and the
-## held blade (which pokes).
+## held blade once it can poke ([method can_poke]).
 func is_cutting() -> bool:
 	match phase:
 		Phase.SWING:
 			return _t >= swing_startup and _t <= swing_startup + swing_active + 0.0001
-		Phase.SPIN, Phase.CHARGE:
+		Phase.SPIN:
 			return true
+		Phase.CHARGE:
+			return can_poke()
 	return false
+
+
+## True once the held blade has been out for [member poke_interval]: the
+## swing that came just before is not followed by an instant second hit.
+## Each enemy is then poked at most once per [member poke_interval]; the
+## player keeps that clock per target (jogabilidade-classica.md §3.2).
+func can_poke() -> bool:
+	return phase == Phase.CHARGE and charge >= poke_interval
 
 
 ## Where the blade points now, relative to the facing.
@@ -164,7 +173,6 @@ func tick(delta: float) -> String:
 					_angle = 0.0
 					_prev_angle = 0.0
 					_new_id()
-					_poke_left = poke_interval
 				else:
 					_finish()
 		Phase.CHARGE:
@@ -182,10 +190,6 @@ func tick(delta: float) -> String:
 				charge += delta
 				if not was_full and charge >= charge_time:
 					event = "charged"
-				_poke_left -= delta
-				if _poke_left <= 0.0:
-					_poke_left += poke_interval
-					_new_id()
 		Phase.SPIN:
 			_t += delta
 			_angle = spin_sweep * minf(1.0, _t / spin_time)

@@ -14,7 +14,7 @@ extends RefCounted
 const SKILLS := {
 	"espada": "Primeiro golpe de espada que acertou",
 	"defesa": "Primeira defesa (escudo segurou um golpe)",
-	"defesa_precisa": "Primeira defesa precisa",
+	"giro": "Primeiro giro da espada (segurar e soltar)",
 	"gancho": "Primeira travessia com o gancho",
 }
 

@@ -12,7 +12,7 @@ func test_defaults_have_the_kit_keys() -> void:
 	assert_eq(Controls.key_of("attack"), KEY_J, "sword on J")
 	assert_eq(Controls.button_of("attack"), JOY_BUTTON_X, "sword on X")
 	assert_eq(Controls.label("attack"), "J / X", "label")
-	assert_eq(Controls.key_of("dodge"), KEY_SPACE, "dodge on Space")
+	assert_eq(Controls.key_of("dodge"), KEY_NONE, "no dash key until the item (jogabilidade-classica §1)")
 
 
 func test_a_free_key_replaces_the_main_one() -> void:
@@ -95,15 +95,17 @@ func test_bad_saved_values_are_ignored() -> void:
 	Controls.apply_dict({
 		"attack": {"keys": ["J", -5, 99999999], "buttons": [999, JOY_BUTTON_START]},
 		"spawn_1": {"keys": [KEY_U]},
-		"dodge": 3,
-		"guard": {"keys": [KEY_1]},
+		"interact": 3,
+		"quick_swap": {"keys": [KEY_1]},
+		"dodge": {"keys": [KEY_P]},
 		"item": {"keys": [float(KEY_U)]},
 	})
 	assert_eq(Controls.key_of("attack"), KEY_J, "no valid key: default kept")
 	assert_eq(Controls.button_of("attack"), JOY_BUTTON_X, "no valid button: default kept")
 	assert_eq(Controls.key_of("spawn_1"), KEY_1, "not a remappable action")
-	assert_eq(Controls.key_of("dodge"), KEY_SPACE, "not a dictionary")
-	assert_eq(Controls.key_of("guard"), KEY_SHIFT, "a test key cannot be loaded")
+	assert_eq(Controls.key_of("interact"), KEY_K, "not a dictionary")
+	assert_eq(Controls.key_of("quick_swap"), KEY_Q, "a test key cannot be loaded")
+	assert_true(not _has_key("dodge", KEY_P), "an old dodge binding is not loaded (no dash yet)")
 	assert_eq(Controls.key_of("item"), KEY_U, "a float still loads")
 
 
@@ -112,3 +114,11 @@ func _has_key(action: String, keycode: int) -> bool:
 		if ev is InputEventKey and (ev as InputEventKey).physical_keycode == keycode:
 			return true
 	return false
+
+
+func test_space_and_shift_are_free_to_bind() -> void:
+	# The old dodge and guard keys (jogabilidade-classica.md §1).
+	assert_true(Controls.is_key_allowed(KEY_SPACE), "Space can be bound")
+	assert_true(Controls.is_key_allowed(KEY_SHIFT), "Shift can be bound")
+	assert_true(Controls.is_button_allowed(JOY_BUTTON_B), "B can be bound")
+	assert_true(Controls.is_button_allowed(JOY_BUTTON_LEFT_SHOULDER), "LB can be bound")

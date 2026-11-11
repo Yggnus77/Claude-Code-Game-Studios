@@ -3382,7 +3382,7 @@
           "id": "a02.line2",
           "type": "direction",
           "speaker": "SISTEMA",
-          "text": "Botas de Travessia recebidas. Teste o impulso na plataforma segura. A esquiva comum continua diferente da travessia de vãos.",
+          "text": "Botas de Travessia recebidas. Teste o impulso na plataforma segura.",
           "next": "a02.end"
         },
         {

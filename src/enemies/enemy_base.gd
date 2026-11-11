@@ -116,6 +116,19 @@ func receive_sword_hit(damage: int, attack_id: int, from: Vector2) -> bool:
 	return true
 
 
+## The held (charging) blade touching the enemy
+## (jogabilidade-classica.md §3.2): the player decides how often. Shields
+## still stop it. Returns true if damage was applied.
+func receive_poke(damage: int, from: Vector2) -> bool:
+	if is_defeated or not _hittable():
+		return false
+	if _blocks(from):
+		_block_flash = 0.12
+		return false
+	_take_hit(damage, from)
+	return true
+
+
 ## A Carga de Bronze going off at [param from] (ferramentas.md §3): the
 ## shield does not stop a blast. Returns true if damage was applied.
 func receive_blast(damage: int, from: Vector2) -> bool:

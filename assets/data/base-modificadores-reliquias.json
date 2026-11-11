@@ -24,7 +24,8 @@
       }
     },
     "guard": {
-      "perfect_window": 0
+      "perfect_window": 0,
+      "angle_degrees": 100
     }
   },
   "rule": "Rebuild current parameters from base, then apply exactly one active relic. Never modify base in place."

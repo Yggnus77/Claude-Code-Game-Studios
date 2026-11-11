@@ -18,7 +18,7 @@ const REBINDABLE := ["move_up", "move_down", "move_left", "move_right", "attack"
 ## Names shown in the menu.
 const NAMES := {
 	"move_up": "Andar para cima", "move_down": "Andar para baixo", "move_left": "Andar para a esquerda",
-	"move_right": "Andar para a direita", "attack": "Espada", "guard": "Defesa (escudo)", "dodge": "Esquiva",
+	"move_right": "Andar para a direita", "attack": "Espada", "dodge": "Esquiva",
 	"interact": "Examinar / confirmar", "item": "Usar item", "quick_swap": "Trocar item", "map": "Inventário",
 	"history": "Histórico de falas", "skip_scene": "Pular cena", "reset_room": "Reiniciar sala",
 }

@@ -28,6 +28,7 @@
     "magic.pulso.cost": ["Custo do Pulso", ""],
     "magic.pulso.cooldown": ["Recarga do Pulso", "s"],
     "magic.pulso.radius": ["Raio do Pulso", "px"],
-    "guard.perfect_window": ["Janela de defesa precisa", "s"]
+    "guard.perfect_window": ["Janela de defesa precisa", "s"],
+    "guard.angle_degrees": ["Cobertura do escudo", "°"]
   }
 }

@@ -39,7 +39,7 @@
     "blade_inner": 5,
     "hit_pivot": [
       0,
-      -6
+      -10
     ],
     "charge_time": 0.75,
     "charge_speed_factor": 0.55,
@@ -70,8 +70,7 @@
     "perfect_window": 0,
     "minimum_retrigger": 0,
     "heavy_guard_damage": 1,
-    "guard_break": 0.45,
-    "passive": true
+    "guard_break": 0.45
   },
   "hook": {
     "range": 112,

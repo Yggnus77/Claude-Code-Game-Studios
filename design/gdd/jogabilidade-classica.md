@@ -51,8 +51,9 @@ Começo fraco e cada baú me deixa mais forte."
    direção de Yggnus, sempre no sentido horário da tela. Acerta tudo que a
    lâmina varre: inimigo, arbusto, pote, sino. Cada alvo leva no máximo um
    acerto por golpe.
-4. O alcance é medido do pivô (`hit_pivot`, um pouco acima dos pés) até a
-   ponta: `blade_inner` (cabo) a `reach` px.
+4. O alcance é medido do pivô (`hit_pivot`, na altura do peito; a lâmina é
+   desenhada a partir do mesmo ponto) até a ponta: `blade_inner` (cabo) a
+   `reach` px.
 5. Yggnus para durante o golpe (desacelera).
 
 ### 3.2 Carga e giro
@@ -60,8 +61,11 @@ Começo fraco e cada baú me deixa mais forte."
 1. Se o botão continua apertado quando o golpe termina, Yggnus passa a
    **carregar**: a lâmina fica apontada para a frente, ele anda a
    `charge_speed_factor` da velocidade e não vira (anda de lado).
-2. Inimigos que encostam na lâmina carregada levam `poke_damage` e são
-   empurrados; o mesmo inimigo só leva de novo depois de `poke_interval` s.
+2. Depois de `poke_interval` s com a lâmina à frente, inimigos comuns que
+   encostam nela levam `poke_damage` e são empurrados; cada inimigo só leva
+   de novo depois de outros `poke_interval` s (relógio por inimigo). Sinos,
+   Igris, o regulador e as amarras de Yame só contam golpes de verdade
+   (golpe ou giro), nunca a lâmina parada.
 3. Depois de `charge_time` s a ponta brilha: carga cheia.
 4. Soltar com a carga cheia faz o **giro**: a lâmina percorre
    `spin_degrees` em `spin_time` s, alcance `spin_reach`, dano do golpe
@@ -76,7 +80,9 @@ Começo fraco e cada baú me deixa mais forte."
 2. Cobre o cone frontal (`guard.angle_degrees`). Golpe leve de frente: sem
    dano. Golpe pesado: guarda quebra por `guard_break` s e entra
    `heavy_guard_damage`. A onda de Igris nunca é bloqueada.
-3. Não há bloqueio perfeito nem botão de defesa.
+3. Não há bloqueio perfeito nem botão de defesa. A relíquia Broche da
+   Vigília, que alargava a janela precisa, agora alarga a cobertura do
+   escudo (`guard.angle_degrees` 140).
 
 ### 3.4 Dano em Yggnus
 
@@ -126,8 +132,12 @@ Ao levar dano: recuo de `knockback` px em `hitstun` s e invencibilidade de
   a lâmina passa.
 - Escudo quebrado por golpe pesado: volta sozinho depois de `guard_break`.
 - Save antigo com o arco já pego na adega: o arco continua com o jogador
-  (o recibo é o mesmo); o baú da antecâmara abre vazio de arco e entrega só
-  as agulhas que faltarem. Ver §8.
+  (o recibo é o mesmo). O baú da antecâmara abre vazio e diz "Vazio. Você
+  já tem o que estava aqui." O baú da adega, com recibo novo, entrega os 50
+  Bronze uma vez também nesse save (bônus aceito).
+- Teclas antigas: Espaço, Shift, B e LB ficam livres para outras ações; um
+  arquivo de configurações com esquiva ou defesa salvas é lido sem erro e
+  essas entradas são ignoradas.
 
 ## 6. Dependências
 
@@ -149,7 +159,7 @@ Ao levar dano: recuo de `knockback` px em `hitstun` s e invencibilidade de
 | sword.swing_startup / active / recovery | 0.03 / 0.12 / 0.08 | s |
 | sword.arc_from / arc_to | −100 / 75 | graus |
 | sword.reach / blade_inner | 27 / 5 | px |
-| sword.hit_pivot | [0, −6] | px |
+| sword.hit_pivot | [0, −10] | px |
 | sword.charge_time | 0.75 | s |
 | sword.charge_speed_factor | 0.55 | |
 | sword.spin_time / spin_degrees / spin_reach | 0.36 / 380 / 31 | |

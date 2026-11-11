@@ -141,6 +141,7 @@ func test_the_hint_lists_only_what_the_player_has() -> void:
 	tree.root.add_child(main)
 	await _frames(2)
 	var hint: String = main.hud._hint.text
+	assert_true(not main.player.has_sword and not main.player.has_shield, "a new game starts with neither")
 	assert_true(not hint.contains("espada"), "no sword yet: %s" % hint)
 	assert_true(not hint.contains("esquiva") and not hint.contains("defesa"), "never dodge or guard")
 	assert_true(not hint.contains("troca"), "nothing to swap")
@@ -172,3 +173,63 @@ func test_the_bow_is_in_the_tower_and_the_cellar_holds_bronze() -> void:
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "chest", "antechamber chest")
 	assert_eq(main.state.item_count("arco_fio"), 1, "the bow")
+
+
+func test_holding_after_hitting_a_bell_rings_it_once() -> void:
+	# Review fix: the held blade must not ring bells (Igris' order, t05).
+	var p := _setup("t05_sinos")
+	var rings: Array = []
+	for b in main.bells:
+		b.rung.connect(func(id: String) -> void: rings.append(id))
+	p.respawn_at(main.room.data.tile_center(Vector2i(8, 10)))
+	p.motor.facing = Vector2.UP
+	await _frames(2)
+	p.attack_held_override = true
+	p.request_attack()
+	# Held well past a poke, released before the charge fills (a spin would
+	# be a new strike and may ring it again).
+	await _frames(14 + int(p.sword.charge_time * 60.0) - 6)
+	assert_true(p.sword.is_charging() and not p.sword.is_charged(), "still charging")
+	p.attack_held_override = false
+	await _frames(5)
+	assert_eq(rings.size(), 1, "one press, one ring (%s)" % [rings])
+
+
+func test_the_held_blade_pokes_each_enemy_at_its_own_pace() -> void:
+	var p := _setup()
+	p.respawn_at(main.room.data.tile_center(Vector2i(10, 10)))
+	p.motor.facing = Vector2.RIGHT
+	var e := _dummy(p, "soldado_corda", Vector2(22, -8))
+	e.health = Health.new(20)
+	p.attack_held_override = true
+	p.request_attack()
+	await _frames(16)
+	assert_eq(e.health.current, 19, "the swing hits once, no instant poke after it")
+	await _frames(30)
+	var after_one := e.health.current
+	assert_eq(after_one, 18, "then one poke")
+	await _frames(int(p.sword.poke_interval * 60.0) + 2)
+	assert_eq(e.health.current, 17, "and one more per poke_interval")
+	p.attack_held_override = false
+
+
+func test_no_shield_while_charging() -> void:
+	var p := _setup()
+	p.motor.facing = Vector2.RIGHT
+	p.attack_held_override = true
+	p.request_attack()
+	await _frames(20)
+	assert_true(p.sword.is_charging(), "charging")
+	assert_eq(p.receive_hit(1, p.global_position + Vector2(20, 0)), HitResolver.Outcome.HIT, "the front is open while charging")
+
+
+func test_an_old_save_with_the_bow_finds_the_tower_chest_empty() -> void:
+	var p := _setup("t06_marco")
+	main.state.apply([{"op": "grant_unique", "item_id": "arco_fio", "quantity": 1, "receipt_id": "reward.arco_fio"},
+		{"op": "grant_unique", "item_id": "agulha_fio", "quantity": 4, "receipt_id": "reward.arco_fio.also.0"}])
+	p.respawn_at(main.room.data.tile_center(Vector2i(18, 16)))
+	p.motor.facing = Vector2.UP
+	assert_eq(main.interact(), "chest_empty", "nothing new inside")
+	assert_true(main.hud._toast.text.begins_with("Vazio"), "says so: %s" % main.hud._toast.text)
+	assert_eq(main.state.item_count("agulha_fio"), 4, "no needles appear from nowhere")
+	assert_eq(main.interact(), "chest_empty", "stays open")

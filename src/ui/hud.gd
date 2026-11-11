@@ -197,7 +197,7 @@ func refresh_hint() -> void:
 	parts.append("%s examinar" % k.call("interact"))
 	if has.get("tools", false):
 		parts.append("%s item · %s troca" % [k.call("item"), k.call("quick_swap")])
-	else:
+	elif has.get("flask", false):
 		parts.append("%s frasco" % k.call("item"))
 	parts.append("%s inventário" % k.call("map"))
 	parts.append("%s reinicia a sala" % k.call("reset_room"))
