@@ -67,7 +67,7 @@ func test_clue_sets_flag_once() -> void:
 
 func test_scene_pauses_world_and_one_box_only() -> void:
 	var p := _setup("v00_oficina", ["seen.p00"])
-	_face(p, Vector2i(12, 6))
+	_face(p, Vector2i(22, 14))
 	assert_eq(main.interact(), "scene", "examining the clock plays p01")
 	assert_true(main.dialogue.is_open(), "box open")
 	assert_true(tree.paused, "world paused during the scene")

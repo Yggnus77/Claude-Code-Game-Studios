@@ -56,6 +56,20 @@ ela, falo com o mercador na barraca e corto os arbustos."
   25, 15 (degraus do chafariz); fragmento 1 em 33, 21, ao lado do pote.
 - Seis arbustos cortáveis no chão (3, 13–14; 14, 17–18; 25, 17–18).
 
+### 3.2 Oficina de Exódia
+
+- 40 × 23 células (640 × 368 px). A referência 1 tinha Yggnus pintado no
+  meio; a cópia `01-oficina-de-exodia-sem-yggnus.png` tem o chão refeito.
+- Porta para a praça: a porta de madeira embaixo, no meio (células 18–21,
+  linha 17, `span` 4, lado sul). A porta da praça para a oficina fica no lado
+  norte, então a troca entre as duas desliza a tela.
+- Relógio da bancada: o relógio aberto em cima da mesa grande (pintado; o
+  jogador examina de frente para a gaveta, célula 22, 15).
+- Yame Black aparece entre a bancada de ferramentas e a mesa (12, 8); as
+  três amarras ficam no chão perto da porta (12, 15; 17, 16; 28, 15).
+- O mentor não está na imagem: a entidade fica marcada como pintada e não
+  desenha nada (ela não tem conversa).
+
 ## 4. Fórmulas
 
 - Tamanho da imagem: `L = largura · 16`, `A = altura · 16` px. Praça: 40 × 24

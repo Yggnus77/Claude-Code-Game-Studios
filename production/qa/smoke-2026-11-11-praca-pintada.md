@@ -41,3 +41,14 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Doors between the square, the workshop and the road fade instead of
   sliding until those rooms are painted with matching sides.
 - The lowest rows of the square sit under the HUD buttons and objective box.
+
+## 2026-11-12 — Oficina de Exódia (teste21)
+
+- Reference 1 with the painted Yggnus removed (mirror of the rug and floor);
+  room 40 × 23, door on the south wall (span 4), slides to the square.
+- Full suite: 312 passed, 0 failed. New: `test_the_workshop_and_the_square_slide_into_each_other`.
+  The old tile workshop is kept as a test fixture (`tests/fixtures/maps/v00_oficina.json`)
+  for the tile-art tests.
+- QA review fixed: back-wall baseboard (row 7) and a crate were floor.
+- Evidence: `production/qa/evidence/salas/oficina_01_inicio.png`,
+  `oficina_02_relogio.png`, `oficina_03_invasao.png` — PASS.

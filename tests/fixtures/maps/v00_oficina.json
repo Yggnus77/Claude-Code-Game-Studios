@@ -1,0 +1,103 @@
+{
+  "id": "v00_oficina",
+  "name": "Oficina",
+  "width": 24,
+  "height": 18,
+  "tile_size": 16,
+  "art": {"rugs": [[9, 8, 5, 3]]},
+  "grid": [
+    "########################",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.....####.............#",
+    "#.....####.............#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.............####.....#",
+    "#.............####.....#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "########################"
+  ],
+  "doors": [
+    {
+      "id": "door.v00_oficina.v01_praca",
+      "side": "east",
+      "tile": [
+        21,
+        9
+      ],
+      "target_room": "v01_praca",
+      "target_tile": [
+        11,
+        6
+      ],
+      "gate": null,
+      "unlock_persistent_flag": "open.door.v00_oficina.v01_praca",
+      "key_consumption": null
+    }
+  ],
+  "entities": [
+    {
+      "id": "v00_oficina.clock",
+      "kind": "interact",
+      "tile": [
+        12,
+        6
+      ],
+      "trigger_id": "examinar_relogio",
+      "persistent_receipt": null
+    },
+    {
+      "id": "v00_oficina.mentor",
+      "kind": "npc",
+      "tile": [
+        4,
+        6
+      ],
+      "trigger_id": null,
+      "persistent_receipt": null
+    },
+    {
+      "id": "v00_oficina.yame_bind_1",
+      "kind": "binding",
+      "tile": [
+        8,
+        11
+      ],
+      "trigger_id": null,
+      "persistent_receipt": "unique.v00_oficina.yame_bind_1"
+    },
+    {
+      "id": "v00_oficina.yame_bind_2",
+      "kind": "binding",
+      "tile": [
+        12,
+        11
+      ],
+      "trigger_id": null,
+      "persistent_receipt": "unique.v00_oficina.yame_bind_2"
+    },
+    {
+      "id": "v00_oficina.yame_bind_3",
+      "kind": "binding",
+      "tile": [
+        16,
+        10
+      ],
+      "trigger_id": null,
+      "persistent_receipt": "unique.v00_oficina.yame_bind_3"
+    }
+  ],
+  "special_edges": [],
+  "entry_default": [
+    3,
+    9
+  ]
+}

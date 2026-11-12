@@ -49,7 +49,7 @@
       "side": "north",
       "tile": [11, 6],
       "target_room": "v00_oficina",
-      "target_tile": [21, 9],
+      "target_tile": [18, 17],
       "gate": null,
       "unlock_persistent_flag": "open.door.v00_oficina.v01_praca",
       "key_consumption": null
