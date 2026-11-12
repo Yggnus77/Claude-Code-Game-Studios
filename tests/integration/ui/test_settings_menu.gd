@@ -116,13 +116,15 @@ func test_title_screen_lists_settings() -> void:
 	t.settings = Settings.new(PATH)
 	tree.root.add_child(t)
 	_nodes.append(t)
-	assert_eq(t.menu.options[SaveStore.SLOT_COUNT], "Configurações", "after the slots")
-	t.menu.selected = SaveStore.SLOT_COUNT
+	t.show_main()
+	var at := Array(t.menu.options).find("Configurações")
+	assert_true(at > 0, "the main menu lists it: %s" % [t.menu.options])
+	t.menu.selected = at
 	t.menu.confirm()
 	assert_true(t.settings_screen.is_open(), "opens")
 	t.settings_screen.close()
-	assert_true(t.menu.visible, "slot list back")
-	assert_eq(t.menu.selected, SaveStore.SLOT_COUNT, "on Configurações")
+	assert_true(t.menu.visible, "main menu back")
+	assert_eq(t.menu.selected, at, "on Configurações")
 
 
 func test_focus_option_changed_on_the_title_reaches_the_pause_menu() -> void:

@@ -1,0 +1,5 @@
+{
+ "_doc": "HUD (design/gdd/telas-e-mochila.md §3.4). 'areas': nome da região mostrado no painel do canto direito, pelo prefixo do id da sala. 'hint_seconds': quanto tempo a linha de teclas fica na tela depois de mudar.",
+ "areas": {"v": "Versalhes", "r": "Campos de Versalhes", "t": "Torre de Akurame"},
+ "hint_seconds": 10.0
+}

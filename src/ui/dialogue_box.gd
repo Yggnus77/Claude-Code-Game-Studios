@@ -28,12 +28,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 8
 	_panel = PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = COLOR_PANEL
-	style.border_color = COLOR_EDGE
-	style.set_border_width_all(1)
-	style.set_content_margin_all(6)
-	_panel.add_theme_stylebox_override("panel", style)
+	_panel.add_theme_stylebox_override("panel", UiArt.panel_style(7.0))
 	# Anchored to the bottom edge: long choices grow the box upward, so the
 	# last option and the key hint stay on screen.
 	_panel.anchor_left = 0.0
@@ -50,7 +45,7 @@ func _ready() -> void:
 	_panel.add_child(box)
 	_speaker = Label.new()
 	_speaker.add_theme_font_size_override("font_size", 10)
-	_speaker.add_theme_color_override("font_color", COLOR_EDGE)
+	_speaker.add_theme_color_override("font_color", UiArt.ACCENT)
 	box.add_child(_speaker)
 	_text = Label.new()
 	_text.add_theme_font_size_override("font_size", 12)
@@ -65,7 +60,7 @@ func _ready() -> void:
 	_hint.modulate = Color(1, 1, 1, 0.6)
 	box.add_child(_hint)
 	_history_panel = PanelContainer.new()
-	_history_panel.add_theme_stylebox_override("panel", style)
+	_history_panel.add_theme_stylebox_override("panel", UiArt.panel_style(7.0))
 	_history_panel.position = Vector2(16, 16)
 	_history_panel.size = Vector2(608, 244)
 	_history = Label.new()
