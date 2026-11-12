@@ -300,7 +300,11 @@ func continue_from(doc: Dictionary) -> void:
 	_slice_was_done = loaded.has_flag(SLICE_END_FLAG)
 	state.replace_with(loaded)
 	player.health.maximum = state.life_max()
-	load_room(str(r["room"]), r["entry"])
+	var entry: Vector2i = r["entry"]
+	var saved_room := RoomData.load_room(str(r["room"]))
+	if saved_room != null and not saved_room.is_walkable(entry):
+		entry = saved_room.entry_default  # the room was redrawn since this save
+	load_room(str(r["room"]), entry)
 	player.health.set_current(int(r["life"]))
 	if not _attempt.is_empty():
 		# The attempt began on load, before the saved life was put back.
@@ -778,6 +782,8 @@ func _update_glow() -> void:
 		return
 	if room.is_dark() and tools.owns("lamparina", state):
 		player.set_glow(tools.num("lamparina", "dark_glow_radius", 120.0), tools.num("lamparina", "dark_glow_energy", 0.95))
+	elif room.is_painted() and not room.is_dark():
+		player.set_glow(Player.GLOW_RADIUS, 0.0)  # the picture has its own light
 	else:
 		player.set_glow(Player.GLOW_RADIUS, Player.GLOW_ENERGY)
 

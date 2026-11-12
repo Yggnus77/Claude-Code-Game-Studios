@@ -94,14 +94,14 @@ func test_pump_side_quest_gives_second_flask_once() -> void:
 
 func test_travel_reserves_buy_a_refill_and_the_flask_heals() -> void:
 	var p := _setup("v01_praca")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(5, 14))
 	main.interact()
 	main.load_room("r00_estrada")
 	_face(p, Vector2i(33, 7))
 	main.interact()
 	assert_eq(main.state.bronze, 20, "two reserves of 10")
 	main.load_room("v01_praca")
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	assert_eq(main.interact(), "scene", "merchant talk (r05)")
 	assert_eq(await _skip_scene(), "r05", "r05")
 	await _frames(2)
@@ -109,7 +109,7 @@ func test_travel_reserves_buy_a_refill_and_the_flask_heals() -> void:
 	main.shop_panel._index = 1
 	assert_true(main.shop_panel.buy_selected(), "refill bought")
 	assert_eq(main.state.bronze, 0, "20 Bronze spent")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(5, 14))
 	main.interact()
 	assert_eq(main.state.bronze, 0, "reopening the chest changes nothing")
 	main.shop_panel.close()
@@ -137,7 +137,7 @@ func test_hit_while_drinking_spends_nothing() -> void:
 
 func test_merchant_goes_straight_to_goods_after_first_talk() -> void:
 	var p := _setup("v01_praca", AFTER_INVASION + ["seen.r05"])
-	_face(p, Vector2i(24, 7))
+	_face(p, Vector2i(6, 10))
 	assert_eq(main.interact(), "shop", "no repeated talk")
 	await tree.process_frame
 	assert_true(main.shop_panel.is_open(), "the goods are shown")

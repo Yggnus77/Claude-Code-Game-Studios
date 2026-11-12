@@ -101,3 +101,124 @@ func test_walking_up_to_the_arch_uses_the_door() -> void:
 	var west := room.door_zone({"tile": [2, 12]})
 	assert_true(west.has_point(Vector2(16 + 4, 12 * 16 + 8)), "against the west wall")
 	room.free()
+
+
+func test_a_painted_room_draws_its_picture_instead_of_tiles() -> void:
+	var room := _room("v01_praca")  # "art": {"background": "v01_praca"}
+	assert_true(room.is_painted(), "the square is a painted room")
+	assert_eq(Vector2i(room.background.get_size()), room.data.pixel_size(), "the picture is the room's size")
+	assert_eq(room.top_extent(), 0, "no tall wall above row 0")
+	assert_eq(room.decor.size(), 0, "no tile decoration")
+	assert_eq(room.light_specs.size(), 0, "the lamps are in the picture")
+	assert_true(room.painted_objects.has("bush"), "bushes redrawn in the picture's style")
+	room.free()
+
+
+func test_a_tile_room_is_not_painted() -> void:
+	var room := _room("v00_oficina")
+	assert_true(not room.is_painted(), "no background")
+	assert_true(room.painted_objects.is_empty(), "objects from the tile sheet")
+	room.free()
+
+
+func test_people_in_the_picture_get_no_sprite() -> void:
+	var room := _room("v01_praca")
+	var merchant: Dictionary = room.data.entities.filter(func(e: Dictionary) -> bool: return e["id"] == "v01_praca.merchant")[0]
+	assert_true(room.is_painted_entity(merchant), "the merchant is painted at the stall")
+	for c in room.get_children():
+		if c is Room.Prop:
+			assert_true(str((c as Room.Prop).entity.get("id", "")) != "v01_praca.merchant", "no prop for the merchant")
+	room.free()
+
+
+func test_a_wide_way_out_covers_its_whole_span() -> void:
+	var room := _room("v01_praca")  # road north at [18, 1], span 4
+	var road: Dictionary = room.data.doors.filter(func(d: Dictionary) -> bool: return d["id"] == "door.v01_praca.r00_estrada")[0]
+	var zone := room.door_zone(road)
+	for x in range(18, 22):
+		assert_true(zone.has_point(room.data.tile_center(Vector2i(x, 1))), "column %d of the road" % x)
+	assert_true(not zone.has_point(room.data.tile_center(Vector2i(22, 1))), "not past the road")
+	room.free()
+
+
+func test_every_painted_map_matches_its_picture() -> void:
+	# Each map naming a background must have it, at the map's size, and its
+	# doors and entities must stand where the map says (floor, or a wall the
+	# painting shows them in, for painted people).
+	for f in DirAccess.get_files_at("res://assets/data/maps"):
+		var data := RoomData.load_room(f.get_basename())
+		if data == null or str(data.art.get("background", "")).is_empty():
+			continue
+		var path := "res://assets/art/salas/%s.png" % data.art["background"]
+		assert_true(ResourceLoader.exists(path), "%s has its picture" % data.id)
+		if ResourceLoader.exists(path):
+			assert_eq(Vector2i((load(path) as Texture2D).get_size()), data.pixel_size(), "%s picture size" % data.id)
+		for d: Dictionary in data.doors:
+			var t: Array = d["tile"]
+			assert_true(data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s door on floor" % d["id"])
+		for e: Dictionary in data.entities:
+			var t: Array = e["tile"]
+			assert_true(bool(e.get("painted", false)) or data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s on floor" % e["id"])
+
+
+func test_world_reward_tiles_match_the_maps() -> void:
+	# recompensas-mundo.json repeats where each fragment is; a redrawn room
+	# must move it there too.
+	var f := FileAccess.open("res://assets/data/recompensas-mundo.json", FileAccess.READ)
+	var data: Dictionary = JSON.parse_string(f.get_as_text())
+	for frag: Dictionary in data.get("fragments", []):
+		if not frag.has("tile") or not frag.has("room"):
+			continue
+		var room := RoomData.load_room(str(frag["room"]))
+		var found := room.entities.filter(func(e: Dictionary) -> bool: return str(e.get("collectible_id", "")) == str(frag.get("id", "")))
+		if found.is_empty():
+			continue
+		assert_eq(found[0]["tile"], frag["tile"], "%s tile" % frag["id"])
+
+
+
+## Floor cells reachable from [param start], bushes and pots counted as walls.
+func _reachable(data: RoomData, start: Vector2i) -> Dictionary:
+	var blocked := {}
+	for kind: String in data.breakables:
+		for at: Vector2i in data.breakables[kind]:
+			blocked[at] = true
+	var seen := {start: true}
+	var todo: Array[Vector2i] = [start]
+	while not todo.is_empty():
+		var at: Vector2i = todo.pop_back()
+		for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			var n := at + dir
+			if not seen.has(n) and data.is_walkable(n) and not blocked.has(n):
+				seen[n] = true
+				todo.append(n)
+	return seen
+
+
+func _touches(seen: Dictionary, at: Vector2i) -> bool:
+	if seen.has(at):
+		return true
+	for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+		if seen.has(at + dir):
+			return true
+	return false
+
+
+func test_every_painted_room_is_connected() -> void:
+	# A hand-drawn grid can wall a part of the room off (it once cut the
+	# workshop door and the road off from the square): from the default
+	# entry, every door must be reached and everything must be next to it.
+	for f in DirAccess.get_files_at("res://assets/data/maps"):
+		var data := RoomData.load_room(f.get_basename())
+		if data == null or str(data.art.get("background", "")).is_empty():
+			continue
+		var seen := _reachable(data, data.entry_default)
+		for d: Dictionary in data.doors:
+			var t: Array = d["tile"]
+			assert_true(seen.has(Vector2i(int(t[0]), int(t[1]))), "%s reached" % d["id"])
+		for e: Dictionary in data.entities:
+			var t: Array = e["tile"]
+			assert_true(_touches(seen, Vector2i(int(t[0]), int(t[1]))), "%s reached" % e["id"])
+		for kind: String in data.breakables:
+			for at: Vector2i in data.breakables[kind]:
+				assert_true(_touches(seen, at), "%s %s reached" % [kind, at])

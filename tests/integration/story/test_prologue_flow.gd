@@ -100,8 +100,8 @@ func test_whole_stretch_with_every_scene_skipped() -> void:
 	assert_true(main.is_door_open(exit), "exit free")
 	_enter("v01_praca")
 	var road: Dictionary = main.room.data.doors[1]
-	assert_true(main.is_door_open(road), "road east is open after p07")
-	p.respawn_at(main.room.data.tile_center(Vector2i(10, 11)))
+	assert_true(main.is_door_open(road), "the road out is open after p07")
+	p.respawn_at(main.room.data.tile_center(Vector2i(7, 13)))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "checkpoint", "marco used")
 	assert_eq(await _skip_scenes(), ["p08"], "first marco scene")

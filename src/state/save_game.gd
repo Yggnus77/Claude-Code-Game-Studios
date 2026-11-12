@@ -180,8 +180,11 @@ func validate(doc: Dictionary) -> Array:
 func _entry_ok(room: String, entry: Variant) -> bool:
 	if not (entry is Array and entry.size() == 2 and entry[0] is int and entry[1] is int):
 		return false
+	# Inside the room is enough: an update may have redrawn the room and put
+	# a wall where the save stood ([method Main.continue_from] then uses the
+	# room's default entry), and that must not make the save look damaged.
 	var data: RoomData = room_loader.call(room)
-	return data != null and data.is_walkable(Vector2i(entry[0], entry[1]))
+	return data != null and Rect2i(Vector2i.ZERO, Vector2i(data.width, data.height)).has_point(Vector2i(entry[0], entry[1]))
 
 
 ## True when [param entity] is a marco (checkpoint) of a known [param room].

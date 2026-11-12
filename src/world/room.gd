@@ -78,6 +78,15 @@ var _cell_kinds: Dictionary = {}
 var _cell_overlays: Dictionary = {}
 var _art: Dictionary = {}
 var _theme_row := 0
+## Painted rooms (design/gdd/salas-pintadas.md): the map's
+## "art": {"background": "<name>"} names a picture in this folder that is the
+## whole room; walls, doors and objects in the map are placed to match it.
+const BACKGROUND_DIR := "res://assets/art/salas"
+## The room's painted picture, or null for a room drawn from tiles.
+var background: Texture2D
+## Objects redrawn in the pictures' style for painted rooms
+## (BACKGROUND_DIR/obj_<kind>.png), by kind.
+var painted_objects: Dictionary = {}
 ## Tall things (people, marcos) are child nodes so they sort by height on
 ## screen with Yggnus and the enemies (main and room use y-sort).
 const PROP_KINDS := ["npc", "checkpoint"]
@@ -110,12 +119,22 @@ func build(room_data: RoomData) -> void:
 	_props.clear()
 	_lights.clear()
 	torches.clear()
+	background = null
+	var bg := str(data.art.get("background", ""))
+	if not bg.is_empty() and ResourceLoader.exists("%s/%s.png" % [BACKGROUND_DIR, bg]):
+		background = load("%s/%s.png" % [BACKGROUND_DIR, bg])
+	painted_objects.clear()
+	if background != null:
+		for kind: String in ["bush", "bush_cut", "pot", "barreira"]:
+			var path := "%s/obj_%s.png" % [BACKGROUND_DIR, kind]
+			if ResourceLoader.exists(path):
+				painted_objects[kind] = load(path)
 	_plan_art()
-	if _tiles:
+	if _tiles and background == null:
 		_plan_cells()
 	if _tiles:
 		for e in data.entities:
-			if PROP_KINDS.has(str(e.get("kind", ""))):
+			if PROP_KINDS.has(str(e.get("kind", ""))) and not is_painted_entity(e):
 				var t: Array = e.get("tile", [0, 0])
 				var prop := Prop.new()
 				prop.room = self
@@ -138,12 +157,13 @@ func build(room_data: RoomData) -> void:
 			shape.shape = rect
 			shape.position = Vector2(r.position * data.tile_size) + rect.size * 0.5
 			body.add_child(shape)
-	if _tiles:
+	if _tiles or background:
 		var ground := Ground.new()
 		ground.name = "Ground"
 		ground.room = self
 		ground.z_index = -1  # under everything that sorts by height
 		add_child(ground)
+	if _tiles and (background == null or is_dark()):
 		_add_lights()
 	queue_redraw()
 
@@ -161,9 +181,20 @@ func _process(delta: float) -> void:
 
 ## How many pixels the tall top wall rises above row 0 (the camera shows it).
 func top_extent() -> int:
-	if data == null or _tiles == null:
+	if data == null or _tiles == null or background != null:
 		return 0
 	return (int(_art.get("wall_rows", 1)) - 1) * data.tile_size
+
+
+## Whether this room is one painted picture ([member background]).
+func is_painted() -> bool:
+	return background != null
+
+
+## Whether entity [param e] is already part of the room's picture (the map
+## marks it "painted": true), so the room draws nothing for it.
+func is_painted_entity(e: Dictionary) -> bool:
+	return background != null and bool(e.get("painted", false))
 
 
 ## Whether the wall at [param at] is the base of the tall wall: walkable
@@ -206,8 +237,8 @@ func _plan_art() -> void:
 	decor.clear()
 	rug_cells.clear()
 	light_specs.clear()
-	if data == null:
-		return
+	if data == null or (background != null and not is_dark()):
+		return  # a painted room has its lamps and light in the picture
 	for r: Array in (data.art.get("rugs", []) as Array):
 		for y in range(int(r[1]), int(r[1]) + int(r[3])):
 			for x in range(int(r[0]), int(r[0]) + int(r[2])):
@@ -441,7 +472,10 @@ static func is_cracked(door: Dictionary) -> bool:
 
 ## Draws object column [param kind] centred on [param item] (bushes, pots).
 func draw_object_on(item: CanvasItem, kind: String) -> void:
-	if _objects:
+	if painted_objects.has(kind):
+		var tex: Texture2D = painted_objects[kind]
+		item.draw_texture(tex, -Vector2(tex.get_width() * 0.5, tex.get_height() - 6.0).floor())
+	elif _objects:
 		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, item)
 	else:
 		match kind:
@@ -460,6 +494,8 @@ func _draw() -> void:
 	if _tiles:
 		_draw_art()
 		return
+	if background != null:
+		return  # without the object sheet the picture is enough
 	var ts := data.tile_size
 	for y in data.height:
 		for x in data.width:
@@ -537,6 +573,10 @@ func _draw_art() -> void:
 			_lights[i].visible = not is_spent(e)
 	for door in data.doors:
 		var open := bool(door_open.call(door))
+		if background != null:
+			if not open:
+				_draw_barrier(door)
+			continue  # the picture already shows the way through
 		var look := "door_open" if open else ("door_cracked" if is_cracked(door) else "door_closed")
 		_draw_object(data.tile_center(door_frame_tile(door)), look)
 	for e in data.entities:
@@ -546,6 +586,8 @@ func _draw_art() -> void:
 		var t: Array = e.get("tile", [0, 0])
 		var c := data.tile_center(Vector2i(int(t[0]), int(t[1])))
 		var spent := is_spent(e)
+		if is_painted_entity(e):
+			kind = ""  # in the picture; only the highlight ring is drawn
 		match kind:
 			"chest":
 				_draw_object(c, "chest_open" if spent else "chest")
@@ -571,6 +613,27 @@ func _draw_art() -> void:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
 
 
+## A closed way out of a painted room: a barrier across the door's span,
+## standing on the door's own row.
+func _draw_barrier(door: Dictionary) -> void:
+	var t: Array = door.get("tile", [0, 0])
+	var span := maxi(1, int(door.get("span", 1)))
+	var ts := float(data.tile_size)
+	var across := Vector2(1, 0) if str(door.get("side", "")) in ["north", "south"] else Vector2(0, 1)
+	var c := data.tile_center(Vector2i(int(t[0]), int(t[1]))) + across * ts * (span - 1) * 0.5
+	var tex: Texture2D = painted_objects.get("barreira")
+	if tex == null:
+		_draw_object(c, "door_closed")
+	elif across.x != 0.0:
+		# The picture is four tiles wide; a narrower way shows its middle.
+		var w := minf(float(tex.get_width()), ts * span)
+		var src := Rect2(Vector2((tex.get_width() - w) * 0.5, 0).floor(), Vector2(w, tex.get_height()))
+		draw_texture_rect_region(tex, Rect2((c - Vector2(w * 0.5, tex.get_height() - 6.0)).floor(), src.size), src)
+	else:  # an east or west way out: the barrier seen from its end
+		draw_texture_rect_region(tex, Rect2(c - Vector2(5, tex.get_height() - 6.0), Vector2(10, tex.get_height())),
+			Rect2(Vector2(3, 0), Vector2(10, tex.get_height())))
+
+
 ## Works out once per build which picture each cell shows (the ground layer
 ## draws from this, so a redraw of the room costs only doors and entities).
 func _plan_cells() -> void:
@@ -594,6 +657,9 @@ func _plan_cells() -> void:
 ## The still picture of the room (tiles, wall, rugs, decor, shadows), drawn
 ## once per build by the [Ground] child.
 func draw_ground(item: CanvasItem) -> void:
+	if background != null:
+		item.draw_texture(background, Vector2.ZERO)
+		return
 	var rows := int(_art.get("wall_rows", 1))
 	for y in range(-(rows - 1), 0):    # the map's edge continues above row 0
 		for x in data.width:
@@ -634,6 +700,11 @@ func door_zone(door: Dictionary) -> Rect2:
 	var at := Vector2i(int(t[0]), int(t[1]))
 	var ts := float(data.tile_size)
 	var zone := Rect2(Vector2(at) * ts, Vector2(ts, ts))
+	# A wide way out ("span": n) covers n tiles across the direction of travel.
+	var span := maxi(1, int(door.get("span", 1)))
+	if span > 1:
+		var across := Vector2(1, 0) if str(door.get("side", "")) in ["north", "south"] else Vector2(0, 1)
+		zone = zone.merge(Rect2((Vector2(at) + across * (span - 1)) * ts, Vector2(ts, ts)))
 	var frame := door_frame_tile(door)
 	if frame != at:
 		# The walkable cells in between; the feet stop at the wall's face,

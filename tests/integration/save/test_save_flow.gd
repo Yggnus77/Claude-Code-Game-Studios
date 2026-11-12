@@ -79,6 +79,22 @@ func test_close_and_load_after_a_door_returns_to_its_entry() -> void:
 	assert_eq(main.player.health.current, main.player.health.maximum - 2, "life as saved, not healed")
 
 
+func test_a_save_standing_where_the_room_now_has_a_wall_still_loads() -> void:
+	# The square was redrawn (salas-pintadas.md): a save made before that may
+	# stand on a tile that is now wall. It loads, at the room's default entry.
+	main = _new_main()
+	main.load_room("v01_praca")
+	main.save_now()
+	var doc: Dictionary = main.saves.read(1)["data"]
+	doc["safe_entry"] = [2, 12]  # floor in the old square, wall in the new one
+	assert_true(not main.room.data.is_walkable(Vector2i(2, 12)), "fixture: a wall now")
+	assert_eq(main.saves.write(1, doc), OK, "the old save is accepted")
+	var r: Dictionary = main.saves.read(1)
+	assert_eq(r["status"], SaveStore.Status.OK, "and reads back as valid")
+	main.continue_from(r["data"])
+	assert_eq(main.player.global_position, main.room.data.tile_center(main.room.data.entry_default), "on the default entry")
+
+
 func test_quitting_during_igris_returns_to_the_attempt_start() -> void:
 	main = _new_main()
 	_flags(main, TOWER + ["seen.t08"])
