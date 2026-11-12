@@ -1,11 +1,11 @@
 {
  "frame_size": [
-  32,
-  48
+  48,
+  56
  ],
  "pivot": [
-  16,
-  44
+  24,
+  52
  ],
  "frames": [
   "rastejo_idle0",
@@ -27,12 +27,12 @@
  ],
  "igris": {
   "frame_size": [
-   48,
-   64
+   80,
+   72
   ],
   "pivot": [
-   24,
-   60
+   40,
+   68
   ],
   "frames": [
    "idle",
@@ -40,5 +40,9 @@
    "regulator",
    "free"
   ]
- }
+ },
+ "source": [
+  "design/art/referencias/personagens/12-inimigos-de-papel-e-tinta.png",
+  "design/art/referencias/personagens/13-inimigos-de-maquina-e-igris.png"
+ ]
 }

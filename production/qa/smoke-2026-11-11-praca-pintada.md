@@ -52,3 +52,16 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - QA review fixed: back-wall baseboard (row 7) and a crate were floor.
 - Evidence: `production/qa/evidence/salas/oficina_01_inicio.png`,
   `oficina_02_relogio.png`, `oficina_03_invasao.png` — PASS.
+
+## 2026-11-12: Yggnus e inimigos pelas folhas do usuário (teste22)
+
+- Folhas 11, 12 e 13 (`design/art/referencias/personagens/`) recortadas por
+  `tools/art/yggnus_referencia.py` e `tools/art/inimigos_referencia.py`
+  (ajudantes em `tools/art/recorte.py`).
+- Suíte completa: 311 de 312 passaram; a falha era o teste que fixava o
+  tamanho antigo do quadro de Igris (48 × 64). Ele agora confere que Igris é
+  maior que um inimigo comum, e passa.
+- Evidência: `production/qa/evidence/personagens/01_inimigos_praca.png`,
+  `02_yame.png`, `03_yggnus_oficina.png`, `04_igris.png`.
+- Limite conhecido: antes da cena p05 Yggnus aparece com espada e escudo,
+  porque a folha do usuário sempre os mostra.

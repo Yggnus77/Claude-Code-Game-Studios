@@ -46,21 +46,21 @@ Daltonismo: vermelho e verde nunca são o único sinal (sempre há forma, anel o
 ## 5. Personagens
 
 Segunda versão (detalhada): os personagens são desenhados à mão, linha a linha, em texto (uma
-letra por pixel, legenda de cores no topo de `tools/art/yggnus_frente.py`). Contorno escuro de 1 px,
+letra por pixel; esses scripts foram trocados pelos recortes das folhas do usuário, ver abaixo). Contorno escuro de 1 px,
 luz do alto à esquerda, 3 tons por material (claro, base, sombra) e um brilho pontual em metal e
 olhos.
 
-- Yggnus: quadro 32×48, pivô [16,44] (pés), 3 vistas (frente, costas, lado; a esquerda é espelho).
-  Rosto com olhos, sobrancelhas e boca; cabelo cacheado com brilho; casaco índigo com galão
-  dourado; cachecol creme; nas costas, o farol bordado. Peças (cabeça, cachecol, tronco, braços,
-  pernas) são deslocadas pelas poses: parado 2, andar 4, corte 1 (2), corte 2 (2), finalização (3),
-  defesa 2, esquiva 2, dano 1, queda 2, ferramenta 1. Espada, broquel e ferramenta são desenhados
-  por cima, com contorno próprio (`tools/art/yggnus_hd.py`).
-- Inimigos: quadro 32×48, pivô nos pés, uma pose por estado de combate (parado, preparar, atacar,
-  aberto). A preparação muda a silhueta, não só a cor. Volumes sombreados (`inimigos_hd.py`).
+- Personagens (2026-11-12): Yggnus, inimigos, Yame e Igris vêm das folhas do usuário
+  (`design/art/referencias/personagens/`, imagens 11, 12 e 13), recortados do fundo e
+  reduzidos por `tools/art/yggnus_referencia.py` e `tools/art/inimigos_referencia.py`
+  (`recorte.py`). Yggnus: quadro 64×52, pivô [32,48], altura 42 px, 3 vistas (a esquerda é
+  espelho); andar de 4 passos da folha; golpe de lado com as 3 poses da folha (sem a lâmina,
+  que o jogo desenha); as poses que a folha não tem reaproveitam as que tem.
+- Inimigos e Yame: quadro 48×56, pivô [24,52], pés 2 px abaixo do pivô; variações por estado
+  (respiro, brilho do aviso, esticada do bote).
 - Yame Black: pequena, papel preto em dobras, olhos de brasa que acendem antes de lançar. Não é
   derrotada.
-- Igris: quadro 48×64, maior que todos; abafador e regulador aparecem no peito na fase certa.
+- Igris: quadro 80×72, pivô [40,68], 62 px de altura, maior que todos; abafador e regulador aparecem no peito na fase certa.
   Sem animação de morte (kit).
 
 ## 6. Cenário

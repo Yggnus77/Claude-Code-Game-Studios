@@ -80,7 +80,7 @@ var _charged_flash := 0.0
 ## Enemy instance id -> seconds until the held blade may poke it again.
 var _poke_wait: Dictionary = {}
 var _pull_target := Vector2.ZERO
-## Sheet drawn by tools/art/gerar_yggnus.py; null keeps the shape placeholder.
+## Sheet drawn by tools/art/yggnus_referencia.py; null keeps the shape placeholder.
 var _sheet: Texture2D
 var _picker: SpritePicker
 var _anim := "idle"
