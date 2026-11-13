@@ -117,8 +117,8 @@
       "scope": "prototype",
       "room": "r00_estrada",
       "tile": [
-        8,
-        18
+        37,
+        15
       ],
       "requires_item": null
     },

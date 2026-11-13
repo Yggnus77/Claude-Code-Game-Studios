@@ -70,6 +70,20 @@ ela, falo com o mercador na barraca e corto os arbustos."
 - O mentor não está na imagem: a entidade fica marcada como pintada e não
   desenha nada (ela não tem conversa).
 
+### 3.3 Estrada inicial
+
+- A referência 3 inteira vira a estrada (40 × 24 células): o portão da
+  vila à esquerda, a placa no cruzamento, o moinho ao fundo e o poço com
+  roldana à direita. O portão e o caminho do moinho são cenário.
+- Porta para a praça: o caminho de terra embaixo, no meio (células 21–24,
+  linha 22, `span` 4, lado sul). A saída da praça para a estrada fica ao
+  norte, então a troca entre as duas desliza a tela de novo.
+- Porta para o cruzamento: o caminho que sai pela direita (célula 38,
+  linhas 10–11, `span` 2, lado leste).
+- Baú da peça da bomba ao lado do poço (30, 21); reserva de viagem nos
+  degraus do portão (11, 13); fragmento 2 escondido na grama atrás do poço
+  (37, 15), atrás de dois arbustos (37–38, 12) que é preciso cortar.
+
 ## 4. Fórmulas
 
 - Tamanho da imagem: `L = largura · 16`, `A = altura · 16` px. Praça: 40 × 24
@@ -86,10 +100,10 @@ ela, falo com o mercador na barraca e corto os arbustos."
 - Porta ou entidade (sem `painted`) numa parede: o mesmo teste falha.
 - Salvamento numa célula que virou parede: carrega na entrada padrão
   (`test_a_save_standing_where_the_room_now_has_a_wall_still_loads`).
-- As portas da praça não ficam mais em lados opostos às da oficina e da
-  estrada, então a troca de sala é por esmaecimento, não por deslize. Quando
-  a estrada for pintada (referência 3), a porta dela para a praça vai para o
-  lado sul e o deslize volta.
+- Oficina, praça e estrada ficam em lados opostos umas das outras, então
+  todas as trocas entre elas deslizam a tela.
+- Um arbusto pode esconder uma parte da sala (o fragmento 2): o teste de
+  ligação passa por arbustos e potes, porque Yggnus começa com a espada.
 
 ## 6. Dependências
 

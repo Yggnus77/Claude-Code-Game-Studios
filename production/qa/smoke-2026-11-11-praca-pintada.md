@@ -65,3 +65,15 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
   `02_yame.png`, `03_yggnus_oficina.png`, `04_igris.png`.
 - Limite conhecido: antes da cena p05 Yggnus aparece com espada e escudo,
   porque a folha do usuário sempre os mostra.
+
+## 2026-11-13: estrada pintada (referência 3, teste23)
+
+- `r00_estrada` usa a referência 3 como fundo; grade, portas e entidades
+  refeitas (design/gdd/salas-pintadas.md §3.3).
+- Saída da praça ao norte chega na porta sul da estrada deslizando a tela
+  (evidência `production/qa/evidence/salas/estrada_01_chegada.png`).
+- Fragmento 2 atrás de dois arbustos ao lado do poço
+  (`estrada_02_poco.png`).
+- O teste de ligação agora exige que as portas sejam alcançadas sem cortar
+  nada; vi ele falhar com arbustos tapando a porta leste antes de confiar nele.
+- Suíte completa depois dos ajustes: 312 de 312.

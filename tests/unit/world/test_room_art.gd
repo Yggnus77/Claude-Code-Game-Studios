@@ -186,12 +186,16 @@ func test_world_reward_tiles_match_the_maps() -> void:
 
 
 
-## Floor cells reachable from [param start], bushes and pots counted as walls.
-func _reachable(data: RoomData, start: Vector2i) -> Dictionary:
+## Floor cells reachable from [param start]. Bushes and pots block, unless
+## [param cut] is true: Yggnus starts with the sword, so a collectible may
+## hide behind them (the road hides a fragment behind two bushes), but a
+## door never should.
+func _reachable(data: RoomData, start: Vector2i, cut := false) -> Dictionary:
 	var blocked := {}
-	for kind: String in data.breakables:
-		for at: Vector2i in data.breakables[kind]:
-			blocked[at] = true
+	if not cut:
+		for kind: String in data.breakables:
+			for at: Vector2i in data.breakables[kind]:
+				blocked[at] = true
 	var seen := {start: true}
 	var todo: Array[Vector2i] = [start]
 	while not todo.is_empty():
@@ -224,7 +228,8 @@ func test_every_painted_room_is_connected() -> void:
 		var seen := _reachable(data, data.entry_default)
 		for d: Dictionary in data.doors:
 			var t: Array = d["tile"]
-			assert_true(seen.has(Vector2i(int(t[0]), int(t[1]))), "%s reached" % d["id"])
+			assert_true(seen.has(Vector2i(int(t[0]), int(t[1]))), "%s reached without cutting" % d["id"])
+		seen = _reachable(data, data.entry_default, true)
 		for e: Dictionary in data.entities:
 			var t: Array = e["tile"]
 			assert_true(_touches(seen, Vector2i(int(t[0]), int(t[1]))), "%s reached" % e["id"])

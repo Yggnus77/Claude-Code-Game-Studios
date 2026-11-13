@@ -59,7 +59,7 @@
       "side": "north",
       "tile": [18, 1],
       "target_room": "r00_estrada",
-      "target_tile": [2, 12],
+      "target_tile": [22, 21],
       "gate": "seen.p07",
       "unlock_persistent_flag": "open.door.v01_praca.r00_estrada",
       "key_consumption": null,

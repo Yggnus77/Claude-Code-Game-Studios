@@ -26,6 +26,7 @@ OUT = os.path.join(ROOT, "assets", "art", "salas")
 SALAS = {
     "v00_oficina": "01-oficina-de-exodia-sem-yggnus.png",
     "v01_praca": "02-praca-de-versalhes.png",
+    "r00_estrada": "03-estrada-inicial-e-cruzamento.png",
 }
 
 # Cores por sala: menos cores deixam a imagem com cara de pixel art.

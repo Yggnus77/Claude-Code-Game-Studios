@@ -43,7 +43,7 @@
       "target_room": "r00_estrada",
       "target_tile": [
         37,
-        12
+        10
       ],
       "gate": null,
       "unlock_persistent_flag": "open.door.r00_estrada.r01_cruzamento",
