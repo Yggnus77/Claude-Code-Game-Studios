@@ -70,6 +70,9 @@ def build():
     sheet = Image.open(SOURCE)
     idle = {d: pose(sheet, b, BG, HEIGHT)[0] for d, b in IDLE.items()}
     walk = {d: [pose(sheet, b, BG, HEIGHT)[0] for b in boxes] for d, boxes in WALK.items()}
+    # Na folha do usuário os passos de lado olham para a esquerda, e o resto
+    # da linha de lado olha para a direita: espelha para Yggnus não andar de costas.
+    walk["side"] = [f.transpose(Image.Transpose.FLIP_LEFT_RIGHT) for f in walk["side"]]
     # O ataque usa a escala do preparo, para o braço esticado não encolher.
     ready, s = pose(sheet, ATTACK[0]["box"], BG, HEIGHT)
     attack = [ready] + [pose(sheet, a["box"], BG, cut=a["cut"], scale=s)[0] for a in ATTACK[1:]]

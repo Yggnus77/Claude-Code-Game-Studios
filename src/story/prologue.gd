@@ -95,8 +95,8 @@ func objective(state: GameState, room_id: String = "") -> String:
 		var total: int = encounter.get("bindings", []).size()
 		var done := total - bindings_left(state).size()
 		if not room_id.is_empty() and room_id != WORKSHOP:
-			return "Volte à oficina e corte as amarras da porta (%d/%d)." % [done, total]
-		return "Corte as amarras da porta (%d/%d). Defenda os papéis com o escudo." % [total - bindings_left(state).size(), total]
+			return "Volte à oficina e quebre as correntes da porta (%d/%d)." % [done, total]
+		return "Quebre as correntes da porta (%d/%d). Defenda os papéis com o escudo." % [total - bindings_left(state).size(), total]
 	if not state.has_flag("seen.p08"):
 		return "Ative o Marco de Memória na praça."
 	if not state.has_flag("visited.t00_base"):

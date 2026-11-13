@@ -96,3 +96,16 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
   `sinos_01.png`, `torre-01_base.png`, `torre-02_guardas.png`,
   `torre-03_antecamara.png`, `torre-04_igris.png` (sino de Igris aceso no
   alto da parede durante a mostra da ordem).
+
+## 2026-11-13: Yggnus andando de lado e correntes de Yame (teste25)
+
+- Os quadros de andar de lado vinham da folha do usuário olhando para a
+  esquerda; agora são espelhados em `tools/art/yggnus_referencia.py`.
+  Teste novo `test_yggnus_walks_sideways_facing_where_he_goes`: falhou com a
+  folha antiga e passa com a nova.
+- As amarras de Yame viraram correntes de ferro (elos com contorno escuro,
+  estaca com um elo por golpe, rachadura depois do primeiro golpe, faíscas
+  ao partir). Textos do objetivo e avisos passaram a dizer "correntes".
+- Suíte completa: 313 de 313.
+- Evidência: `production/qa/evidence/personagens/05_andando_direita.png`,
+  `06_andando_esquerda.png`, `07_correntes_yame.png`.

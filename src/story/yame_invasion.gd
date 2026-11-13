@@ -20,6 +20,11 @@ const COLOR_YAME := Color("1b1530")
 const COLOR_PAGE := Color("efe6cf")
 const COLOR_EYE := Color("c44a6a")
 const COLOR_THREAD := Color("b23a48")
+## The bindings read as iron chains to break (user feedback, 2026-11-13).
+const COLOR_IRON := Color("9aa3ad")
+const COLOR_IRON_DARK := Color("2a2730")
+const COLOR_IRON_SHINE := Color("e6edf2")
+const LINK_STEP := 7.0
 const FLEE_TIME := 0.8
 
 var def: Dictionary
@@ -130,6 +135,8 @@ func receive_sword_hit(_damage: int, attack_id: int, from: Vector2) -> bool:
 
 func _on_binding_cut(b: Node2D) -> void:
 	_bindings.erase(b)
+	# The chain bursts: iron sparks where it held.
+	Fx.hit_sparks(get_parent(), b.global_position, b.global_position + Vector2(0, 8), true)
 	state.apply([{"op": "add_receipt", "receipt_id": Prologue.binding_receipt(b.binding_id)}])
 	var left := prologue.bindings_left(state).size()
 	binding_cut.emit(b.binding_id, left)
@@ -141,9 +148,9 @@ func _on_binding_cut(b: Node2D) -> void:
 func _draw() -> void:
 	for b in _bindings:
 		if is_instance_valid(b) and _door_center != Vector2.ZERO:
-			draw_line(to_local(b.global_position), to_local(_door_center), COLOR_THREAD, 1.0)
+			draw_chain(self, to_local(b.global_position), to_local(_door_center))
 		if is_instance_valid(b):
-			draw_line(to_local(b.global_position), Vector2(0, 6), Color(COLOR_THREAD, 0.5), 1.0)
+			draw_chain(self, to_local(b.global_position), Vector2(0, 6), 0.6)
 	var art := SpriteAtlas.enemies()
 	if art:
 		art.draw(self, "yame_telegraph" if _telegraph_left > 0.0 else "yame_idle", Vector2(0, 14))
@@ -156,6 +163,30 @@ func _draw() -> void:
 		draw_rect(Rect2(c - Vector2(3, 4), Vector2(6, 8)), COLOR_PAGE)
 	var eye := COLOR_EYE.lightened(0.5) if _telegraph_left > 0.0 else COLOR_EYE
 	draw_circle(Vector2.ZERO, 3.5 if _telegraph_left > 0.0 else 2.5, eye)
+
+
+## Draws an iron chain on [param canvas] from [param a] to [param b]: oval
+## links that alternate face-on and edge-on, outlined so they read on any floor.
+static func draw_chain(canvas: CanvasItem, a: Vector2, b: Vector2, alpha := 1.0) -> void:
+	var length := a.distance_to(b)
+	if length < 1.0:
+		return
+	var dir := (b - a) / length
+	var side := Vector2(-dir.y, dir.x)
+	var n := maxi(1, int(length / LINK_STEP))
+	for i in n + 1:
+		var c := a + dir * (length * i / n)
+		if i % 2 == 0:
+			var ring := PackedVector2Array()
+			for k in 13:
+				var t := TAU * k / 12.0
+				ring.append(c + dir * cos(t) * 4.5 + side * sin(t) * 2.8)
+			canvas.draw_polyline(ring, Color(COLOR_IRON_DARK, alpha), 3.0)
+			canvas.draw_polyline(ring, Color(COLOR_IRON, alpha), 1.5)
+			canvas.draw_line(c - dir * 2.0 + side * 1.6, c + dir * 1.0 + side * 1.6, Color(COLOR_IRON_SHINE, alpha), 1.0)
+		else:
+			canvas.draw_line(c - dir * 4.5, c + dir * 4.5, Color(COLOR_IRON_DARK, alpha), 3.5)
+			canvas.draw_line(c - dir * 4.0, c + dir * 4.0, Color(COLOR_IRON, alpha), 1.5)
 
 
 ## One binding: hit it with the sword to break it. Joins the "enemies"
@@ -196,10 +227,20 @@ class Binding extends Node2D:
 			queue_redraw()
 
 	func _draw() -> void:
-		var col := Color.WHITE if _flash > 0.0 else COLOR_THREAD
-		draw_rect(Rect2(Vector2(-2, -10), Vector2(4, 12)), Color("5a4632"))
+		# An iron stake with a ring per hit still needed, cracked once struck.
+		var iron := Color.WHITE if _flash > 0.0 else COLOR_IRON
+		draw_rect(Rect2(Vector2(-4, -14), Vector2(8, 17)), COLOR_IRON_DARK)
+		draw_rect(Rect2(Vector2(-3, -13), Vector2(6, 15)), Color("5b5f68"))
+		draw_rect(Rect2(Vector2(-2, -12), Vector2(1, 13)), Color("8b919b"))
+		draw_rect(Rect2(Vector2(-5, -15), Vector2(10, 3)), COLOR_IRON_DARK)
 		for i in hits_needed - _hits:
-			draw_arc(Vector2(0, -4 - i * 4), 5.0, 0, TAU, 10, col, 2.0)
+			var c := Vector2(0, -6 - i * 6)
+			draw_arc(c, 6.0, 0, TAU, 14, COLOR_IRON_DARK, 4.0)
+			draw_arc(c, 6.0, 0, TAU, 14, iron, 2.0)
+			draw_arc(c, 6.0, PI * 1.1, PI * 1.5, 4, COLOR_IRON_SHINE, 1.0)
+		if _hits > 0:
+			# A crack shows the chain is about to give.
+			draw_polyline(PackedVector2Array([Vector2(-3, -10), Vector2(0, -7), Vector2(-1, -4), Vector2(2, -1)]), COLOR_IRON_SHINE, 1.0)
 
 
 ## A sheet of paper flying in a straight line. The shield stops it from the

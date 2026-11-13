@@ -565,12 +565,12 @@ func _sync_invasion() -> void:
 
 ## The sword reached Yame: say what to hit instead.
 func _on_yame_deflected() -> void:
-	hud.toast("A espada não fere Yame Black. Corte as amarras que prendem a porta!", 3.0)
+	hud.toast("A espada não fere Yame Black. Quebre as correntes que prendem a porta!", 3.0)
 	playtest.refuse(session_time(), "espada em Yame Black")
 
 
 func _on_binding_cut(_binding_id: String, left: int) -> void:
-	hud.toast("Amarra cortada!" if left > 0 else "A última amarra se rompeu!")
+	hud.toast("Corrente quebrada!" if left > 0 else "A última corrente se partiu!")
 
 
 func _on_invasion_cleared() -> void:
@@ -1709,7 +1709,7 @@ func _check_doors() -> void:
 ## What a closed door says when the player walks into it.
 func _locked_text(door: Dictionary, door_id: String) -> String:
 	if prologue.blocks_door(state, room_id, door_id):
-		return "As amarras de Yame prendem a porta."
+		return "As correntes de Yame prendem a porta."
 	if door.has("locked_text"):
 		return str(door["locked_text"])
 	if Room.is_cracked(door):
