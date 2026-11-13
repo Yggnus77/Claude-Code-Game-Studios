@@ -186,7 +186,7 @@ func _door_by_id(id: String) -> Dictionary:
 func test_leaving_the_workshop_lands_on_the_square_door_steps() -> void:
 	# salas-pintadas.md §8.4: the painted square's workshop door is the
 	# wooden door at the top left; arriving must not send Yggnus back.
-	var p := _setup("v00_oficina", Vector2i(20, 9))
+	var p := _setup("v00_oficina", Vector2i(14, 10))
 	await main._go_through(_door_by_id("door.v00_oficina.v01_praca"))
 	await _frames(20)
 	assert_eq(main.room_id, "v01_praca", "in the square")
@@ -214,3 +214,12 @@ func test_the_square_road_is_barred_until_p07_then_leads_to_the_road() -> void:
 			break
 	p.input_override = Vector2.ZERO
 	assert_eq(main.room_id, "r00_estrada", "the far column of the wide way out still leads on")
+
+
+func test_the_workshop_and_the_square_slide_into_each_other() -> void:
+	# Painted workshop: its door is on the south wall, the square's on the
+	# north side, so the screen slides both ways (salas-pintadas.md §3.2).
+	_setup("v00_oficina", Vector2i(14, 10))
+	assert_true(main._can_slide(_door_by_id("door.v00_oficina.v01_praca")), "workshop to square slides")
+	main.load_room("v01_praca", Vector2i(11, 7))
+	assert_true(main._can_slide(_door_by_id("door.v00_oficina.v01_praca")), "square to workshop slides")

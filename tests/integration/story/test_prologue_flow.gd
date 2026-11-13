@@ -77,7 +77,7 @@ func test_whole_stretch_with_every_scene_skipped() -> void:
 	var p := _setup("v00_oficina", ["seen.p00"])
 	main._refresh_story()
 	assert_true(main.hud.objective_text().contains("relógio"), "first objective: the clock")
-	p.respawn_at(main.room.data.tile_center(Vector2i(12, 7)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(22, 15)))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "scene", "clock plays p01")
 	assert_eq(await _skip_scenes(), ["p01"], "p01 skipped")
@@ -139,7 +139,7 @@ func test_death_in_invasion_keeps_matrix_and_cut_bindings() -> void:
 func test_shield_stops_paper_from_the_front() -> void:
 	var p := _setup("v00_oficina", ["seen.p05"])
 	main.state.apply([{"op": "grant_unique", "item_id": "escudo_bronze", "quantity": 1, "receipt_id": "scene.p05.escudo_bronze"}])
-	p.respawn_at(main.room.data.tile_center(Vector2i(12, 8)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(12, 12)))
 	p.motor.facing = Vector2.UP
 	# The shield is passive: facing the paper is enough.
 	main.invasion._throw_left = 0.0

@@ -10,8 +10,17 @@ func _room(id: String) -> Room:
 	return room
 
 
+## The workshop as it was before it was painted: a tile room with a rug and
+## two furniture blocks (tests/fixtures/maps/v00_oficina.json).
+func _tile_room() -> Room:
+	var room := Room.new()
+	room._ready()
+	room.build(RoomData.load_room("v00_oficina", "res://tests/fixtures/maps"))
+	return room
+
+
 func test_top_wall_is_tall_and_inner_blocks_are_furniture() -> void:
-	var room := _room("v00_oficina")
+	var room := _tile_room()
 	assert_true(room.is_tall_wall(Vector2i(5, 0)), "top wall above the floor")
 	assert_true(not room.is_tall_wall(Vector2i(0, 5)), "side wall is not")
 	assert_eq(room.tile_kind(Vector2i(0, 5)), "wall_top", "side wall shows its top")
@@ -23,7 +32,7 @@ func test_top_wall_is_tall_and_inner_blocks_are_furniture() -> void:
 
 
 func test_rug_pieces_follow_their_neighbours() -> void:
-	var room := _room("v00_oficina")  # rug at [9, 8, 5, 3]
+	var room := _tile_room()  # rug at [9, 8, 5, 3]
 	assert_eq(room.rug_piece(Vector2i(9, 8)), "rug_tl", "top left corner")
 	assert_eq(room.rug_piece(Vector2i(11, 8)), "rug_t", "top edge")
 	assert_eq(room.rug_piece(Vector2i(11, 9)), "rug_c", "middle")
@@ -62,7 +71,7 @@ func test_effects_without_a_parent_are_dropped() -> void:
 
 func test_rebuilding_replaces_the_old_lights_at_once() -> void:
 	var room := _room("t07_igris")
-	room.build(RoomData.load_room("v00_oficina"))
+	room.build(RoomData.load_room("v00_oficina", "res://tests/fixtures/maps"))
 	assert_true(room.get_node_or_null("Ambient") is CanvasModulate, "the new ambient keeps its name")
 	var ambients := room.get_children().filter(func(n: Node) -> bool: return n is CanvasModulate)
 	assert_eq(ambients.size(), 1, "only one ambient per room")
@@ -115,7 +124,7 @@ func test_a_painted_room_draws_its_picture_instead_of_tiles() -> void:
 
 
 func test_a_tile_room_is_not_painted() -> void:
-	var room := _room("v00_oficina")
+	var room := _room("t02_oficina")
 	assert_true(not room.is_painted(), "no background")
 	assert_true(room.painted_objects.is_empty(), "objects from the tile sheet")
 	room.free()

@@ -20,7 +20,11 @@ MAPS = os.path.join(ROOT, "assets", "data", "maps")
 OUT = os.path.join(ROOT, "assets", "art", "salas")
 
 # Sala -> referência de origem.
+# A referência 1 trazia Yggnus pintado no meio da oficina; a cópia
+# "-sem-yggnus" tem o chão refeito no lugar dele (espelho do tapete e do
+# piso de baixo), porque o Yggnus do jogo anda por cima do fundo.
 SALAS = {
+    "v00_oficina": "01-oficina-de-exodia-sem-yggnus.png",
     "v01_praca": "02-praca-de-versalhes.png",
 }
 

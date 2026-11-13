@@ -22,3 +22,5 @@ A galeria dos sinos segue os seis sinos solicitados no prompt visual. O pacote a
 As folhas de personagem e inimigos mostram referência de aparência e pose. Alinhamento de quadros, pontos de origem, contornos de colisão e sequências finais de animação dependem da produção no motor.
 
 Imagens geradas com a ferramenta integrada de geração de imagens. O manifesto inclui o prompt final de cada resultado. Abra Galeria.html para ampliar e baixar cada PNG.
+
+A referência 1 trazia Yggnus pintado no meio da sala. `01-oficina-de-exodia-sem-yggnus.png` é a mesma imagem com o chão refeito no lugar dele (espelho do tapete e do piso de baixo); é ela que vai para o jogo.

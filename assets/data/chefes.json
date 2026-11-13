@@ -9,7 +9,7 @@
       "proposed": "Números propostos para a etapa 4; ajustar no teste de jogo.",
       "yame_tile": [
         12,
-        2
+        8
       ],
       "bindings": [
         "v00_oficina.yame_bind_1",

@@ -14,7 +14,8 @@ func test_enemy_atlas_has_a_frame_for_every_state_drawn() -> void:
 func test_igris_atlas_has_every_fight_phase() -> void:
 	var art := SpriteAtlas.igris()
 	assert_true(art != null, "igris.png loads")
-	assert_eq(art.frame_size, Vector2(48, 64), "Igris is bigger")
+	var common := SpriteAtlas.enemies()
+	assert_true(art.frame_size.x > common.frame_size.x and art.frame_size.y > common.frame_size.y, "Igris is bigger than a common enemy")
 	for f in ["idle", "muffler", "regulator", "free"]:
 		assert_true(art.has_frame(f), "frame '%s'" % f)
 

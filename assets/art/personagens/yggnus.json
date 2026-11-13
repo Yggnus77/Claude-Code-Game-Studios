@@ -1,11 +1,11 @@
 {
  "frame_size": [
-  32,
-  48
+  64,
+  52
  ],
  "pivot": [
-  16,
-  44
+  32,
+  48
  ],
  "rows": {
   "down": 0,
@@ -69,5 +69,6 @@
   "guard": 4,
   "dodge": 12,
   "fall": 6
- }
+ },
+ "source": "design/art/referencias/personagens/11-yggnus-folha-de-personagem.png"
 }

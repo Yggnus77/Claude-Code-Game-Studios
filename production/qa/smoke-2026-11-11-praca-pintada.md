@@ -41,3 +41,27 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Doors between the square, the workshop and the road fade instead of
   sliding until those rooms are painted with matching sides.
 - The lowest rows of the square sit under the HUD buttons and objective box.
+
+## 2026-11-12 — Oficina de Exódia (teste21)
+
+- Reference 1 with the painted Yggnus removed (mirror of the rug and floor);
+  room 40 × 23, door on the south wall (span 4), slides to the square.
+- Full suite: 312 passed, 0 failed. New: `test_the_workshop_and_the_square_slide_into_each_other`.
+  The old tile workshop is kept as a test fixture (`tests/fixtures/maps/v00_oficina.json`)
+  for the tile-art tests.
+- QA review fixed: back-wall baseboard (row 7) and a crate were floor.
+- Evidence: `production/qa/evidence/salas/oficina_01_inicio.png`,
+  `oficina_02_relogio.png`, `oficina_03_invasao.png` — PASS.
+
+## 2026-11-12: Yggnus e inimigos pelas folhas do usuário (teste22)
+
+- Folhas 11, 12 e 13 (`design/art/referencias/personagens/`) recortadas por
+  `tools/art/yggnus_referencia.py` e `tools/art/inimigos_referencia.py`
+  (ajudantes em `tools/art/recorte.py`).
+- Suíte completa: 311 de 312 passaram; a falha era o teste que fixava o
+  tamanho antigo do quadro de Igris (48 × 64). Ele agora confere que Igris é
+  maior que um inimigo comum, e passa.
+- Evidência: `production/qa/evidence/personagens/01_inimigos_praca.png`,
+  `02_yame.png`, `03_yggnus_oficina.png`, `04_igris.png`.
+- Limite conhecido: antes da cena p05 Yggnus aparece com espada e escudo,
+  porque a folha do usuário sempre os mostra.
