@@ -75,7 +75,7 @@ func test_close_and_load_after_a_door_returns_to_its_entry() -> void:
 	main.player.global_position += Vector2(48, 0)  # walked on, then quit
 	main = await _reopen(main)
 	assert_eq(main.room_id, "t07_igris", "same room")
-	assert_eq(main.player.global_position, main.room.data.tile_center(Vector2i(2, 14)), "on the door's entry tile")
+	assert_eq(main.player.global_position, main.room.data.tile_center(Vector2i(19, 20)), "on the door's entry tile")
 	assert_eq(main.player.health.current, main.player.health.maximum - 2, "life as saved, not healed")
 
 
@@ -100,7 +100,7 @@ func test_quitting_during_igris_returns_to_the_attempt_start() -> void:
 	_flags(main, TOWER + ["seen.t08"])
 	main.state.apply([{"op": "refill_flask"}, {"op": "grant_unique", "item_id": "pao_porto", "quantity": 2, "receipt_id": "test.pao"}])
 	main.player.health.take_damage(1)
-	main.load_room("t07_igris", Vector2i(2, 14), false)
+	main.load_room("t07_igris", Vector2i(19, 20), false)
 	assert_true(not main._attempt.is_empty(), "the attempt started")
 	var life_at_start: int = main.player.health.current
 	# Mid-fight: drink the flask, eat bread, get hit, then the game closes.
@@ -109,7 +109,7 @@ func test_quitting_during_igris_returns_to_the_attempt_start() -> void:
 	main.player.health.take_damage(2)
 	main = await _reopen(main)
 	assert_eq(main.room_id, "t07_igris", "back in the chamber")
-	assert_eq(main.player.global_position, main.room.data.tile_center(Vector2i(2, 14)), "at the attempt's entry")
+	assert_eq(main.player.global_position, main.room.data.tile_center(Vector2i(19, 20)), "at the attempt's entry")
 	assert_eq(main.state.full_flask_count(), 1, "flask full again")
 	assert_eq(main.state.item_count("pao_porto"), 2, "bread back")
 	assert_eq(main.player.health.current, life_at_start, "life as the attempt began")
@@ -120,7 +120,7 @@ func test_closing_during_the_victory_scene_keeps_win_and_supplies_together() -> 
 	main = _new_main()
 	_flags(main, TOWER + ["seen.t08"])
 	main.state.apply([{"op": "refill_flask"}])
-	main.load_room("t07_igris", Vector2i(2, 14), false)
+	main.load_room("t07_igris", Vector2i(19, 20), false)
 	main.state.apply([{"op": "drink_flask"}])
 	main.igris.control_broken.emit()
 	await tree.process_frame
@@ -234,10 +234,10 @@ func test_the_playtest_record_follows_the_session() -> void:
 	main = _new_main()
 	main.playtest_dir = _dir.path_join("playtest")
 	_flags(main, TOWER + ["seen.t08"])
-	main.load_room("t07_igris", Vector2i(2, 14), false)
+	main.load_room("t07_igris", Vector2i(19, 20), false)
 	main._on_room_entered()
 	assert_eq(main.playtest.igris_attempts.size(), 0, "attempt running, not ended")
-	main.load_room("t07_igris", Vector2i(2, 14), false)  # R mid-fight
+	main.load_room("t07_igris", Vector2i(19, 20), false)  # R mid-fight
 	assert_eq(main.playtest.igris_attempts.size(), 1, "the reset ends the first attempt")
 	assert_eq(main.playtest.igris_attempts[0]["result"], "reiniciou", "as a reset")
 	main.player.receive_hit(99, main.igris.global_position, false, true, "onda de Igris")

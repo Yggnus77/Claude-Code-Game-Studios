@@ -32,14 +32,14 @@
   "doors": [
     {
       "id": "door.t01_guardas.t03_treino",
-      "side": "south",
-      "tile": [16, 21],
+      "side": "west",
+      "tile": [4, 20],
       "target_room": "t01_guardas",
-      "target_tile": [29, 12],
+      "target_tile": [31, 20],
       "gate": "item:gancho_retorno",
       "unlock_persistent_flag": "open.door.t01_guardas.t03_treino",
       "key_consumption": null,
-      "span": 4
+      "span": 2
     },
     {
       "id": "door.t03_treino.t04_pesos",
@@ -80,7 +80,7 @@
       "type": "grapple_traversal"
     }
   ],
-  "entry_default": [18, 20],
+  "entry_default": [6, 20],
   "art": {
     "background": "t03_treino"
   }

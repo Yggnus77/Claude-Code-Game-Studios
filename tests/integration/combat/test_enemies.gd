@@ -8,7 +8,7 @@ func _setup() -> Player:
 	main = load("res://src/scenes/main.tscn").instantiate()
 	main.play_intro = false
 	tree.root.add_child(main)
-	main.load_room("t00_base")
+	main.load_room("r04_adega")
 	var p: Player = main.player
 	p.read_input = false
 	p.respawn_at(main.room.data.tile_center(Vector2i(8, 12)))

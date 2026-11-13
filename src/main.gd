@@ -1092,6 +1092,9 @@ func _build_bells() -> void:
 		b.symbol = str(def.get("symbols", {}).get(b.bell_id, ""))
 		b.lit = bell_puzzle != null and bell_puzzle.solved
 		b.position = room.data.tile_center(Vector2i(int(e["tile"][0]), int(e["tile"][1])))
+		b.painted = bool(e.get("painted", false)) and room.is_painted()
+		if b.painted and e.get("glow_at") is Array:
+			b.glow_offset = room.data.tile_center(Vector2i(int(e["glow_at"][0]), int(e["glow_at"][1]))) - b.position
 		b.rung.connect(_on_igris_bell if in_igris else _on_bell_rung)
 		add_child(b)
 		bells.append(b)

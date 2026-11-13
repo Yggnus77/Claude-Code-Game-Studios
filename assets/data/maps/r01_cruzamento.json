@@ -74,8 +74,8 @@
       ],
       "target_room": "t00_base",
       "target_tile": [
-        2,
-        12
+        19,
+        20
       ],
       "gate": null,
       "unlock_persistent_flag": "open.door.r01_cruzamento.t00_base",

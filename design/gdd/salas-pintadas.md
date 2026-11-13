@@ -103,19 +103,46 @@ ela, falo com o mercador na barraca e corto os arbustos."
 As imagens da torre têm a entrada embaixo e a saída no alto, então cada
 sala de passagem liga a porta sul à porta norte da seguinte, e a troca
 desliza a tela. Salas com uma terceira porta (Base, Guardas, Antecâmara e
-câmara de Igris) ganham uma porta lateral desenhada no estilo das imagens
-(decisão do usuário, 2026-11-13).
+câmara de Igris) ganham uma segunda saída desenhada no estilo das imagens
+(decisão do usuário, 2026-11-13): `tools/art/gerar_salas.py` (`PORTAS`)
+copia a saída pintada da própria sala para outro trecho da parede da
+frente, com a borda suavizada. Uma porta lateral desenhada em perspectiva
+ficou fina demais e foi descartada.
 
-- Travessia do gancho (40 × 23): entra-se pela passarela embaixo (células
-  16–19, linha 21) e sai-se pela porta no alto (18–21, linha 3). O abismo
-  entre as plataformas é vão (`~`): o gancho passa por cima. O aro da
-  plataforma que sai da passarela (20, 15) e o aro da plataforma de cima
-  (20, 7) formam a travessia; as duas plataformas dos lados são cenário.
-- Contrapesos (40 × 23): entra-se por baixo (18–21, linha 21) e a porta
-  para os sinos fica no alto (18–21, linha 5). O peso é o contrapeso
-  pintado da esquerda (6, 13), puxado com o gancho de (6, 14); a trava é a
-  alavanca da direita (31, 16), examinada de (31, 17). A ponte já aparece
-  baixada na pintura; o que segura a passagem é a porta.
+Todas as salas da torre têm 40 × 23 células. Ordem da subida:
+
+| Sala | Entrada | Saídas |
+|---|---|---|
+| Base (t00) | sul (18–21, linha 21), vinda do cruzamento | norte (18–21, linha 8), cadeado da chave da base; segunda saída sul (31–34) para o atalho de Igris, aberta depois de t11 |
+| Guardas (t01) | sul (18–21, linha 21) | norte (18–21, linha 8) para a oficina, abre sem guardas; segunda saída sul (30–33) para a travessia, pede o gancho |
+| Oficina do gancho (t02) | sul (18–21, linha 16) | — |
+| Travessia (t03) | oeste (linha 20–21, coluna 4), vinda dos guardas | norte (18–21, linha 3) |
+| Contrapesos (t04) | sul (18–21, linha 21) | norte (18–21, linha 5) |
+| Galeria dos sinos (t05) | sul (18–21, linha 21) | norte (18–21, linha 6), abre com os sinos |
+| Antecâmara (t06) | sul (18–21, linha 17) | norte (18–21, linha 6), Chave Grande; segunda saída sul (30–33) para o mirante, abre com a placa |
+| Câmara de Igris (t07) | sul (18–21, linha 21) | segunda saída sul (8–11) para o atalho da base, aberta depois de t11 |
+
+- Base: o baú grande pintado à esquerda é o baú da chave (6, 13, aberto de
+  (6, 14)); o marco fica na placa de engrenagem do centro (19, 11).
+- Guardas: os dois guardas ficam no salão, longe das colunas, em (17, 15)
+  e (24, 13); o baú do mapa fica no canto direito (34, 16).
+- Travessia: o abismo é vão (`~`): o gancho passa por cima. O aro que sai
+  da passarela (20, 15) e o aro da plataforma de cima (20, 7) formam a
+  travessia.
+- Contrapesos: o peso é o contrapeso pintado da esquerda (6, 13), puxado
+  com o gancho de (6, 14); a trava é a alavanca da direita (31, 16),
+  examinada de (31, 17).
+- Antecâmara: a placa de bronze fica na parede do fundo ao lado da porta
+  grande (16, 5); a agulha a acerta vinda do chão, a espada não. O baú do
+  arco fica à esquerda (8, 9) e as agulhas em (6, 15).
+- Câmara de Igris: os quatro aros pintados na borda da arena são os pontos
+  do gancho (20, 6), (5, 11), (35, 11) e (20, 16). Os dois sinos pintados
+  ficam no alto da parede, fora do alcance da espada: cada um é tocado
+  numa placa no chão logo abaixo (9, 7) e (31, 7), e o brilho que mostra a
+  ordem aparece sobre o sino pintado (`glow_at`).
+- Mapa da masmorra: uma segunda saída na parede da frente leva para o lado
+  dela no mapa (`map_side`): a travessia fica a leste dos guardas e o
+  mirante a leste da antecâmara. O atalho Igris–base não entra no mapa.
 - O teste de ligação segue as travessias do gancho (`special_edges`).
 
 ## 4. Fórmulas
@@ -132,6 +159,10 @@ câmara de Igris) ganham uma porta lateral desenhada no estilo das imagens
 - Imagem com tamanho diferente do mapa: o teste
   `test_every_painted_map_matches_its_picture` falha.
 - Porta ou entidade (sem `painted`) numa parede: o mesmo teste falha.
+  Placas (`plate`) são a exceção: ficam na parede de propósito.
+- Segunda saída na parede da frente que leva a uma porta de outro lado
+  (guardas → travessia, antecâmara → mirante): a tela não desliza, faz o
+  escurecimento; o mapa usa `map_side`.
 - Salvamento numa célula que virou parede: carrega na entrada padrão
   (`test_a_save_standing_where_the_room_now_has_a_wall_still_loads`).
 - Oficina, praça e estrada ficam em lados opostos umas das outras, então

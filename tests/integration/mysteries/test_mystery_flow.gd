@@ -156,11 +156,11 @@ func test_pressing_again_never_gives_clues() -> void:
 
 func test_quarto_toque_through_the_tower() -> void:
 	var p := _setup("t05_sinos", ["seen.x02a"])
-	for tile in [Vector2i(5, 4), Vector2i(27, 4), Vector2i(16, 17)]:
+	for tile in [Vector2i(11, 13), Vector2i(28, 13), Vector2i(25, 17)]:
 		_face(p, tile)
 		assert_eq(main.interact(), "clue", "clue at %s" % tile)
 	assert_eq(await _skip_scenes(), ["x02b"], "comparison after the third clue")
-	_face(p, Vector2i(16, 5))
+	_face(p, Vector2i(14, 6))
 	assert_eq(main.interact(), "question", "the inscription asks")
 	main.dialogue_box.runner.choose(1)
 	main.dialogue_box._after_step()

@@ -4,7 +4,7 @@ extends TestCase
 var main: Node
 
 
-func _setup(room_id: String = "t00_base") -> Player:
+func _setup(room_id: String = "r04_adega") -> Player:
 	main = load("res://src/scenes/main.tscn").instantiate()
 	main.play_intro = false
 	tree.root.add_child(main)
@@ -40,6 +40,7 @@ func test_cannot_walk_through_outer_wall() -> void:
 
 func test_slides_along_wall_on_diagonal() -> void:
 	var p := _setup()
+	p.respawn_at(main.room.data.tile_center(Vector2i(12, 8)))  # clear of the corner pots
 	await _walk(p, Vector2.LEFT, 120)
 	var y0 := p.global_position.y
 	await _walk(p, Vector2(-1, 1).normalized(), 30)

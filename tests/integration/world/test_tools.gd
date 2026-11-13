@@ -87,15 +87,15 @@ func test_no_needles_says_so_and_spends_nothing() -> void:
 
 
 func test_a_needle_on_the_plate_opens_the_lookout_and_the_sword_does_not() -> void:
-	var p := _setup("t06_marco", Vector2i(17, 8), {"arco_fio": 1, "agulha_fio": 5})
+	var p := _setup("t06_marco", Vector2i(16, 8), {"arco_fio": 1, "agulha_fio": 5})
 	var door := _door("door.t06_marco.t08_mirante")
 	assert_true(not main.is_door_open(door), "closed at first")
 	p.motor.facing = Vector2.UP
-	p.respawn_at(main.room.data.tile_center(Vector2i(17, 1)), false)
+	p.respawn_at(main.room.data.tile_center(Vector2i(16, 6)), false)
 	p.request_attack()
 	await _frames(20)
 	assert_true(not main.is_door_open(door), "the sword does not reach the plate")
-	p.respawn_at(main.room.data.tile_center(Vector2i(17, 8)), false)
+	p.respawn_at(main.room.data.tile_center(Vector2i(16, 8)), false)
 	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.UP)
 	for i in 60:
 		if a.advance(1.0 / 60.0):
@@ -105,7 +105,7 @@ func test_a_needle_on_the_plate_opens_the_lookout_and_the_sword_does_not() -> vo
 
 
 func test_the_refill_tops_needles_up_to_ten() -> void:
-	var p := _setup("t06_marco", Vector2i(5, 14), {"arco_fio": 1, "agulha_fio": 2})
+	var p := _setup("t06_marco", Vector2i(6, 16), {"arco_fio": 1, "agulha_fio": 2})
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "refill", "used the container")
 	assert_eq(main.state.item_count("agulha_fio"), 10, "2 -> 10")
@@ -129,18 +129,18 @@ func test_a_charge_opens_the_cracked_wall_only_when_close() -> void:
 
 
 func test_a_blast_hurts_enemies_breaks_pots_and_hurts_yggnus_nearby() -> void:
-	var p := _setup("t02_oficina", Vector2i(20, 6), {"carga_bronze": 2})
-	var enemy: EnemyBase = main.spawn_enemy("guarda_contrapeso", Vector2i(21, 7))
+	var p := _setup("t02_oficina", Vector2i(8, 8), {"carga_bronze": 2})
+	var enemy: EnemyBase = main.spawn_enemy("guarda_contrapeso", Vector2i(9, 9))
 	enemy.set_physics_process(false)
 	var pot: Breakable = null
 	for b in tree.get_nodes_in_group("breakables"):
-		if b is Breakable and (b as Breakable).tile == Vector2i(22, 6):
+		if b is Breakable and (b as Breakable).tile == Vector2i(10, 8):
 			pot = b
 	assert_true(pot != null, "a pot by the wall")
 	main.drop_roll = func() -> float: return 0.0  # nothing drops
 	var life := enemy.health.current
 	var mine := p.health.current
-	var bomb: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(21, 6)))
+	var bomb: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(9, 8)))
 	bomb.detonate()
 	assert_eq(enemy.health.current, maxi(0, life - 3), "3 damage, the shield does not stop it")
 	assert_true(pot.is_broken, "the pot broke")
@@ -271,12 +271,12 @@ func test_a_needle_stops_at_a_chest_and_a_weight() -> void:
 
 
 func test_a_near_miss_by_one_column_still_hits_the_plate() -> void:
-	var p := _setup("t06_marco", Vector2i(18, 8), {"arco_fio": 1})
+	var p := _setup("t06_marco", Vector2i(17, 8), {"arco_fio": 1})
 	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.UP)
 	for i in 60:
 		if a.advance(1.0 / 60.0):
 			break
-	assert_true(main.state.has_flag("world.plate.t06_marco"), "column 18 counts")
+	assert_true(main.state.has_flag("world.plate.t06_marco"), "a column off still counts")
 
 
 func test_the_shop_will_not_sell_hidden_charges() -> void:
@@ -289,7 +289,7 @@ func test_the_shop_will_not_sell_hidden_charges() -> void:
 
 func test_chest_text_names_amounts_and_extras() -> void:
 	# The bow is the tower's chest item (jogabilidade-classica.md §3.5).
-	var p := _setup("t06_marco", Vector2i(18, 16))
+	var p := _setup("t06_marco", Vector2i(8, 10))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "chest", "opened")
 	assert_true(main.hud._toast.text.contains("Recebeu Arco de Fio e 10 Agulhas de Fio"), main.hud._toast.text)

@@ -169,7 +169,7 @@ func test_the_bow_is_in_the_tower_and_the_cellar_holds_bronze() -> void:
 	assert_eq(main.state.bronze - before, 50, "50 Bronze")
 	assert_eq(main.state.item_count("arco_fio"), 0, "no bow here")
 	main.load_room("t06_marco")
-	p.respawn_at(main.room.data.tile_center(Vector2i(18, 16)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(8, 10)))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "chest", "antechamber chest")
 	assert_eq(main.state.item_count("arco_fio"), 1, "the bow")
@@ -181,8 +181,8 @@ func test_holding_after_hitting_a_bell_rings_it_once() -> void:
 	var rings: Array = []
 	for b in main.bells:
 		b.rung.connect(func(id: String) -> void: rings.append(id))
-	p.respawn_at(main.room.data.tile_center(Vector2i(8, 10)))
-	p.motor.facing = Vector2.UP
+	p.respawn_at(main.room.data.tile_center(Vector2i(10, 10)))
+	p.motor.facing = Vector2.LEFT
 	await _frames(2)
 	p.attack_held_override = true
 	p.request_attack()
@@ -227,7 +227,7 @@ func test_an_old_save_with_the_bow_finds_the_tower_chest_empty() -> void:
 	var p := _setup("t06_marco")
 	main.state.apply([{"op": "grant_unique", "item_id": "arco_fio", "quantity": 1, "receipt_id": "reward.arco_fio"},
 		{"op": "grant_unique", "item_id": "agulha_fio", "quantity": 4, "receipt_id": "reward.arco_fio.also.0"}])
-	p.respawn_at(main.room.data.tile_center(Vector2i(18, 16)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(8, 10)))
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "chest_empty", "nothing new inside")
 	assert_true(main.hud._toast.text.begins_with("Vazio"), "says so: %s" % main.hud._toast.text)

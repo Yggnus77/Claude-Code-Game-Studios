@@ -72,7 +72,7 @@ func test_a_bush_blocks_until_cut_and_grows_back() -> void:
 
 func test_pots_give_bronze_and_vanish() -> void:
 	var p := _setup("t02_oficina", Vector2i(12, 12))
-	var pot := _breakable_at(Vector2i(22, 6))
+	var pot := _breakable_at(Vector2i(10, 8))
 	assert_true(pot != null, "a pot")
 	main.drop_roll = func() -> float: return 0.99  # bronze_5
 	var bronze: int = main.state.bronze
@@ -99,9 +99,9 @@ func test_side_doors_slide_the_screen() -> void:
 	var p := _setup("t00_base", Vector2i(16, 12))
 	var door: Dictionary = {}
 	for d: Dictionary in main.room.data.doors:
-		if str(d.get("side", "")) == "west":
+		if str(d.get("side", "")) == "north":
 			door = d
-	assert_true(not door.is_empty(), "a west door")
+	assert_true(not door.is_empty(), "a north door")
 	var cam: Camera2D = p.camera
 	var done := [false]
 	var run := func() -> void:
@@ -147,18 +147,18 @@ func test_hud_gauge_counts_fragments_toward_life() -> void:
 func test_doors_on_the_same_side_fade_instead() -> void:
 	_setup("t00_base", Vector2i(16, 12))
 	var to_arena: Dictionary = {}
-	var west: Dictionary = {}
+	var north: Dictionary = {}
 	for d: Dictionary in main.room.data.doors:
 		if str(d.get("target_room", "")) == "t07_igris":
 			to_arena = d
-		elif str(d.get("side", "")) == "west":
-			west = d
-	assert_true(not main._can_slide(to_arena), "both doors north: no edge to slide across")
-	assert_true(main._can_slide(west), "west to east slides")
+		elif str(d.get("side", "")) == "north":
+			north = d
+	assert_true(not main._can_slide(to_arena), "both doors south: no edge to slide across")
+	assert_true(main._can_slide(north), "north to south slides")
 
 
 func test_the_boss_door_needs_the_big_key() -> void:
-	_setup("t06_marco", Vector2i(12, 9))
+	_setup("t06_marco", Vector2i(19, 13))
 	var door: Dictionary = {}
 	for d: Dictionary in main.room.data.doors:
 		if str(d.get("target_room", "")) == "t07_igris":

@@ -12,7 +12,7 @@ Uso: python3 tools/art/gerar_salas.py (também roda em gerar_tudo.py)
 import json
 import os
 
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 REFS = os.path.join(ROOT, "design", "art", "referencias", "salas")
@@ -31,6 +31,12 @@ SALAS = {
     "r03_poco": "r03-poco-antigo.png",
     "t03_treino": "t03-travessia-do-gancho.png",
     "t04_pesos": "t04-contrapesos.png",
+    "t02_oficina": "t02-oficina-do-gancho-sem-yggnus.png",
+    "t05_sinos": "t05-galeria-dos-sinos-sem-yggnus.png",
+    "t00_base": "t00-base-da-torre-sem-yggnus.png",
+    "t01_guardas": "t01-sala-dos-guardas.png",
+    "t06_marco": "t06-antecamara-sem-yggnus.png",
+    "t07_igris": "t07-camara-de-igris.png",
 }
 
 # Cores por sala: menos cores deixam a imagem com cara de pixel art.
@@ -45,9 +51,33 @@ def tamanho(room_id):
     return int(d["width"]) * ts, int(d["height"]) * ts
 
 
+# Portas que a imagem não tem e o mapa precisa (decisão do usuário de
+# 2026-11-13: "Eu desenho a porta lateral"). Cada sala copia a própria
+# saída pintada para outro trecho da parede da frente: "de" é o recorte
+# (x0, y0, x1, y1) e "para" o canto esquerdo de cima do destino, em pixels
+# da referência de 960 × 540.
+PORTAS = {
+    "t01_guardas": [{"de": (325, 416, 600, 540), "para": (612, 416)}],
+    "t00_base": [{"de": (320, 376, 610, 540), "para": (640, 376)}],
+    "t06_marco": [{"de": (372, 376, 588, 540), "para": (656, 376)}],
+    "t07_igris": [{"de": (372, 400, 588, 540), "para": (120, 400)}],
+}
+
+
+def copia_porta(im, de, para):
+    """Copia a saída pintada para outro trecho da parede, com a borda suave."""
+    pedaco = im.crop(de)
+    mascara = Image.new("L", pedaco.size, 0)
+    ImageDraw.Draw(mascara).rectangle([6, 0, pedaco.width - 7, pedaco.height - 1], fill=255)
+    mascara = mascara.filter(ImageFilter.GaussianBlur(3))
+    im.paste(pedaco, para, mascara)
+
+
 def fundo(room_id, source):
     """Reduz a referência ao tamanho da sala e limita a paleta."""
     im = Image.open(os.path.join(REFS, source)).convert("RGB")
+    for porta in PORTAS.get(room_id, []):
+        copia_porta(im, **porta)
     im = im.resize(tamanho(room_id), Image.Resampling.LANCZOS)
     im = im.filter(ImageFilter.UnsharpMask(radius=0.7, percent=50, threshold=2))
     im = ImageEnhance.Color(im).enhance(1.04)

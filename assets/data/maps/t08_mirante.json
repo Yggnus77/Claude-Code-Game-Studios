@@ -29,15 +29,15 @@
   "doors": [
     {
       "id": "door.t06_marco.t08_mirante",
-      "side": "south",
+      "side": "west",
       "tile": [
-        12,
-        15
+        2,
+        8
       ],
       "target_room": "t06_marco",
       "target_tile": [
-        4,
-        2
+        31,
+        16
       ],
       "gate": "world.plate.t06_marco",
       "unlock_persistent_flag": "open.door.t06_marco.t08_mirante",

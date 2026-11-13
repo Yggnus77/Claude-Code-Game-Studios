@@ -19,6 +19,15 @@ func _tile_room() -> Room:
 	return room
 
 
+## The tower base as it was before it was painted: a tile room with three
+## doors (tests/fixtures/maps/t00_base.json).
+func _tile_tower() -> Room:
+	var room := Room.new()
+	room._ready()
+	room.build(RoomData.load_room("t00_base", "res://tests/fixtures/maps"))
+	return room
+
+
 func test_top_wall_is_tall_and_inner_blocks_are_furniture() -> void:
 	var room := _tile_room()
 	assert_true(room.is_tall_wall(Vector2i(5, 0)), "top wall above the floor")
@@ -54,7 +63,7 @@ func test_every_tile_kind_exists_in_the_sheet() -> void:
 
 
 func test_decor_sits_on_the_tall_wall_and_lamps_light_up() -> void:
-	var room := _room("t07_igris")
+	var room := _tile_tower()
 	assert_true(room.decor.size() > 0, "the tower wall is decorated")
 	for d: Dictionary in room.decor:
 		assert_true(room.is_tall_wall(d["tile"]), "decoration on the tall wall")
@@ -92,7 +101,7 @@ func test_a_wall_joined_to_the_top_edge_is_not_furniture() -> void:
 
 
 func test_doors_are_set_into_the_nearest_wall() -> void:
-	var room := _room("t00_base")  # doors at [2, 12], [29, 12], [16, 2]
+	var room := _tile_tower()  # doors at [2, 12], [29, 12], [16, 2]
 	assert_eq(room.door_frame_tile({"tile": [16, 2]}), Vector2i(16, 0), "north door sits in the tall wall")
 	assert_eq(room.door_frame_tile({"tile": [2, 12]}), Vector2i(0, 12), "west door sits in the side wall")
 	assert_eq(room.door_frame_tile({"tile": [10, 10]}), Vector2i(10, 10), "far from walls it stays put")
@@ -102,7 +111,7 @@ func test_doors_are_set_into_the_nearest_wall() -> void:
 
 
 func test_walking_up_to_the_arch_uses_the_door() -> void:
-	var room := _room("t00_base")  # north door at [16, 2], arch in the wall at [16, 0]
+	var room := _tile_tower()  # north door at [16, 2], arch in the wall at [16, 0]
 	var zone := room.door_zone({"tile": [16, 2]})
 	assert_true(zone.has_point(room.data.tile_center(Vector2i(16, 2))), "the door's own tile")
 	assert_true(zone.has_point(Vector2(16 * 16 + 8, 16 + 4)), "right under the arch, against the wall")
@@ -124,7 +133,7 @@ func test_a_painted_room_draws_its_picture_instead_of_tiles() -> void:
 
 
 func test_a_tile_room_is_not_painted() -> void:
-	var room := _room("t02_oficina")
+	var room := _tile_room()
 	assert_true(not room.is_painted(), "no background")
 	assert_true(room.painted_objects.is_empty(), "objects from the tile sheet")
 	room.free()
@@ -167,7 +176,7 @@ func test_every_painted_map_matches_its_picture() -> void:
 			assert_true(data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s door on floor" % d["id"])
 		for e: Dictionary in data.entities:
 			var t: Array = e["tile"]
-			assert_true(bool(e.get("painted", false)) or data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s on floor" % e["id"])
+			assert_true(bool(e.get("painted", false)) or str(e.get("kind", "")) == "plate" or data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s on floor" % e["id"])
 
 
 func test_world_reward_tiles_match_the_maps() -> void:

@@ -51,7 +51,7 @@ func test_chest_gives_bronze_once() -> void:
 
 func test_key_chest_gives_key_once() -> void:
 	var p := _setup("t00_base")
-	_face(p, Vector2i(5, 4))
+	_face(p, Vector2i(6, 13))
 	main.interact()
 	main.interact()
 	assert_eq(main.state.item_count("key_ak_base"), 1, "one key")

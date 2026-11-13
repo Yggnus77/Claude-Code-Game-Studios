@@ -147,8 +147,8 @@
       "scope": "prototype",
       "room": "t00_base",
       "tile": [
-        26,
-        4
+        33,
+        13
       ],
       "requires_item": null
     },
@@ -157,8 +157,8 @@
       "scope": "prototype",
       "room": "t02_oficina",
       "tile": [
-        18,
-        14
+        28,
+        9
       ],
       "requires_item": null
     },
@@ -177,8 +177,8 @@
       "scope": "prototype",
       "room": "t05_sinos",
       "tile": [
-        27,
-        18
+        28,
+        19
       ],
       "requires_item": null
     },

@@ -45,7 +45,9 @@ func def_of(dungeon: String) -> Dictionary:
 
 
 ## Grid cell of every room reachable from the start through side doors whose
-## other end is on the opposite side (rooms that sit edge to edge).
+## other end is on the opposite side (rooms that sit edge to edge). A door
+## drawn on another wall than the one it leads through (a second exit in a
+## painted room's front wall) names its map side in "map_side".
 func layout(dungeon: String) -> Dictionary:
 	if _layouts.has(dungeon):
 		return _layouts[dungeon]
@@ -64,7 +66,7 @@ func layout(dungeon: String) -> Dictionary:
 		if data == null:
 			continue
 		for door: Dictionary in data.doors:
-			var side := str(door.get("side", ""))
+			var side := map_side(door)
 			var to := str(door.get("target_room", ""))
 			if not STEPS.has(side) or not to.begins_with(prefix) or out.has(to):
 				continue
@@ -87,9 +89,14 @@ func _room(id: String) -> RoomData:
 	return _rooms[id]
 
 
+## The side [param door] leads through on the dungeon map.
+static func map_side(door: Dictionary) -> String:
+	return str(door.get("map_side", door.get("side", "")))
+
+
 static func _has_door_back(data: RoomData, to: String, side: String) -> bool:
 	for d: Dictionary in data.doors:
-		if str(d.get("target_room", "")) == to and str(d.get("side", "")) == side:
+		if str(d.get("target_room", "")) == to and map_side(d) == side:
 			return true
 	return false
 

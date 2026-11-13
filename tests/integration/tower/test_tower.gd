@@ -62,7 +62,7 @@ func _door(id: String) -> Dictionary:
 
 func test_way_to_the_hook_without_owning_it() -> void:
 	var p := _setup("t00_base")
-	_stand(p, Vector2i(5, 5), Vector2.UP)
+	_stand(p, Vector2i(6, 14), Vector2.UP)
 	main.interact()
 	assert_eq(await _skip_scene(), "t01", "arriving at the base plays t01")
 	assert_eq(main.state.item_count("key_ak_base"), 1, "key from the base chest")
@@ -81,25 +81,26 @@ func test_way_to_the_hook_without_owning_it() -> void:
 	main.load_room("t01_guardas")
 	assert_eq(main.enemies.size(), 0, "the guards do not come back")
 	main.load_room("t02_oficina")
-	_stand(p, Vector2i(12, 7), Vector2.UP)
+	_stand(p, Vector2i(19, 10), Vector2.UP)
 	assert_eq(main.interact(), "scene", "the hook chest plays t03")
 	assert_eq(await _skip_scene(), "t03", "t03")
 	assert_eq(main.state.item_count("gancho_retorno"), 1, "hook obtained")
 	assert_eq(main.equipped, "gancho", "hook equipped on the item button")
-	_stand(p, Vector2i(12, 7), Vector2.UP)
+	_stand(p, Vector2i(19, 10), Vector2.UP)
 	assert_eq(main.interact(), "chest_empty", "the chest stays open")
 
 
 func test_hook_never_passes_a_wall() -> void:
 	var p := _setup("t00_base", [], true)
-	_stand(p, Vector2i(2, 12), Vector2.LEFT)
+	_stand(p, Vector2i(12, 12), Vector2.LEFT)
 	main.equipped = "gancho"
 	main.use_item()
 	var leftmost := p.global_position.x
 	for i in 40:
 		await tree.physics_frame
 		leftmost = minf(leftmost, p.hook.tip(p.global_position).x)
-	assert_true(leftmost >= 16.0, "tip stops at the wall (x %.1f ≥ 16)" % leftmost)
+	# The tip checks every Hook.STEP px, so it stops at most one step inside.
+	assert_true(leftmost >= 160.0 - Hook.STEP, "tip stops at the chest's wall (x %.1f)" % leftmost)
 
 
 func test_gap_is_not_floor_and_hook_crosses_it() -> void:
@@ -153,7 +154,7 @@ func test_counterweight_then_lock_opens_bells_for_good() -> void:
 func test_bells_in_drawn_order() -> void:
 	var p := _setup("t05_sinos")
 	assert_eq(main.bells.size(), 3, "three bells")
-	_stand(p, Vector2i(16, 6), Vector2.UP)
+	_stand(p, Vector2i(14, 7), Vector2.UP)
 	assert_eq(main.interact(), "scene", "inscription (t06)")
 	assert_eq(await _skip_scene(), "t06", "t06")
 	assert_eq(main.interact(), "scene", "asking again gives the hint (t07)")
@@ -175,10 +176,10 @@ func test_bells_in_drawn_order() -> void:
 
 func test_restarting_a_room_keeps_its_chest_open() -> void:
 	var p := _setup("t00_base")
-	_stand(p, Vector2i(5, 5), Vector2.UP)
+	_stand(p, Vector2i(6, 14), Vector2.UP)
 	main.interact()
 	main.load_room("t00_base")
-	_stand(p, Vector2i(5, 5), Vector2.UP)
+	_stand(p, Vector2i(6, 14), Vector2.UP)
 	assert_eq(main.interact(), "chest_empty", "still open")
 	assert_eq(main.state.item_count("key_ak_base"), 1, "one key")
 

@@ -49,7 +49,7 @@
       "side": "north",
       "tile": [18, 5],
       "target_room": "t05_sinos",
-      "target_tile": [16, 21],
+      "target_tile": [19, 20],
       "gate": "world.weight_locked",
       "unlock_persistent_flag": "open.door.t04_pesos.t05_sinos",
       "key_consumption": null,
