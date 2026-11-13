@@ -33,6 +33,7 @@ func test_cannot_walk_through_outer_wall() -> void:
 	await _walk(p, Vector2.LEFT, 180)
 	# Wall column 0 ends at x = 16; the feet box is 12 px wide.
 	assert_true(p.global_position.x >= 16.0 + 6.0 - 0.5, "stopped at the west wall (x=%.2f)" % p.global_position.x)
+	p.respawn_at(room.tile_center(Vector2i(12, 8)))  # away from the corner pots
 	await _walk(p, Vector2.UP, 300)
 	assert_true(p.global_position.y >= 16.0 + 5.0 - 0.5, "stopped at the north wall (y=%.2f)" % p.global_position.y)
 	assert_true(room.is_walkable(Vector2i(p.global_position / room.tile_size)), "still standing on floor")

@@ -92,7 +92,7 @@ func test_way_to_the_hook_without_owning_it() -> void:
 
 func test_hook_never_passes_a_wall() -> void:
 	var p := _setup("t00_base", [], true)
-	_stand(p, Vector2i(12, 12), Vector2.LEFT)
+	_stand(p, Vector2i(12, 12), Vector2.LEFT)  # the chest's plinth fills columns 2–9
 	main.equipped = "gancho"
 	main.use_item()
 	var leftmost := p.global_position.x
@@ -100,7 +100,7 @@ func test_hook_never_passes_a_wall() -> void:
 		await tree.physics_frame
 		leftmost = minf(leftmost, p.hook.tip(p.global_position).x)
 	# The tip checks every Hook.STEP px, so it stops at most one step inside.
-	assert_true(leftmost >= 160.0 - Hook.STEP, "tip stops at the chest's wall (x %.1f)" % leftmost)
+	assert_true(leftmost >= 160.0 - Hook.STEP, "tip stops at the first wall (x %.1f)" % leftmost)
 
 
 func test_gap_is_not_floor_and_hook_crosses_it() -> void:

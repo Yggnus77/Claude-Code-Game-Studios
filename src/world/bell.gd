@@ -58,7 +58,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var swing := sin(_flash * 40.0) * 2.0 if _flash > 0.0 else 0.0
+	# A painted bell cannot swing, so only a drawn one wobbles.
+	var swing := sin(_flash * 40.0) * 2.0 if _flash > 0.0 and not painted else 0.0
 	var body := PackedVector2Array([Vector2(-7 + swing, 2), Vector2(7 + swing, 2), Vector2(5 + swing, -10), Vector2(-5 + swing, -10)])
 	if lit or (painted and _flash > 0.0):
 		# A lit bell glows, so the order reads from across the room; a

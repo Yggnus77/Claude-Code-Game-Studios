@@ -77,3 +77,22 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - O teste de ligação agora exige que as portas sejam alcançadas sem cortar
   nada; vi ele falhar com arbustos tapando a porta leste antes de confiar nele.
 - Suíte completa depois dos ajustes: 312 de 312.
+
+## 2026-11-13: bomba, poço e torre pintados (imagens por sala, teste24)
+
+- Bomba d'água, poço antigo e as oito salas da torre usam as imagens novas
+  do usuário (`design/art/referencias/salas/`); a torre sobe de baixo para
+  cima (design/gdd/salas-pintadas.md §3.4 e §3.5).
+- Base, guardas, antecâmara e câmara de Igris ganharam a segunda saída
+  copiada da própria porta pintada (`tools/art/gerar_salas.py`, `PORTAS`).
+- O mapa da masmorra usa `map_side` para essas saídas; os nove cômodos
+  aparecem (`test_the_tower_layout_follows_its_side_doors`).
+- Testes genéricos de combate e movimento passaram a usar a adega (sala de
+  blocos); os testes de porta em parede usam a base antiga como fixture
+  (`tests/fixtures/maps/t00_base.json`).
+- Suíte completa: 312 de 312.
+- Evidência: `production/qa/evidence/salas/bomba_01.png`, `poco_01.png`,
+  `travessia_01.png`, `contrapesos_01.png`, `oficina_gancho_01.png`,
+  `sinos_01.png`, `torre-01_base.png`, `torre-02_guardas.png`,
+  `torre-03_antecamara.png`, `torre-04_igris.png` (sino de Igris aceso no
+  alto da parede durante a mostra da ordem).
