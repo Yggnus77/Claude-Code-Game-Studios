@@ -98,6 +98,26 @@ ela, falo com o mercador na barraca e corto os arbustos."
   sul). As duas portas ficam do lado sul, então essa troca é por
   esmaecimento.
 
+### 3.5 Torre: a subida passa a ser de baixo para cima
+
+As imagens da torre têm a entrada embaixo e a saída no alto, então cada
+sala de passagem liga a porta sul à porta norte da seguinte, e a troca
+desliza a tela. Salas com uma terceira porta (Base, Guardas, Antecâmara e
+câmara de Igris) ganham uma porta lateral desenhada no estilo das imagens
+(decisão do usuário, 2026-11-13).
+
+- Travessia do gancho (40 × 23): entra-se pela passarela embaixo (células
+  16–19, linha 21) e sai-se pela porta no alto (18–21, linha 3). O abismo
+  entre as plataformas é vão (`~`): o gancho passa por cima. O aro da
+  plataforma que sai da passarela (20, 15) e o aro da plataforma de cima
+  (20, 7) formam a travessia; as duas plataformas dos lados são cenário.
+- Contrapesos (40 × 23): entra-se por baixo (18–21, linha 21) e a porta
+  para os sinos fica no alto (18–21, linha 5). O peso é o contrapeso
+  pintado da esquerda (6, 13), puxado com o gancho de (6, 14); a trava é a
+  alavanca da direita (31, 16), examinada de (31, 17). A ponte já aparece
+  baixada na pintura; o que segura a passagem é a porta.
+- O teste de ligação segue as travessias do gancho (`special_edges`).
+
 ## 4. Fórmulas
 
 - Tamanho da imagem: `L = largura · 16`, `A = altura · 16` px. Praça: 40 × 24

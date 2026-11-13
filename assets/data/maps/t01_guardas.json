@@ -74,8 +74,8 @@
       ],
       "target_room": "t03_treino",
       "target_tile": [
-        2,
-        12
+        17,
+        20
       ],
       "gate": "item:gancho_retorno",
       "unlock_persistent_flag": "open.door.t01_guardas.t03_treino",

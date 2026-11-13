@@ -200,8 +200,16 @@ func _reachable(data: RoomData, start: Vector2i, cut := false) -> Dictionary:
 	var todo: Array[Vector2i] = [start]
 	while not todo.is_empty():
 		var at: Vector2i = todo.pop_back()
-		for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-			var n := at + dir
+		var next: Array[Vector2i] = [at + Vector2i.UP, at + Vector2i.DOWN, at + Vector2i.LEFT, at + Vector2i.RIGHT]
+		# A hook crossing (special_edges) links its two ends across a gap.
+		for edge: Dictionary in data.special_edges:
+			var a := Vector2i(int(edge["from"][0]), int(edge["from"][1]))
+			var b := Vector2i(int(edge["to"][0]), int(edge["to"][1]))
+			if at == a:
+				next.append(b)
+			elif at == b and bool(edge.get("bidirectional", false)):
+				next.append(a)
+		for n: Vector2i in next:
 			if not seen.has(n) and data.is_walkable(n) and not blocked.has(n):
 				seen[n] = true
 				todo.append(n)

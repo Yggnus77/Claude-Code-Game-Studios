@@ -29,6 +29,8 @@ SALAS = {
     "r00_estrada": "03-estrada-inicial-e-cruzamento.png",
     "r02_bomba": "r02-bomba-d-agua.png",
     "r03_poco": "r03-poco-antigo.png",
+    "t03_treino": "t03-travessia-do-gancho.png",
+    "t04_pesos": "t04-contrapesos.png",
 }
 
 # Cores por sala: menos cores deixam a imagem com cara de pixel art.

@@ -262,12 +262,12 @@ func test_a_charge_never_takes_the_last_point_of_life() -> void:
 
 
 func test_a_needle_stops_at_a_chest_and_a_weight() -> void:
-	var p := _setup("t04_pesos", Vector2i(8, 10), {"arco_fio": 1})
-	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.RIGHT)
+	var p := _setup("t04_pesos", Vector2i(6, 18), {"arco_fio": 1})
+	var a: Arrow = main.spawn_arrow(p.global_position, Vector2.UP)
 	for i in 60:
 		if a.advance(1.0 / 60.0):
 			break
-	assert_true(a.global_position.x < main.room.data.tile_center(Vector2i(12, 10)).x, "stopped at the weight, not past it")
+	assert_true(a.global_position.y > main.room.data.tile_center(Vector2i(6, 13)).y, "stopped at the weight, not past it")
 
 
 func test_a_near_miss_by_one_column_still_hits_the_plate() -> void:

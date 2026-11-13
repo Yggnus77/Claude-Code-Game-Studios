@@ -41,8 +41,8 @@
       ],
       "target_room": "t04_pesos",
       "target_tile": [
-        16,
-        2
+        19,
+        6
       ],
       "gate": "world.weight_locked",
       "unlock_persistent_flag": "open.door.t04_pesos.t05_sinos",
