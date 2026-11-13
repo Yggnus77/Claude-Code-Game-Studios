@@ -84,6 +84,20 @@ ela, falo com o mercador na barraca e corto os arbustos."
   degraus do portão (11, 13); fragmento 2 escondido na grama atrás do poço
   (37, 15), atrás de dois arbustos (37–38, 12) que é preciso cortar.
 
+### 3.4 Bomba d'água e poço antigo
+
+- Imagens novas do usuário, uma por sala (`r02-bomba-d-agua.png`,
+  `r03-poco-antigo.png`). As duas salas passam a 40 × 23 células, o
+  formato 16:9 das imagens (antes 32 × 24 e 24 × 18).
+- Bomba: a porta da roda, no alto da escada, leva ao cruzamento (células
+  18–21, linha 5, norte). A passagem entre os lampiões, embaixo, desce ao
+  poço (células 17–20, linha 21, sul) e continua selada até as duas tochas
+  ao lado dela (16, 20 e 21, 20) acenderem. A bomba é pintada e se examina
+  de frente para os degraus (23, 14).
+- Poço: sala escura; entra-se pela corda embaixo (células 19–20, linha 19,
+  sul). As duas portas ficam do lado sul, então essa troca é por
+  esmaecimento.
+
 ## 4. Fórmulas
 
 - Tamanho da imagem: `L = largura · 16`, `A = altura · 16` px. Praça: 40 × 24

@@ -137,8 +137,8 @@
       "scope": "prototype",
       "room": "r02_bomba",
       "tile": [
-        26,
-        18
+        29,
+        19
       ],
       "requires_item": null
     },

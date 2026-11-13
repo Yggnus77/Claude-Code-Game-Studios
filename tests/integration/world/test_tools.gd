@@ -179,17 +179,18 @@ func test_the_merchant_sells_charges_only_after_the_first() -> void:
 
 
 func test_both_torches_lit_open_the_sealed_door_for_good() -> void:
-	var p := _setup("r02_bomba", Vector2i(29, 9), {"lamparina_oleo": 1})
+	var p := _setup("r02_bomba", Vector2i(17, 20), {"lamparina_oleo": 1})
 	var door := _door("door.r02_bomba.r03_poco")
 	assert_eq(main.room.torches.size(), 2, "two torches")
 	assert_true(not main.is_door_open(door), "sealed")
 	main.equipped = "lamparina"
-	p.motor.facing = Vector2.RIGHT
-	p.respawn_at(main.room.data.tile_center(Vector2i(29, 10)), false)
+	p.motor.facing = Vector2.LEFT
+	p.respawn_at(main.room.data.tile_center(Vector2i(17, 20)), false)
 	assert_eq(main.use_lamp(), "lit", "the first catches")
 	assert_true(not main.is_door_open(door), "still sealed")
 	main._tool_cooldown = 0.0
-	p.respawn_at(main.room.data.tile_center(Vector2i(29, 14)), false)
+	p.motor.facing = Vector2.RIGHT
+	p.respawn_at(main.room.data.tile_center(Vector2i(20, 20)), false)
 	assert_eq(main.use_lamp(), "solved", "both burn")
 	assert_true(main.is_door_open(door), "the door opened")
 	main.load_room("r02_bomba", Vector2i(20, 12))
@@ -197,15 +198,15 @@ func test_both_torches_lit_open_the_sealed_door_for_good() -> void:
 
 
 func test_a_lone_torch_goes_out_when_leaving() -> void:
-	var p := _setup("r02_bomba", Vector2i(29, 10), {"lamparina_oleo": 1})
-	p.motor.facing = Vector2.RIGHT
+	var p := _setup("r02_bomba", Vector2i(17, 20), {"lamparina_oleo": 1})
+	p.motor.facing = Vector2.LEFT
 	assert_eq(main.use_lamp(), "lit", "one lit")
 	main.load_room("r02_bomba", Vector2i(20, 12))
 	assert_true(main.room.torches.all(func(t: Torch) -> bool: return not t.lit), "out again")
 
 
 func test_the_lamp_widens_the_light_in_the_dark_well() -> void:
-	var p := _setup("r03_poco", Vector2i(3, 9))
+	var p := _setup("r03_poco", Vector2i(20, 17))
 	assert_true(main.room.is_dark(), "the well is dark")
 	var glow := p.get_node_or_null("Glow") as PointLight2D
 	if glow == null:

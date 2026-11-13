@@ -27,6 +27,8 @@ SALAS = {
     "v00_oficina": "01-oficina-de-exodia-sem-yggnus.png",
     "v01_praca": "02-praca-de-versalhes.png",
     "r00_estrada": "03-estrada-inicial-e-cruzamento.png",
+    "r02_bomba": "r02-bomba-d-agua.png",
+    "r03_poco": "r03-poco-antigo.png",
 }
 
 # Cores por sala: menos cores deixam a imagem com cara de pixel art.

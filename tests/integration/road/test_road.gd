@@ -68,7 +68,7 @@ func _defeat(enemy: Node) -> void:
 
 func test_pump_side_quest_gives_second_flask_once() -> void:
 	var p := _setup("r02_bomba")
-	_face(p, Vector2i(16, 10))
+	_face(p, Vector2i(23, 13))
 	assert_eq(main.interact(), "scene", "the mechanic asks for the parts (r03)")
 	assert_eq(await _skip_scene(), "r03", "r03")
 	assert_eq(main.interact(), "nothing", "without parts the pump waits")
@@ -84,7 +84,7 @@ func test_pump_side_quest_gives_second_flask_once() -> void:
 	_defeat(_enemy_with_entity("r01_cruzamento.pump_b"))
 	assert_eq(main.state.item_count("peca_bomba_b"), 1, "defeating it again gives nothing more")
 	main.load_room("r02_bomba")
-	_face(p, Vector2i(16, 10))
+	_face(p, Vector2i(23, 13))
 	assert_eq(main.interact(), "scene", "both parts: r04")
 	assert_eq(await _skip_scene(), "r04", "r04")
 	assert_eq(main.state.flasks(), ["frasco_01", "frasco_02"], "the pump gave only the second flask")

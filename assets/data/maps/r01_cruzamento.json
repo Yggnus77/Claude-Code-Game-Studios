@@ -58,8 +58,8 @@
       ],
       "target_room": "r02_bomba",
       "target_tile": [
-        16,
-        2
+        19,
+        6
       ],
       "gate": null,
       "unlock_persistent_flag": "open.door.r01_cruzamento.r02_bomba",
