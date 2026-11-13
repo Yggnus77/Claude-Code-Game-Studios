@@ -36,8 +36,8 @@
       ],
       "target_room": "r01_cruzamento",
       "target_tile": [
-        30,
-        2
+        36,
+        11
       ],
       "gate": "world.cracked.r01_adega",
       "unlock_persistent_flag": "open.door.r01_cruzamento.r04_adega",

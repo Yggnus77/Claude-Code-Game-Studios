@@ -37,6 +37,7 @@ SALAS = {
     "t01_guardas": "t01-sala-dos-guardas.png",
     "t06_marco": "t06-antecamara-sem-yggnus.png",
     "t07_igris": "t07-camara-de-igris.png",
+    "r01_cruzamento": "r01-cruzamento.png",
 }
 
 # Cores por sala: menos cores deixam a imagem com cara de pixel art.

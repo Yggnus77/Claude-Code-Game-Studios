@@ -113,15 +113,15 @@ func test_the_refill_tops_needles_up_to_ten() -> void:
 
 
 func test_a_charge_opens_the_cracked_wall_only_when_close() -> void:
-	var p := _setup("r01_cruzamento", Vector2i(30, 8), {"carga_bronze": 3})
+	var p := _setup("r01_cruzamento", Vector2i(36, 12), {"carga_bronze": 3})
 	var door := _door("door.r01_cruzamento.r04_adega")
 	assert_true(not door.is_empty() and Room.is_cracked(door), "a cracked wall")
 	assert_true(not main.is_door_open(door), "closed")
-	var far: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(30, 6)))
+	var far: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(30, 12)))
 	far.detonate()
 	assert_true(not main.is_door_open(door), "too far: still closed")
-	p.respawn_at(main.room.data.tile_center(Vector2i(30, 10)), false)
-	var near: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(30, 2)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(32, 12)), false)
+	var near: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(36, 10)))
 	near.detonate()
 	assert_true(main.is_door_open(door), "the wall fell")
 	main.load_room("r04_adega")
@@ -148,7 +148,7 @@ func test_a_blast_hurts_enemies_breaks_pots_and_hurts_yggnus_nearby() -> void:
 
 
 func test_placing_a_charge_spends_one_and_it_goes_off_after_the_fuse() -> void:
-	var p := _setup("r01_cruzamento", Vector2i(20, 12), {"carga_bronze": 2})
+	var p := _setup("r01_cruzamento", Vector2i(16, 12), {"carga_bronze": 2})
 	main.equipped = "cargas"
 	p.motor.facing = Vector2.RIGHT
 	assert_eq(main.place_bomb(), "placed", "placed")

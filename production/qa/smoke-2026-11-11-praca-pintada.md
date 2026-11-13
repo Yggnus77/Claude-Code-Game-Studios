@@ -109,3 +109,11 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Suíte completa: 313 de 313.
 - Evidência: `production/qa/evidence/personagens/05_andando_direita.png`,
   `06_andando_esquerda.png`, `07_correntes_yame.png`.
+
+## 2026-11-13: cruzamento pintado (teste26)
+
+- `r01_cruzamento` usa a imagem nova do usuário (`r01-cruzamento.png`);
+  portas para estrada, bomba, torre e adega refeitas (salas-pintadas.md §3.3).
+- Testes que usavam posições do cruzamento (carga, pista m01, parede rachada)
+  ajustados ao chão novo.
+- Evidência: `production/qa/evidence/salas/cruzamento_01.png`.

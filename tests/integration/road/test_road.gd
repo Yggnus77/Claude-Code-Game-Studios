@@ -157,7 +157,7 @@ func test_common_enemy_drops_bronze() -> void:
 
 func test_m01_clues_wait_for_igris_record() -> void:
 	var p := _setup("r01_cruzamento")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(16, 15))
 	assert_eq(main.interact(), "clue_locked", "too early")
 	assert_true(not main.state.has_flag("clue.m01.via_cais"), "nothing recorded")
 	main.state.apply([{"op": "set_flag", "flag": "seen.t11", "value": true}])

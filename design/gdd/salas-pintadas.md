@@ -84,6 +84,16 @@ ela, falo com o mercador na barraca e corto os arbustos."
   degraus do portão (11, 13); fragmento 2 escondido na grama atrás do poço
   (37, 15), atrás de dois arbustos (37–38, 12) que é preciso cortar.
 
+**Cruzamento** (imagem do usuário de 2026-11-13, `r01-cruzamento.png`,
+40 × 24): a estrada do oeste chega pela borda esquerda (1, linhas 11–13), a
+bomba d'água fica descendo a estrada do sul (19–22, linha 22) e a torre
+pela borda direita (38, linhas 11–13). A parede rachada da adega é o arco
+das ruínas no canto de cima à direita (36–37, linha 10). A estrada do norte
+vai até a borda, mas ainda não leva a lugar nenhum. O portão da cidade, a
+casinha, o moinho e o poço cercado são cenário. O fragmento 3 fica no
+calçamento do portão (6, 9), e a pista m01 fica na beira da estrada do
+sul (16, 15).
+
 ### 3.4 Bomba d'água e poço antigo
 
 - Imagens novas do usuário, uma por sala (`r02-bomba-d-agua.png`,

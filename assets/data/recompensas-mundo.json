@@ -127,8 +127,8 @@
       "scope": "prototype",
       "room": "r01_cruzamento",
       "tile": [
-        11,
-        5
+        6,
+        9
       ],
       "requires_item": null
     },
