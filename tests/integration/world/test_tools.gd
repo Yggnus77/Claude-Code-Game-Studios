@@ -301,7 +301,7 @@ func test_chest_text_names_amounts_and_extras() -> void:
 func test_a_painted_way_that_leads_nowhere_says_why() -> void:
 	# salas-pintadas.md §3 rule 9: the city gate of the crossroads is shut
 	# with a barrier and a note instead of being an invisible wall.
-	var p := _setup("r01_cruzamento", Vector2i(6, 8))
-	assert_true(not main.room.data.is_walkable(Vector2i(6, 7)), "the gate itself is a wall")
+	var p := _setup("r01_cruzamento", Vector2i(6, 9))
+	assert_true(not main.room.data.is_walkable(Vector2i(6, 8)), "the gate itself is a wall")
 	p.motor.facing = Vector2.UP
 	assert_eq(main.interact(), "examine", "the barrier can be examined")

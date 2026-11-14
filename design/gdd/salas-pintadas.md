@@ -58,7 +58,10 @@ ela, falo com o mercador na barraca e corto os arbustos."
    (`APAGAR` em `gerar_salas.py`); a tocha tem `"painted": true` e
    `"flame_at"` (posição do vidro a partir do centro da célula) e o jogo só
    desenha a chama e a luz quando acesa.
-11. Uma parede rachada pintada (`"cracked": true`) não ganha barreira: a
+11. O que o aviso diz, a pintura mostra: um portão que o jogo diz fechado é
+   pintado fechado (`GRADES` em `gerar_salas.py` baixa uma grade de ferro
+   no vão do portão da cidade na estrada e no cruzamento).
+11b. Uma parede rachada pintada (`"cracked": true`) não ganha barreira: a
    rachadura já está na imagem. Depois da explosão o jogo abre um buraco
    escuro no lugar.
 12. Um salvamento feito antes de a sala ser redesenhada pode estar numa
@@ -199,6 +202,10 @@ Todas as salas da torre têm 40 × 23 células. Ordem da subida:
 - Porta ou entidade (sem `painted`) numa parede: o mesmo teste falha.
   Placas (`plate`) e avisos (`examine`) são a exceção: ficam na parede de
   propósito.
+- Voltar pela porta logo depois de passar por ela funciona: depois de
+  chegar, basta parar ou dar um passo para dentro e andar de volta. Segurar
+  o mesmo sentido em que chegou (porta do mesmo lado nas duas salas) não
+  faz voltar.
 - Aviso examinado: o texto aparece por 3,5 s e quebra em duas linhas se
   for longo.
 - Segunda saída na parede da frente que leva a uma porta de outro lado

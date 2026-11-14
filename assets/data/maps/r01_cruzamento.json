@@ -26,7 +26,7 @@
     "###################...##################",
     "###################...##################",
     "###################...#######..#########",
-    "#####...###########...######...#########",
+    "###################...######...#########",
     "#####.....######......#.......##########",
     "#####..................................#",
     "#......................................#",
@@ -131,15 +131,10 @@
     {
       "id": "r01_cruzamento.portao",
       "kind": "examine",
-      "tile": [6, 7],
+      "tile": [6, 8],
       "trigger_id": null,
       "persistent_receipt": null,
-      "text": "O portão da cidade tem a grade baixada. Um guarda grita lá de dentro: \"Ninguém entra até a bomba voltar a funcionar!\"",
-      "barrier": {
-        "tile": [5, 7],
-        "span": 3,
-        "side": "north"
-      }
+      "text": "O portão da cidade tem a grade baixada. Um guarda grita lá de dentro: \"Ninguém entra até a bomba voltar a funcionar!\""
     },
     {
       "id": "r01_cruzamento.moinho",

@@ -80,6 +80,9 @@ var _autoitem_timer := 0.5
 var _autointeract_timer := 0.5
 ## Door the player arrived on; doors fire again only after leaving it.
 var _arrival_door := ""
+## Whether the player, standing on [member _arrival_door], has stopped or
+## walked into the room since arriving (then walking out again goes back).
+var _arrival_settled := false
 var _locked_notice := ""
 var _transitioning := false
 var _fade: ColorRect
@@ -523,6 +526,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	player.set_camera_limits(data.pixel_size(), room.top_extent())
 	_update_glow()
 	_arrival_door = _door_at(player.global_position)
+	_arrival_settled = false
 	clear_enemies()
 	room.raised = {}
 	var cleared := state.has_flag(str(config.tower.get("room_clear_flags", {}).get(id, "-")))
@@ -1690,7 +1694,15 @@ func _check_doors() -> void:
 	if _transitioning:
 		return
 	var here := _door_at(player.global_position)
-	if here != _arrival_door:
+	if here == _arrival_door and not here.is_empty():
+		# Turning straight back into the door just come through also
+		# counts: no need to step off it first (user report, teste27). Still
+		# holding the way in (a door on the same side in both rooms) does not.
+		if not _heading_out_of(here):
+			_arrival_settled = true
+		elif _arrival_settled:
+			_arrival_door = ""
+	elif here != _arrival_door:
 		_arrival_door = ""
 	if here.is_empty() or here == _arrival_door:
 		if here.is_empty():
@@ -1709,6 +1721,18 @@ func _check_doors() -> void:
 				playtest.refuse(session_time(), "porta fechada (%s)" % here)
 			return
 		_go_through(door)
+
+
+## Whether the player walks out through door [param door_id] (towards
+## its side of the room), not in from it.
+func _heading_out_of(door_id: String) -> bool:
+	if door_id.is_empty():
+		return false
+	for door: Dictionary in room.data.doors:
+		if str(door["id"]) == door_id:
+			var out: Vector2 = {"north": Vector2.UP, "south": Vector2.DOWN, "east": Vector2.RIGHT, "west": Vector2.LEFT}.get(str(door.get("side", "")), Vector2.ZERO)
+			return player.velocity.dot(out) > 10.0
+	return false
 
 
 ## What a closed door says when the player walks into it.

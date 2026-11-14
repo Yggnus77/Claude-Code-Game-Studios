@@ -142,3 +142,15 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Evidência: `production/qa/evidence/ambiente/01_oficina.png` a
   `10_poco_buraco_aberto.png`, `04b_cruzamento_portao_aviso.png`,
   `11_torre_salas.png`.
+
+## 2026-11-14: correções do teste27 (teste28)
+
+- Praça: a frente do chafariz é calçamento livre; a estrada do norte se
+  alcança pelos dois lados.
+- Portão da cidade (estrada e cruzamento) pintado com a grade baixada,
+  como o aviso diz.
+- Voltar pela porta logo depois de chegar funciona (teste novo
+  `test_turning_straight_back_through_the_door_just_used`).
+- Suíte completa: 317 de 317.
+- Evidência: `production/qa/evidence/ambiente/12_praca_estrada_direita.png`,
+  `13_estrada_portao_grade.png`, `14_cruzamento_portao_grade.png`.

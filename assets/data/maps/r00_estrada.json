@@ -114,7 +114,7 @@
       "tile": [7, 11],
       "trigger_id": null,
       "persistent_receipt": null,
-      "text": "O portão da cidade está fechado e trancado por dentro. O caminho segue pela estrada."
+      "text": "A grade do portão da cidade está baixada. Ninguém entra até a bomba d'água voltar a funcionar."
     },
     {
       "id": "r00_estrada.moinho",

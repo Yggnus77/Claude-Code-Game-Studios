@@ -12,6 +12,8 @@ Uso: python3 tools/art/gerar_salas.py (também roda em gerar_tudo.py)
 import json
 import os
 
+import numpy as np
+
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
 import objetos_pintados
@@ -75,9 +77,47 @@ APAGAR = {
 }
 
 
+# Portões da cidade pintados abertos que o jogo mantém fechados: uma grade
+# de ferro baixada no vão (pedido do usuário, 2026-11-14: "se o jogo diz que
+# o portão está fechado, ele não deveria ficar aberto"). Vão em pixels da
+# referência: x0, x1 (batentes), topo do arco, início do arco, chão.
+GRADES = {
+    "r00_estrada": [(106, 207, 138, 188, 292)],
+    "r01_cruzamento": [(112, 197, 118, 162, 218)],
+}
+
+
+def grade(im, x0, x1, topo, arco, chao):
+    """Grade levadiça baixada: o vão escurece e barras de ferro o fecham."""
+    k = 4
+    w, h = (x1 - x0) * k, (chao - topo) * k
+    vao = Image.new("L", (w, h), 0)
+    d = ImageDraw.Draw(vao)
+    d.ellipse([0, 0, w - 1, (arco - topo) * 2 * k], fill=255)
+    d.rectangle([0, (arco - topo) * k, w - 1, h - 1], fill=255)
+    vao = vao.resize((x1 - x0, chao - topo), Image.Resampling.LANCZOS)
+    caixa = (x0, topo, x1, chao)
+    sombra = ImageEnhance.Brightness(im.crop(caixa)).enhance(0.45)
+    im.paste(sombra, (x0, topo), vao)
+    barras = Image.new("RGBA", (x1 - x0, chao - topo), (0, 0, 0, 0))
+    d = ImageDraw.Draw(barras)
+    ferro, brilho, escuro = (58, 50, 58, 255), (128, 112, 112, 255), (26, 20, 28, 255)
+    for x in range(4, x1 - x0 - 2, 11):  # barras de pé, com ponta embaixo
+        d.rectangle([x - 2, 0, x + 2, chao - topo - 6], fill=ferro, outline=escuro)
+        d.line([x - 1, 0, x - 1, chao - topo - 7], fill=brilho)
+        d.polygon([(x - 2, chao - topo - 6), (x + 2, chao - topo - 6), (x, chao - topo - 1)], fill=ferro, outline=escuro)
+    for y in range(14, chao - topo - 10, 20):  # travessas
+        d.rectangle([0, y - 2, x1 - x0, y + 2], fill=ferro, outline=escuro)
+        d.line([1, y - 1, x1 - x0 - 2, y - 1], fill=brilho)
+        for x in range(4, x1 - x0 - 2, 11):  # rebites
+            d.point((x, y), fill=(196, 160, 96, 255))
+    a = np.asarray(barras).copy()
+    a[..., 3] = np.minimum(a[..., 3], np.asarray(vao))
+    im.paste(Image.fromarray(a, "RGBA"), (x0, topo), Image.fromarray(a[..., 3], "L"))
+
+
 def apaga_lampada(im, caixa):
     """Tira o brilho da lâmpada: o vidro aceso vira vidro escuro e frio."""
-    import numpy as np
     x0, y0, x1, y1 = caixa
     a = np.asarray(im.crop(caixa)).astype(float)
     lum = a.mean(axis=2)
@@ -105,6 +145,8 @@ def fundo(room_id, source):
     im = Image.open(os.path.join(REFS, source)).convert("RGB")
     for porta in PORTAS.get(room_id, []):
         copia_porta(im, **porta)
+    for vao in GRADES.get(room_id, []):
+        grade(im, *vao)
     for caixa in APAGAR.get(room_id, []):
         apaga_lampada(im, caixa)
     im = im.resize(tamanho(room_id), Image.Resampling.LANCZOS)
