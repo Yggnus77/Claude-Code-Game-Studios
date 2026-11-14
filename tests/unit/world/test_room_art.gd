@@ -176,7 +176,7 @@ func test_every_painted_map_matches_its_picture() -> void:
 			assert_true(data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s door on floor" % d["id"])
 		for e: Dictionary in data.entities:
 			var t: Array = e["tile"]
-			assert_true(bool(e.get("painted", false)) or str(e.get("kind", "")) == "plate" or data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s on floor" % e["id"])
+			assert_true(bool(e.get("painted", false)) or str(e.get("kind", "")) in ["plate", "examine"] or data.is_walkable(Vector2i(int(t[0]), int(t[1]))), "%s on floor" % e["id"])
 
 
 func test_world_reward_tiles_match_the_maps() -> void:

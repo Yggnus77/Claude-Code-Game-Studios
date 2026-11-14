@@ -39,10 +39,29 @@ ela, falo com o mercador na barraca e corto os arbustos."
    fechada: uma barreira de madeira listrada atravessa a passagem.
 6. Uma saída larga usa `"span": n`: a área da porta cobre `n` células
    lado a lado (a estrada da praça tem 4).
-7. Arbustos e potes de uma sala pintada usam o desenho no estilo das
-   referências (`obj_bush.png`, `obj_bush_cut.png`), não o da folha de
-   ladrilhos.
-8. Um salvamento feito antes de a sala ser redesenhada pode estar numa
+7. Arbustos, potes e os objetos dos mecanismos (baú aberto e fechado,
+   pista, recipiente de agulhas, placa, marco) de uma sala pintada usam o
+   desenho no estilo das referências (`obj_<tipo>.png`), não o da folha de
+   ladrilhos. Os mecanismos são recortados das próprias pinturas do
+   usuário por `tools/art/objetos_pintados.py` (pedido de 2026-11-13: "os
+   mecanismos precisam coexistir no mesmo ambiente como um só").
+8. Todo chão que a pintura mostra é andável (pedido de 2026-11-13: "deixe
+   cada sala totalmente trafegável"). Nenhum item fica atrás de cenário sem
+   passagem.
+9. Todo caminho pintado que sai da sala leva a algum lugar ou termina num
+   aviso (decisão do usuário: "Ligar onde der, fechar o resto"). O aviso é
+   uma entidade `"kind": "examine"` numa célula de parede, com `"text"` (o
+   que Yggnus lê ao examinar) e, se a pintura mostra a passagem aberta,
+   `"barrier"` (a mesma barreira listrada de uma porta fechada, no formato
+   de porta: `tile`, `span`, `side`).
+10. Lâmpadas pintadas que são tochas do jogo ficam apagadas no fundo
+   (`APAGAR` em `gerar_salas.py`); a tocha tem `"painted": true` e
+   `"flame_at"` (posição do vidro a partir do centro da célula) e o jogo só
+   desenha a chama e a luz quando acesa.
+11. Uma parede rachada pintada (`"cracked": true`) não ganha barreira: a
+   rachadura já está na imagem. Depois da explosão o jogo abre um buraco
+   escuro no lugar.
+12. Um salvamento feito antes de a sala ser redesenhada pode estar numa
    célula que agora é parede: ele continua válido e o jogo põe Yggnus na
    entrada padrão da sala.
 
@@ -53,7 +72,7 @@ ela, falo com o mercador na barraca e corto os arbustos."
   linha 1), fechada por barreira até a cena p07.
 - Mercador na barraca da esquerda (pintado, célula 6, 10); marco em 7, 12;
   baú da reserva de viagem em 5, 14; pistas em 33, 10 (barraca de frutas) e
-  25, 15 (degraus do chafariz); fragmento 1 em 33, 21, ao lado do pote.
+  26, 16 (degraus do chafariz); fragmento 1 em 33, 21, ao lado do pote.
 - Seis arbustos cortáveis no chão (3, 13–14; 14, 17–18; 25, 17–18).
 
 ### 3.2 Oficina de Exódia
@@ -61,7 +80,7 @@ ela, falo com o mercador na barraca e corto os arbustos."
 - 40 × 23 células (640 × 368 px). A referência 1 tinha Yggnus pintado no
   meio; a cópia `01-oficina-de-exodia-sem-yggnus.png` tem o chão refeito.
 - Porta para a praça: a porta de madeira embaixo, no meio (células 18–21,
-  linha 17, `span` 4, lado sul). A porta da praça para a oficina fica no lado
+  linha 18, `span` 4, lado sul; o vão da porta é chão). A porta da praça para a oficina fica no lado
   norte, então a troca entre as duas desliza a tela.
 - Relógio da bancada: o relógio aberto em cima da mesa grande (pintado; o
   jogador examina de frente para a gaveta, célula 22, 15).
@@ -74,7 +93,8 @@ ela, falo com o mercador na barraca e corto os arbustos."
 
 - A referência 3 inteira vira a estrada (40 × 24 células): o portão da
   vila à esquerda, a placa no cruzamento, o moinho ao fundo e o poço com
-  roldana à direita. O portão e o caminho do moinho são cenário.
+  roldana à direita. O portão da vila (7, 11) e o portão do moinho
+  (22–24, linha 6, com barreira) são avisos `examine`.
 - Porta para a praça: o caminho de terra embaixo, no meio (células 21–24,
   linha 22, `span` 4, lado sul). A saída da praça para a estrada fica ao
   norte, então a troca entre as duas desliza a tela de novo.
@@ -87,10 +107,11 @@ ela, falo com o mercador na barraca e corto os arbustos."
 **Cruzamento** (imagem do usuário de 2026-11-13, `r01-cruzamento.png`,
 40 × 24): a estrada do oeste chega pela borda esquerda (1, linhas 11–13), a
 bomba d'água fica descendo a estrada do sul (19–22, linha 22) e a torre
-pela borda direita (38, linhas 11–13). A parede rachada da adega é o arco
-das ruínas no canto de cima à direita (36–37, linha 10). A estrada do norte
-vai até a borda, mas ainda não leva a lugar nenhum. O portão da cidade, a
-casinha, o moinho e o poço cercado são cenário. O fragmento 3 fica no
+pela borda direita (38, linhas 11–13). Avisos: a estrada do norte termina
+numa cancela (19–21, linha 1, "ponte caída"); o portão da cidade tem o
+chão até o arco e uma barreira (5–7, linha 7); o caminho do moinho sobe até
+a porta trancada (29, 6); o arco das ruínas tem uma barreira de pedras
+(36–37, linha 9). A casinha e o poço cercado são cenário. O fragmento 3 fica no
 calçamento do portão (6, 9), e a pista m01 fica na beira da estrada do
 sul (16, 15).
 
@@ -101,12 +122,19 @@ sul (16, 15).
   formato 16:9 das imagens (antes 32 × 24 e 24 × 18).
 - Bomba: a porta da roda, no alto da escada, leva ao cruzamento (células
   18–21, linha 5, norte). A passagem entre os lampiões, embaixo, desce ao
-  poço (células 17–20, linha 21, sul) e continua selada até as duas tochas
-  ao lado dela (16, 20 e 21, 20) acenderem. A bomba é pintada e se examina
-  de frente para os degraus (23, 14).
+  poço (células 17–20, linha 21, sul) e continua selada até os dois
+  lampiões pintados ao lado dela (tochas em 15, 19 e 22, 19) acenderem. A
+  bomba é pintada e se examina de frente para os degraus (23, 14).
+- A escada da esquerda (2–3, linhas 7–14) e o mezanino (2–10, linha 6) são
+  andáveis; o baú da Lamparina fica lá em cima (9, 6).
 - Poço: sala escura; entra-se pela corda embaixo (células 19–20, linha 19,
   sul). As duas portas ficam do lado sul, então essa troca é por
   esmaecimento.
+- A rachadura pintada na parede do fundo (20–21, linha 8, norte) é a
+  parede rachada da adega: uma Carga a derruba (o baú das Cargas fica na
+  mesma sala). Antes ficava no cruzamento; o sinal salvo continua o mesmo
+  (`world.cracked.r01_adega`), então um jogo que já abriu a parede a encontra
+  aberta.
 
 ### 3.5 Torre: a subida passa a ser de baixo para cima
 
@@ -169,7 +197,10 @@ Todas as salas da torre têm 40 × 23 células. Ordem da subida:
 - Imagem com tamanho diferente do mapa: o teste
   `test_every_painted_map_matches_its_picture` falha.
 - Porta ou entidade (sem `painted`) numa parede: o mesmo teste falha.
-  Placas (`plate`) são a exceção: ficam na parede de propósito.
+  Placas (`plate`) e avisos (`examine`) são a exceção: ficam na parede de
+  propósito.
+- Aviso examinado: o texto aparece por 3,5 s e quebra em duas linhas se
+  for longo.
 - Segunda saída na parede da frente que leva a uma porta de outro lado
   (guardas → travessia, antecâmara → mirante): a tela não desliza, faz o
   escurecimento; o mapa usa `map_side`.
@@ -196,6 +227,9 @@ referências do jogador em `design/art/referencias/salas/`.
 | mapa | art.background | nome da imagem | — |
 | mapa | door.span | 4 (estrada da praça) | 1 até a largura da passagem |
 | mapa | entity.painted | true (mercador) | — |
+| mapa | examine.text / barrier | aviso de caminho fechado | — |
+| mapa | torch.flame_at | [3, −7] e [−9, −7] (bomba) | dentro da célula da tocha |
+| gerar_salas.py | APAGAR | caixas das lâmpadas apagadas | — |
 
 ## 8. Critérios de aceitação
 
@@ -208,3 +242,9 @@ referências do jogador em `design/art/referencias/salas/`.
 5. Antes de p07 a estrada mostra a barreira e avisa; depois de p07 ela
    leva à estrada.
 6. Um salvamento antigo na praça continua carregando.
+7. Em toda sala pintada, cada porta, entidade e arbusto é alcançável a
+   partir da entrada (`test_every_painted_room_is_connected`).
+8. Examinar a barreira do portão da cidade no cruzamento mostra o aviso.
+9. A Lamparina acende os dois lampiões pintados da bomba e eles brilham;
+   a porta do poço abre.
+10. Uma Carga junto à rachadura do poço abre um buraco que leva à adega.

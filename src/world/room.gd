@@ -26,7 +26,7 @@ const COLOR_FRAGMENT := Color("6fe0e0")
 const COLOR_OTHER := Color("5fa8a0")
 const COLOR_HIGHLIGHT := Color("ffffff")
 ## Entity kinds drawn by the room (enemies are their own nodes).
-const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "push_block", "plate", "refill"]
+const DRAWN_KINDS := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "unique_fragment", "anchor", "push_block", "plate", "refill", "examine"]
 ## Wall plates hang this far above their tile (they sit on the tall wall).
 const PLATE_LIFT := Vector2(0, -6)
 
@@ -87,6 +87,10 @@ var background: Texture2D
 ## Objects redrawn in the pictures' style for painted rooms
 ## (BACKGROUND_DIR/obj_<kind>.png), by kind.
 var painted_objects: Dictionary = {}
+## Objects a painted room draws from BACKGROUND_DIR/obj_<kind>.png instead
+## of the block sheet (tools/art/gerar_salas.py and objetos_pintados.py).
+const PAINTED_KINDS := ["bush", "bush_cut", "pot", "barreira", "chest", "chest_open", "clue", "refill",
+	"plate", "plate_hit", "marco", "marco_active"]
 ## Tall things (people, marcos) are child nodes so they sort by height on
 ## screen with Yggnus and the enemies (main and room use y-sort).
 const PROP_KINDS := ["npc", "checkpoint"]
@@ -125,7 +129,7 @@ func build(room_data: RoomData) -> void:
 		background = load("%s/%s.png" % [BACKGROUND_DIR, bg])
 	painted_objects.clear()
 	if background != null:
-		for kind: String in ["bush", "bush_cut", "pot", "barreira"]:
+		for kind: String in PAINTED_KINDS:
 			var path := "%s/obj_%s.png" % [BACKGROUND_DIR, kind]
 			if ResourceLoader.exists(path):
 				painted_objects[kind] = load(path)
@@ -415,6 +419,11 @@ func _draw_tile(at: Vector2i, kind: String, item: CanvasItem = null) -> void:
 func _draw_object(center: Vector2, kind: String, lift := Vector2.ZERO, item: CanvasItem = null) -> void:
 	if item == null:
 		item = self
+	if painted_objects.has(kind):
+		# The painted-style picture, standing on the tile like the block one.
+		var tex: Texture2D = painted_objects[kind]
+		item.draw_texture(tex, (center + lift - Vector2(tex.get_width() * 0.5, tex.get_height() - 6.0)).floor())
+		return
 	var col: int = (_art.get("object_cols", []) as Array).find(kind)
 	if col < 0:
 		return
@@ -459,6 +468,12 @@ func _build_torches() -> void:
 		torch.entity = e
 		torch.name = "Torch_%s" % str(e.get("id", "")).replace(".", "_")
 		torch.position = data.tile_center(Vector2i(int(t[0]), int(t[1])))
+		if is_painted_entity(e):
+			# A lamp of the picture: only the flame and its light are drawn,
+			# at "flame_at" (pixels from the tile's centre).
+			torch.painted = true
+			var f: Array = e.get("flame_at", [0, -12])
+			torch.flame_offset = Vector2(float(f[0]), float(f[1]))
 		var flag := torch.puzzle_flag()
 		torch.lit = state != null and not flag.is_empty() and state.has_flag(flag)
 		add_child(torch)
@@ -557,6 +572,10 @@ func _draw() -> void:
 				draw_circle(c + PLATE_LIFT, 2.0, COLOR_HIGHLIGHT)
 			"refill":
 				draw_rect(Rect2(c - Vector2(4, 7), Vector2(8, 11)), COLOR_INTERACT)
+			"examine":
+				if e.get("barrier") is Dictionary:
+					var b: Array = e["barrier"].get("tile", t)
+					draw_rect(Rect2(data.tile_center(Vector2i(int(b[0]), int(b[1]))) - Vector2(7, 7), Vector2(14, 14)), COLOR_DOOR_LOCKED)
 			_:
 				draw_circle(c, 3.0, COLOR_OTHER)
 		if str(e.get("id", "")) == highlight_id:
@@ -574,7 +593,11 @@ func _draw_art() -> void:
 	for door in data.doors:
 		var open := bool(door_open.call(door))
 		if background != null:
-			if not open:
+			if is_cracked(door):
+				# The picture shows the crack; once blown, a hole opens in it.
+				if open:
+					_draw_hole(door)
+			elif not open:
 				_draw_barrier(door)
 			continue  # the picture already shows the way through
 		var look := "door_open" if open else ("door_cracked" if is_cracked(door) else "door_closed")
@@ -609,6 +632,11 @@ func _draw_art() -> void:
 				_draw_object(c, "plate_hit" if plate_hit(e) else "plate", PLATE_LIFT)
 			"refill":
 				_draw_object(c, "refill")
+			"examine":
+				# A way the picture shows but the story keeps shut: the same
+				# barrier a closed door gets (map entity "barrier", door-shaped).
+				if e.get("barrier") is Dictionary:
+					_draw_barrier(e["barrier"])
 		if str(e.get("id", "")) == highlight_id:
 			draw_arc(c - Vector2(0, 4), 12.0, 0, TAU, 20, COLOR_HIGHLIGHT, 1.0)
 
@@ -632,6 +660,26 @@ func _draw_barrier(door: Dictionary) -> void:
 	else:  # an east or west way out: the barrier seen from its end
 		draw_texture_rect_region(tex, Rect2(c - Vector2(5, tex.get_height() - 6.0), Vector2(10, tex.get_height())),
 			Rect2(Vector2(3, 0), Vector2(10, tex.get_height())))
+
+
+## A cracked wall of a painted room after the blast: a dark broken arch
+## in the wall above the door's span, with fallen stones at its foot.
+func _draw_hole(door: Dictionary) -> void:
+	var t: Array = door.get("tile", [0, 0])
+	var span := maxi(1, int(door.get("span", 1)))
+	var ts := float(data.tile_size)
+	var foot := data.tile_center(Vector2i(int(t[0]), int(t[1]))) + Vector2(ts * (span - 1) * 0.5, -ts * 0.5)
+	var half := ts * span * 0.5 - 2.0
+	var pts := PackedVector2Array()
+	for i in 13:  # a ragged arch: the rim jumps in and out by a pixel or two
+		var a := PI + PI * i / 12.0
+		var jag := 1.5 if i % 2 == 0 else -1.0
+		pts.append(foot + Vector2(cos(a) * (half + jag), sin(a) * (half * 2.4 + jag)))
+	draw_colored_polygon(pts, Color("140c12"))
+	draw_polyline(pts, Color("3a2a2e"), 1.0)
+	for k: Vector3 in [Vector3(-half + 2, 1, 3), Vector3(-3, 2, 2.5), Vector3(half - 4, 1, 3.5), Vector3(4, 3, 2)]:
+		draw_circle(foot + Vector2(k.x, k.y), k.z, Color("6a5a5e"))
+		draw_circle(foot + Vector2(k.x - 0.5, k.y - 0.8), k.z * 0.5, Color("8a7a7a"))
 
 
 ## Works out once per build which picture each cell shows (the ground layer

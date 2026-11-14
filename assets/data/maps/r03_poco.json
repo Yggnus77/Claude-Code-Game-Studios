@@ -55,6 +55,18 @@
       "unlock_persistent_flag": "open.door.r02_bomba.r03_poco",
       "key_consumption": null,
       "span": 2
+    },
+    {
+      "id": "door.r03_poco.r04_adega",
+      "side": "north",
+      "tile": [20, 8],
+      "target_room": "r04_adega",
+      "target_tile": [12, 15],
+      "gate": "world.cracked.r01_adega",
+      "unlock_persistent_flag": "open.door.r03_poco.r04_adega",
+      "key_consumption": null,
+      "cracked": true,
+      "span": 2
     }
   ],
   "entities": [

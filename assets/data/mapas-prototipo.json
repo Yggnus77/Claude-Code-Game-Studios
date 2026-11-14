@@ -92,7 +92,7 @@
       "gate": "world.torches.r02_bomba"
     },
     {
-      "from": "r01_cruzamento",
+      "from": "r03_poco",
       "to": "r04_adega",
       "gate": "world.cracked.r01_adega"
     },

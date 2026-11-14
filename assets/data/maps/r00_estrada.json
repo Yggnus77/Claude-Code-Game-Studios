@@ -107,6 +107,27 @@
       "tile": [11, 13],
       "persistent_receipt": "loot.r00_estrada.apoio_estrada",
       "trigger_id": "loot_apoio_estrada"
+    },
+    {
+      "id": "r00_estrada.portao",
+      "kind": "examine",
+      "tile": [7, 11],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "O portão da cidade está fechado e trancado por dentro. O caminho segue pela estrada."
+    },
+    {
+      "id": "r00_estrada.moinho",
+      "kind": "examine",
+      "tile": [23, 6],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "A estrada sobe até o moinho, mas a cerca do moleiro está fechada a cadeado.",
+      "barrier": {
+        "tile": [22, 6],
+        "span": 3,
+        "side": "north"
+      }
     }
   ],
   "special_edges": [],

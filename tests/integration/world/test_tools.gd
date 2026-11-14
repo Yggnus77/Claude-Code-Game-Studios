@@ -113,19 +113,20 @@ func test_the_refill_tops_needles_up_to_ten() -> void:
 
 
 func test_a_charge_opens_the_cracked_wall_only_when_close() -> void:
-	var p := _setup("r01_cruzamento", Vector2i(36, 12), {"carga_bronze": 3})
-	var door := _door("door.r01_cruzamento.r04_adega")
+	# The crack painted in the well's back wall leads to the adega.
+	var p := _setup("r03_poco", Vector2i(20, 12), {"carga_bronze": 3})
+	var door := _door("door.r03_poco.r04_adega")
 	assert_true(not door.is_empty() and Room.is_cracked(door), "a cracked wall")
 	assert_true(not main.is_door_open(door), "closed")
-	var far: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(30, 12)))
+	var far: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(20, 14)))
 	far.detonate()
 	assert_true(not main.is_door_open(door), "too far: still closed")
-	p.respawn_at(main.room.data.tile_center(Vector2i(32, 12)), false)
-	var near: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(36, 10)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(28, 12)), false)
+	var near: Bomb = main.spawn_bomb(main.room.data.tile_center(Vector2i(21, 8)))
 	near.detonate()
 	assert_true(main.is_door_open(door), "the wall fell")
 	main.load_room("r04_adega")
-	assert_true(main.is_door_open(_door("door.r01_cruzamento.r04_adega")), "open from the other side too")
+	assert_true(main.is_door_open(_door("door.r03_poco.r04_adega")), "open from the other side too")
 
 
 func test_a_blast_hurts_enemies_breaks_pots_and_hurts_yggnus_nearby() -> void:
@@ -179,18 +180,19 @@ func test_the_merchant_sells_charges_only_after_the_first() -> void:
 
 
 func test_both_torches_lit_open_the_sealed_door_for_good() -> void:
-	var p := _setup("r02_bomba", Vector2i(17, 20), {"lamparina_oleo": 1})
+	var p := _setup("r02_bomba", Vector2i(16, 19), {"lamparina_oleo": 1})
 	var door := _door("door.r02_bomba.r03_poco")
 	assert_eq(main.room.torches.size(), 2, "two torches")
+	assert_true(main.room.torches.all(func(t: Torch) -> bool: return t.painted and t.flame_offset != Vector2.ZERO), "the painted lamps are the torches")
 	assert_true(not main.is_door_open(door), "sealed")
 	main.equipped = "lamparina"
 	p.motor.facing = Vector2.LEFT
-	p.respawn_at(main.room.data.tile_center(Vector2i(17, 20)), false)
+	p.respawn_at(main.room.data.tile_center(Vector2i(16, 19)), false)
 	assert_eq(main.use_lamp(), "lit", "the first catches")
 	assert_true(not main.is_door_open(door), "still sealed")
 	main._tool_cooldown = 0.0
 	p.motor.facing = Vector2.RIGHT
-	p.respawn_at(main.room.data.tile_center(Vector2i(20, 20)), false)
+	p.respawn_at(main.room.data.tile_center(Vector2i(21, 19)), false)
 	assert_eq(main.use_lamp(), "solved", "both burn")
 	assert_true(main.is_door_open(door), "the door opened")
 	main.load_room("r02_bomba", Vector2i(20, 12))
@@ -198,7 +200,7 @@ func test_both_torches_lit_open_the_sealed_door_for_good() -> void:
 
 
 func test_a_lone_torch_goes_out_when_leaving() -> void:
-	var p := _setup("r02_bomba", Vector2i(17, 20), {"lamparina_oleo": 1})
+	var p := _setup("r02_bomba", Vector2i(16, 19), {"lamparina_oleo": 1})
 	p.motor.facing = Vector2.LEFT
 	assert_eq(main.use_lamp(), "lit", "one lit")
 	main.load_room("r02_bomba", Vector2i(20, 12))
@@ -294,3 +296,12 @@ func test_chest_text_names_amounts_and_extras() -> void:
 	assert_eq(main.interact(), "chest", "opened")
 	assert_true(main.hud._toast.text.contains("Recebeu Arco de Fio e 10 Agulhas de Fio"), main.hud._toast.text)
 	assert_eq(main.state.item_count("agulha_fio"), 10, "ten needles")
+
+
+func test_a_painted_way_that_leads_nowhere_says_why() -> void:
+	# salas-pintadas.md §3 rule 9: the city gate of the crossroads is shut
+	# with a barrier and a note instead of being an invisible wall.
+	var p := _setup("r01_cruzamento", Vector2i(6, 8))
+	assert_true(not main.room.data.is_walkable(Vector2i(6, 7)), "the gate itself is a wall")
+	p.motor.facing = Vector2.UP
+	assert_eq(main.interact(), "examine", "the barrier can be examined")

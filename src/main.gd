@@ -27,7 +27,7 @@ const SLIDE_DIRS := ["north", "south", "east", "west"]
 const INTERACT_REACH := 14.0
 const INTERACT_RADIUS := 14.0
 ## Kinds the interact action can use.
-const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill"]
+const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill", "examine"]
 ## Arrow hits get their own attack ids, far above the sword's.
 const ARROW_ATTACK_BASE := 1000000
 ## Entity kinds a needle stops at (things standing on the floor).
@@ -1278,7 +1278,7 @@ func interactable_in_front() -> Dictionary:
 
 ## Uses the entity in front of the player. Returns what happened, for tests:
 ## "chest", "chest_empty", "scene", "clue", "clue_locked", "checkpoint",
-## "shop", "nothing".
+## "examine", "shop", "nothing".
 func interact() -> String:
 	if dialogue.is_open() or shop_panel.is_open() or player.is_busy():
 		return "nothing"
@@ -1333,6 +1333,11 @@ func interact() -> String:
 			return "clue"
 		"refill":
 			return _use_refill(e)
+		"examine":
+			# Something the picture shows (a shut gate, a locked mill): says
+			# why the way stops here (map entity "text").
+			hud.toast(str(e.get("text", "")), 3.5)
+			return "examine"
 		"checkpoint":
 			# The marco becomes the safe entry: a load starts beside it.
 			_entry_tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)

@@ -96,10 +96,10 @@ a placa alta na antecâmara viram convites para voltar.
 
 | Coisa | Sala | Detalhe |
 |---|---|---|
-| Lamparina de Óleo | Bomba d'água (`r02_bomba`) | baú em (5, 20) |
-| Tochas | Bomba d'água | (30, 10) e (30, 14), abrem a porta leste (`world.torches.r02_bomba`) |
+| Lamparina de Óleo | Bomba d'água (`r02_bomba`) | baú no mezanino (9, 6) |
+| Tochas | Bomba d'água | os lampiões pintados (15, 19) e (22, 19), abrem a porta sul (`world.torches.r02_bomba`) |
 | 3 Cargas de Bronze | Poço antigo (`r03_poco`, novo, escuro) | baú |
-| Parede rachada | Cruzamento (`r01_cruzamento`) | porta norte (`world.cracked.r01_adega`) |
+| Parede rachada | Poço antigo (`r03_poco`) | a rachadura pintada na parede do fundo (`world.cracked.r01_adega`) |
 | 50 Bronze | Adega escondida (`r04_adega`, nova) | baú, com recipiente de agulhas |
 | Arco de Fio + 10 agulhas | Antecâmara da torre (`t06_marco`) | baú em (18, 15) |
 | Placa | Antecâmara (`t06_marco`) | no alto da parede norte, abre a porta norte (`world.plate.t06_marco`) |

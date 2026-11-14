@@ -109,8 +109,10 @@ func _ready() -> void:
 	add_child(_banner)
 	_toast = Label.new()
 	# Two-line barks grow upward from the same baseline.
-	_toast.position = Vector2(16, 228)
-	_toast.size = Vector2(608, 40)
+	# Long notes (what a shut gate says) wrap instead of running off screen.
+	_toast.position = Vector2(48, 228)
+	_toast.size = Vector2(544, 40)
+	_toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_toast.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_toast.add_theme_font_size_override("font_size", 11)

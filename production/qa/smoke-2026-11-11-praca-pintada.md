@@ -117,3 +117,28 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Testes que usavam posições do cruzamento (carga, pista m01, parede rachada)
   ajustados ao chão novo.
 - Evidência: `production/qa/evidence/salas/cruzamento_01.png`.
+
+## 2026-11-14: salas trafegáveis, avisos e mecanismos na pintura (teste27)
+
+- Botão de correr: segurar Shift (ou LB) multiplica a velocidade por 1,6
+  (`combate.json` `player.run_speed_factor`); configurável no menu.
+- Chão refeito pela pintura na oficina (vão da porta é chão) e na praça
+  (calçamento em volta do chafariz e da estrada). Pista m01 do chafariz
+  passou para 26, 16.
+- Caminhos que a pintura mostra e não levam a lugar nenhum viraram avisos
+  `examine` (estrada do norte, portão da cidade, moinho e ruínas no
+  cruzamento; portão e moinho na estrada). Os que mostram passagem aberta
+  ganham a barreira listrada. O aviso quebra em duas linhas.
+- Bomba: escada e mezanino andáveis, baú da Lamparina no mezanino; os
+  lampiões pintados ao lado da porta do poço são as tochas (apagados no
+  fundo, chama e luz desenhadas quando acesos).
+- Poço: a rachadura pintada leva à adega (antes era o arco das ruínas do
+  cruzamento). O sinal salvo da parede é o mesmo, então jogos antigos
+  continuam com a passagem aberta. Depois da explosão aparece um buraco.
+- Baú, pista, recipiente, placa e marco das salas pintadas usam recortes
+  das próprias pinturas (`tools/art/objetos_pintados.py`).
+- Testes novos: aviso do portão examinável; lampiões pintados são as
+  tochas; parede rachada no poço. Suíte completa: 316 de 316.
+- Evidência: `production/qa/evidence/ambiente/01_oficina.png` a
+  `10_poco_buraco_aberto.png`, `04b_cruzamento_portao_aviso.png`,
+  `11_torre_salas.png`.

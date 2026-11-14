@@ -14,6 +14,8 @@ import os
 
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
+import objetos_pintados
+
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 REFS = os.path.join(ROOT, "design", "art", "referencias", "salas")
 MAPS = os.path.join(ROOT, "assets", "data", "maps")
@@ -65,6 +67,30 @@ PORTAS = {
 }
 
 
+# Lâmpadas pintadas que são tochas do jogo (a Lamparina as acende): o fundo
+# as mostra apagadas, e o jogo desenha a chama e a luz quando acesas. Caixas
+# (x0, y0, x1, y1) em pixels da referência.
+APAGAR = {
+    "r02_bomba": [(362, 436, 390, 470), (515, 436, 543, 470)],
+}
+
+
+def apaga_lampada(im, caixa):
+    """Tira o brilho da lâmpada: o vidro aceso vira vidro escuro e frio."""
+    import numpy as np
+    x0, y0, x1, y1 = caixa
+    a = np.asarray(im.crop(caixa)).astype(float)
+    lum = a.mean(axis=2)
+    h, w = lum.shape
+    yy, xx = np.mgrid[0:h, 0:w]
+    dentro = np.clip(2.5 - np.hypot((xx - w / 2) / (w / 2), (yy - h / 2) / (h / 2)) * 2.5, 0, 1)
+    quente = np.maximum(np.clip((a[..., 0] - a[..., 2] - 25) / 30, 0, 1), np.clip((lum - 185) / 30, 0, 1))
+    peso = np.clip((lum - 105) / 40, 0, 1) * quente * dentro
+    escuro = np.stack([lum * 0.30 + 22, lum * 0.26 + 18, lum * 0.34 + 30], axis=2)
+    a = a * (1 - peso[..., None]) + escuro * peso[..., None]
+    im.paste(Image.fromarray(a.clip(0, 255).astype("uint8"), "RGB"), (x0, y0))
+
+
 def copia_porta(im, de, para):
     """Copia a saída pintada para outro trecho da parede, com a borda suave."""
     pedaco = im.crop(de)
@@ -79,6 +105,8 @@ def fundo(room_id, source):
     im = Image.open(os.path.join(REFS, source)).convert("RGB")
     for porta in PORTAS.get(room_id, []):
         copia_porta(im, **porta)
+    for caixa in APAGAR.get(room_id, []):
+        apaga_lampada(im, caixa)
     im = im.resize(tamanho(room_id), Image.Resampling.LANCZOS)
     im = im.filter(ImageFilter.UnsharpMask(radius=0.7, percent=50, threshold=2))
     im = ImageEnhance.Color(im).enhance(1.04)
@@ -135,6 +163,7 @@ def objetos():
     cut = _blob(20, 19, [(6, 15, 3), (10, 14.5, 3.5), (14, 15, 3)])
     cut.save(os.path.join(OUT, "obj_bush_cut.png"))
     barreira().save(os.path.join(OUT, "obj_barreira.png"))
+    objetos_pintados.gerar()
 
 
 def barreira(w=64, h=28):

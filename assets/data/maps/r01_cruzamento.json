@@ -19,15 +19,15 @@
   },
   "grid": [
     "########################################",
+    "########################################",
     "###################...##################",
     "###################...##################",
     "###################...##################",
     "###################...##################",
     "###################...##################",
-    "###################...##################",
-    "###################...##################",
-    "###################...##################",
-    "#####.....######......##################",
+    "###################...#######..#########",
+    "#####...###########...######...#########",
+    "#####.....######......#.......##########",
     "#####..................................#",
     "#......................................#",
     "#....................##................#",
@@ -76,18 +76,6 @@
       "unlock_persistent_flag": "open.door.r01_cruzamento.t00_base",
       "key_consumption": null,
       "span": 3
-    },
-    {
-      "id": "door.r01_cruzamento.r04_adega",
-      "side": "north",
-      "tile": [36, 10],
-      "target_room": "r04_adega",
-      "target_tile": [12, 15],
-      "gate": "world.cracked.r01_adega",
-      "unlock_persistent_flag": "open.door.r01_cruzamento.r04_adega",
-      "key_consumption": null,
-      "cracked": true,
-      "span": 2
     }
   ],
   "entities": [
@@ -126,6 +114,53 @@
       "collectible_id": "fragment_03",
       "requires_item": null,
       "persistent_receipt": "collectible.fragment_03"
+    },
+    {
+      "id": "r01_cruzamento.norte",
+      "kind": "examine",
+      "tile": [20, 1],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "Uma cancela fecha a estrada do norte. Uma placa avisa: \"Ponte caída. Volte outro dia.\"",
+      "barrier": {
+        "tile": [19, 1],
+        "span": 3,
+        "side": "north"
+      }
+    },
+    {
+      "id": "r01_cruzamento.portao",
+      "kind": "examine",
+      "tile": [6, 7],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "O portão da cidade tem a grade baixada. Um guarda grita lá de dentro: \"Ninguém entra até a bomba voltar a funcionar!\"",
+      "barrier": {
+        "tile": [5, 7],
+        "span": 3,
+        "side": "north"
+      }
+    },
+    {
+      "id": "r01_cruzamento.moinho",
+      "kind": "examine",
+      "tile": [29, 6],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "A porta do moinho está trancada. Lá dentro, só o barulho da roda girando."
+    },
+    {
+      "id": "r01_cruzamento.ruinas",
+      "kind": "examine",
+      "tile": [36, 9],
+      "trigger_id": null,
+      "persistent_receipt": null,
+      "text": "Pedras caídas fecham o arco das ruínas. Não dá para passar.",
+      "barrier": {
+        "tile": [36, 9],
+        "span": 2,
+        "side": "north"
+      }
     }
   ],
   "special_edges": [],

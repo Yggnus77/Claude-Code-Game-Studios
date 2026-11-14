@@ -60,7 +60,7 @@ func test_troco_from_first_talk_to_the_seal() -> void:
 	assert_eq(await _skip_scenes(), ["x01a"], "x01a")
 	_face(p, Vector2i(33, 10))
 	assert_eq(main.interact(), "clue", "market receipt")
-	_face(p, Vector2i(25, 15))
+	_face(p, Vector2i(26, 16))
 	assert_eq(main.interact(), "clue", "delivery stamp")
 	main.state.apply([{"op": "set_flag", "flag": "clue.m01.via_cais", "value": true}])
 	_face(p, Vector2i(6, 10))
