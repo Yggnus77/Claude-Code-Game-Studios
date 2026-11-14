@@ -15,6 +15,13 @@ var _seen_attacks: Dictionary = {}
 var _flash := 0.0
 ## 0 dark, 1 lit (sequence progress shown by the room).
 var lit := false
+## True when the room's picture already shows this bell: only the glow and
+## the marked plate are drawn over it (map entity "painted": true).
+var painted := false
+## Where the picture's bell hangs, from this node, when it is out of the
+## sword's reach: the glow shows there and the plate here marks the spot
+## to strike (map entity "glow_at").
+var glow_offset := Vector2.ZERO
 
 
 ## Bell pictures in the world objects sheet (tools/art/gerar_cenario.py).
@@ -51,13 +58,17 @@ func _physics_process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var swing := sin(_flash * 40.0) * 2.0 if _flash > 0.0 else 0.0
+	# A painted bell cannot swing, so only a drawn one wobbles.
+	var swing := sin(_flash * 40.0) * 2.0 if _flash > 0.0 and not painted else 0.0
 	var body := PackedVector2Array([Vector2(-7 + swing, 2), Vector2(7 + swing, 2), Vector2(5 + swing, -10), Vector2(-5 + swing, -10)])
-	if lit:
-		# A lit bell glows, so the order reads from across the room.
-		draw_circle(Vector2(swing, -4), 13.0, Color(1.0, 0.85, 0.4, 0.25))
-		draw_arc(Vector2(swing, -4), 13.0, 0, TAU, 24, Color(1.0, 0.85, 0.4, 0.9), 1.5)
-	if _sheet:
+	if lit or (painted and _flash > 0.0):
+		# A lit bell glows, so the order reads from across the room; a
+		# painted bell cannot swing, so it flashes the same glow when struck.
+		draw_circle(glow_offset + Vector2(swing, -4), 13.0, Color(1.0, 0.85, 0.4, 0.25))
+		draw_arc(glow_offset + Vector2(swing, -4), 13.0, 0, TAU, 24, Color(1.0, 0.85, 0.4, 0.9), 1.5)
+	if painted:
+		pass  # the picture shows the bell itself
+	elif _sheet:
 		var col := BELL_LIT_COL if _flash > 0.0 or lit else BELL_COL
 		draw_texture_rect_region(_sheet, Rect2(Vector2(-8 + swing, -16), Vector2(16, 32)), Rect2(col * 16, 0, 16, 32))
 	else:

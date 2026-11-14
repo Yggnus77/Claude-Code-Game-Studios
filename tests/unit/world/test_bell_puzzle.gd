@@ -28,9 +28,9 @@ func test_grapple_destination_needs_item_and_start_point() -> void:
 	var room := RoomData.load_room("t03_treino")
 	var has := func(_i: String) -> bool: return true
 	var none := func(_i: String) -> bool: return false
-	var near_left := room.tile_center(Vector2i(13, 12))
-	assert_eq(room.grapple_destination(Vector2i(20, 12), near_left, 32, has), Vector2i(20, 12), "left → right")
-	assert_eq(room.grapple_destination(Vector2i(20, 12), near_left, 32, none), Vector2i(-1, -1), "needs the hook")
-	assert_eq(room.grapple_destination(Vector2i(20, 12), room.tile_center(Vector2i(5, 5)), 32, has), Vector2i(-1, -1), "only from the marked start")
-	assert_eq(room.grapple_destination(Vector2i(12, 12), room.tile_center(Vector2i(21, 12)), 32, has), Vector2i(12, 12), "and back")
-	assert_true(not room.is_walkable(Vector2i(15, 12)), "the gap is not floor")
+	var near_low := room.tile_center(Vector2i(20, 16))
+	assert_eq(room.grapple_destination(Vector2i(20, 7), near_low, 32, has), Vector2i(20, 7), "walkway → upper platform")
+	assert_eq(room.grapple_destination(Vector2i(20, 7), near_low, 32, none), Vector2i(-1, -1), "needs the hook")
+	assert_eq(room.grapple_destination(Vector2i(20, 7), room.tile_center(Vector2i(8, 20)), 32, has), Vector2i(-1, -1), "only from the marked start")
+	assert_eq(room.grapple_destination(Vector2i(20, 15), room.tile_center(Vector2i(20, 6)), 32, has), Vector2i(20, 15), "and back")
+	assert_true(not room.is_walkable(Vector2i(20, 11)), "the gap is not floor")

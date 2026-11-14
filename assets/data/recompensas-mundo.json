@@ -117,8 +117,8 @@
       "scope": "prototype",
       "room": "r00_estrada",
       "tile": [
-        8,
-        18
+        37,
+        15
       ],
       "requires_item": null
     },
@@ -127,8 +127,8 @@
       "scope": "prototype",
       "room": "r01_cruzamento",
       "tile": [
-        11,
-        5
+        6,
+        9
       ],
       "requires_item": null
     },
@@ -137,8 +137,8 @@
       "scope": "prototype",
       "room": "r02_bomba",
       "tile": [
-        26,
-        18
+        29,
+        19
       ],
       "requires_item": null
     },
@@ -147,8 +147,8 @@
       "scope": "prototype",
       "room": "t00_base",
       "tile": [
-        26,
-        4
+        33,
+        13
       ],
       "requires_item": null
     },
@@ -157,8 +157,8 @@
       "scope": "prototype",
       "room": "t02_oficina",
       "tile": [
-        18,
-        14
+        28,
+        9
       ],
       "requires_item": null
     },
@@ -167,8 +167,8 @@
       "scope": "prototype",
       "room": "t04_pesos",
       "tile": [
-        26,
-        18
+        27,
+        7
       ],
       "requires_item": null
     },
@@ -177,8 +177,8 @@
       "scope": "prototype",
       "room": "t05_sinos",
       "tile": [
-        27,
-        18
+        28,
+        19
       ],
       "requires_item": null
     },

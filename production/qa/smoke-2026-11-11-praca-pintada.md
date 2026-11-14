@@ -65,3 +65,106 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
   `02_yame.png`, `03_yggnus_oficina.png`, `04_igris.png`.
 - Limite conhecido: antes da cena p05 Yggnus aparece com espada e escudo,
   porque a folha do usuário sempre os mostra.
+
+## 2026-11-13: estrada pintada (referência 3, teste23)
+
+- `r00_estrada` usa a referência 3 como fundo; grade, portas e entidades
+  refeitas (design/gdd/salas-pintadas.md §3.3).
+- Saída da praça ao norte chega na porta sul da estrada deslizando a tela
+  (evidência `production/qa/evidence/salas/estrada_01_chegada.png`).
+- Fragmento 2 atrás de dois arbustos ao lado do poço
+  (`estrada_02_poco.png`).
+- O teste de ligação agora exige que as portas sejam alcançadas sem cortar
+  nada; vi ele falhar com arbustos tapando a porta leste antes de confiar nele.
+- Suíte completa depois dos ajustes: 312 de 312.
+
+## 2026-11-13: bomba, poço e torre pintados (imagens por sala, teste24)
+
+- Bomba d'água, poço antigo e as oito salas da torre usam as imagens novas
+  do usuário (`design/art/referencias/salas/`); a torre sobe de baixo para
+  cima (design/gdd/salas-pintadas.md §3.4 e §3.5).
+- Base, guardas, antecâmara e câmara de Igris ganharam a segunda saída
+  copiada da própria porta pintada (`tools/art/gerar_salas.py`, `PORTAS`).
+- O mapa da masmorra usa `map_side` para essas saídas; os nove cômodos
+  aparecem (`test_the_tower_layout_follows_its_side_doors`).
+- Testes genéricos de combate e movimento passaram a usar a adega (sala de
+  blocos); os testes de porta em parede usam a base antiga como fixture
+  (`tests/fixtures/maps/t00_base.json`).
+- Suíte completa: 312 de 312.
+- Evidência: `production/qa/evidence/salas/bomba_01.png`, `poco_01.png`,
+  `travessia_01.png`, `contrapesos_01.png`, `oficina_gancho_01.png`,
+  `sinos_01.png`, `torre-01_base.png`, `torre-02_guardas.png`,
+  `torre-03_antecamara.png`, `torre-04_igris.png` (sino de Igris aceso no
+  alto da parede durante a mostra da ordem).
+
+## 2026-11-13: Yggnus andando de lado e correntes de Yame (teste25)
+
+- Os quadros de andar de lado vinham da folha do usuário olhando para a
+  esquerda; agora são espelhados em `tools/art/yggnus_referencia.py`.
+  Teste novo `test_yggnus_walks_sideways_facing_where_he_goes`: falhou com a
+  folha antiga e passa com a nova.
+- As amarras de Yame viraram correntes de ferro (elos com contorno escuro,
+  estaca com um elo por golpe, rachadura depois do primeiro golpe, faíscas
+  ao partir). Textos do objetivo e avisos passaram a dizer "correntes".
+- Suíte completa: 313 de 313.
+- Evidência: `production/qa/evidence/personagens/05_andando_direita.png`,
+  `06_andando_esquerda.png`, `07_correntes_yame.png`.
+
+## 2026-11-13: cruzamento pintado (teste26)
+
+- `r01_cruzamento` usa a imagem nova do usuário (`r01-cruzamento.png`);
+  portas para estrada, bomba, torre e adega refeitas (salas-pintadas.md §3.3).
+- Testes que usavam posições do cruzamento (carga, pista m01, parede rachada)
+  ajustados ao chão novo.
+- Evidência: `production/qa/evidence/salas/cruzamento_01.png`.
+
+## 2026-11-14: salas trafegáveis, avisos e mecanismos na pintura (teste27)
+
+- Botão de correr: segurar Shift (ou LB) multiplica a velocidade por 1,6
+  (`combate.json` `player.run_speed_factor`); configurável no menu.
+- Chão refeito pela pintura na oficina (vão da porta é chão) e na praça
+  (calçamento em volta do chafariz e da estrada). Pista m01 do chafariz
+  passou para 26, 16.
+- Caminhos que a pintura mostra e não levam a lugar nenhum viraram avisos
+  `examine` (estrada do norte, portão da cidade, moinho e ruínas no
+  cruzamento; portão e moinho na estrada). Os que mostram passagem aberta
+  ganham a barreira listrada. O aviso quebra em duas linhas.
+- Bomba: escada e mezanino andáveis, baú da Lamparina no mezanino; os
+  lampiões pintados ao lado da porta do poço são as tochas (apagados no
+  fundo, chama e luz desenhadas quando acesos).
+- Poço: a rachadura pintada leva à adega (antes era o arco das ruínas do
+  cruzamento). O sinal salvo da parede é o mesmo, então jogos antigos
+  continuam com a passagem aberta. Depois da explosão aparece um buraco.
+- Baú, pista, recipiente, placa e marco das salas pintadas usam recortes
+  das próprias pinturas (`tools/art/objetos_pintados.py`).
+- Testes novos: aviso do portão examinável; lampiões pintados são as
+  tochas; parede rachada no poço. Suíte completa: 316 de 316.
+- Evidência: `production/qa/evidence/ambiente/01_oficina.png` a
+  `10_poco_buraco_aberto.png`, `04b_cruzamento_portao_aviso.png`,
+  `11_torre_salas.png`.
+
+## 2026-11-14: correções do teste27 (teste28)
+
+- Praça: a frente do chafariz é calçamento livre; a estrada do norte se
+  alcança pelos dois lados.
+- Portão da cidade (estrada e cruzamento) pintado com a grade baixada,
+  como o aviso diz.
+- Voltar pela porta logo depois de chegar funciona (teste novo
+  `test_turning_straight_back_through_the_door_just_used`).
+- Suíte completa: 317 de 317.
+- Evidência: `production/qa/evidence/ambiente/12_praca_estrada_direita.png`,
+  `13_estrada_portao_grade.png`, `14_cruzamento_portao_grade.png`.
+
+## 2026-11-14: cenário em movimento e NPCs no padrão (teste29)
+
+- Moinhos da estrada e do cruzamento giram (pás recortadas da pintura,
+  fundo preenchido); engrenagens, roda, polias, estandartes, chamas e água
+  se mexem nas salas pintadas.
+- Exódia e a Mecânica do Cais redesenhadas a partir da referência 21.
+- Testes novos: `test_the_mills_turn_and_every_moving_piece_has_its_picture`,
+  `test_every_person_on_a_map_is_drawn_in_the_character_style`.
+- Suíte completa: 319 de 319.
+- Evidência: `production/qa/evidence/ambiente/15_estrada_moinho_a.png` e
+  `_b`, `16_cruzamento_moinho_a.png` e `_b`, `17_bomba_engrenagens_a.png`,
+  `18_praca_agua_chamas.png`, `19_torre_polias.png`,
+  `20_oficina_exodia.png`, `21_bomba_mecanica.png`.

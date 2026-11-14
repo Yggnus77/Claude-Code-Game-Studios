@@ -1,163 +1,130 @@
 {
   "id": "t05_sinos",
   "name": "Galeria dos sinos",
-  "width": 32,
-  "height": 24,
+  "width": 40,
+  "height": 23,
   "tile_size": 16,
-  "art": {"rugs": [[15, 12, 3, 10], [18, 11, 12, 3]]},
+  "art": {
+    "background": "t05_sinos"
+  },
   "grid": [
-    "################################",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#.....####.....................#",
-    "#.....####.....................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#.....................####.....#",
-    "#.....................####.....#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "################################"
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "#############...............############",
+    "############................############",
+    "############................############",
+    "##########.....................#########",
+    "##########.....................#########",
+    "##########.....................#########",
+    "#######........................#########",
+    "##########.....................#########",
+    "##########.....................#########",
+    "#######.........................########",
+    "#######.........................########",
+    "######.............................#####",
+    "########.......###....###.......########",
+    "########.......###....###.......########",
+    "########.......###....###.......########",
+    "##################....##################",
+    "########################################"
   ],
   "doors": [
     {
       "id": "door.t04_pesos.t05_sinos",
       "side": "south",
-      "tile": [
-        16,
-        21
-      ],
+      "tile": [18, 21],
       "target_room": "t04_pesos",
-      "target_tile": [
-        16,
-        2
-      ],
+      "target_tile": [19, 6],
       "gate": "world.weight_locked",
       "unlock_persistent_flag": "open.door.t04_pesos.t05_sinos",
-      "key_consumption": null
+      "key_consumption": null,
+      "span": 4
     },
     {
       "id": "door.t05_sinos.t06_marco",
-      "side": "east",
-      "tile": [
-        29,
-        12
-      ],
+      "side": "north",
+      "tile": [18, 6],
       "target_room": "t06_marco",
-      "target_tile": [
-        2,
-        9
-      ],
+      "target_tile": [19, 16],
       "gate": "world.bells_solved",
       "unlock_persistent_flag": "open.door.t05_sinos.t06_marco",
-      "key_consumption": null
+      "key_consumption": null,
+      "span": 4
     }
   ],
   "entities": [
     {
       "id": "t05_sinos.chave_chefe",
       "kind": "chest",
-      "tile": [4, 20],
+      "tile": [13, 19],
       "trigger_id": "chest_chave_chefe_akurame",
       "persistent_receipt": "unique.t05_sinos.chave_chefe"
     },
     {
       "id": "t05_sinos.bell_circle",
       "kind": "bell",
-      "tile": [
-        8,
-        9
-      ],
+      "tile": [9, 10],
       "trigger_id": null,
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "painted": true
     },
     {
       "id": "t05_sinos.bell_gap",
       "kind": "bell",
-      "tile": [
-        16,
-        9
-      ],
+      "tile": [31, 10],
       "trigger_id": null,
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "painted": true
     },
     {
       "id": "t05_sinos.bell_waves",
       "kind": "bell",
-      "tile": [
-        24,
-        9
-      ],
+      "tile": [6, 15],
       "trigger_id": null,
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "painted": true
     },
     {
       "id": "t05_sinos.inscription",
       "kind": "interact",
-      "tile": [
-        16,
-        5
-      ],
+      "tile": [14, 6],
       "trigger_id": "examinar_inscricao_sinos",
       "persistent_receipt": null
     },
     {
       "id": "t05_sinos.m02_call_plate",
       "kind": "mystery_clue",
-      "tile": [
-        5,
-        4
-      ],
+      "tile": [11, 13],
       "sets_flag": "clue.m02.placa_chamado",
       "persistent_receipt": "clue.t05_sinos.m02_call_plate"
     },
     {
       "id": "t05_sinos.m02_bronze_tube",
       "kind": "mystery_clue",
-      "tile": [
-        27,
-        4
-      ],
+      "tile": [28, 13],
       "sets_flag": "clue.m02.tubo_bronze",
       "persistent_receipt": "clue.t05_sinos.m02_bronze_tube"
     },
     {
       "id": "t05_sinos.m02_pause_record",
       "kind": "mystery_clue",
-      "tile": [
-        16,
-        17
-      ],
+      "tile": [25, 17],
       "sets_flag": "clue.m02.registro_pausa",
       "persistent_receipt": "clue.t05_sinos.m02_pause_record"
     },
     {
       "id": "t05_sinos.fragment_08",
       "kind": "unique_fragment",
-      "tile": [
-        27,
-        18
-      ],
+      "tile": [28, 19],
       "collectible_id": "fragment_08",
       "requires_item": null,
       "persistent_receipt": "collectible.fragment_08"
     }
   ],
   "special_edges": [],
-  "entry_default": [
-    3,
-    12
-  ]
+  "entry_default": [20, 19]
 }

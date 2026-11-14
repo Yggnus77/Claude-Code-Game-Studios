@@ -1,110 +1,103 @@
 {
   "id": "t06_marco",
   "name": "Antecâmara",
-  "width": 24,
-  "height": 18,
+  "width": 40,
+  "height": 23,
   "tile_size": 16,
-  "art": {"rugs": [[1, 8, 22, 3]]},
-  "breakables": {"pot": [[1, 13], [1, 14], [12, 1], [13, 1], [21, 16], [22, 16]]},
+  "art": {
+    "background": "t06_marco"
+  },
+  "breakables": {
+    "pot": [
+      [5, 10],
+      [6, 10],
+      [33, 10],
+      [34, 10],
+      [16, 16],
+      [23, 16]
+    ]
+  },
   "grid": [
-    "########################",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#.....####.............#",
-    "#.....####.............#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#.............####.....#",
-    "#.............####.....#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "########################"
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "######......###..........###......######",
+    "#####.......###..........###.......#####",
+    "####........###..........###........####",
+    "####........###..........###........####",
+    "###..................................###",
+    "##....................................##",
+    "#####......###............###......#####",
+    "#####......###............###......#####",
+    "#####......###............###......#####",
+    "##.........###............###.........##",
+    "####.......###............###.......####",
+    "####................................####",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################"
   ],
   "doors": [
     {
       "id": "door.t05_sinos.t06_marco",
-      "side": "west",
-      "tile": [
-        2,
-        9
-      ],
+      "side": "south",
+      "tile": [18, 17],
       "target_room": "t05_sinos",
-      "target_tile": [
-        29,
-        12
-      ],
+      "target_tile": [19, 7],
       "gate": "world.bells_solved",
       "unlock_persistent_flag": "open.door.t05_sinos.t06_marco",
-      "key_consumption": null
+      "key_consumption": null,
+      "span": 4
     },
     {
       "id": "door.t06_marco.t07_igris",
-      "side": "east",
-      "tile": [
-        21,
-        9
-      ],
+      "side": "north",
+      "tile": [18, 6],
       "target_room": "t07_igris",
-      "target_tile": [
-        2,
-        14
-      ],
+      "target_tile": [19, 20],
       "gate": "boss_key:chave_chefe_akurame",
       "unlock_persistent_flag": "open.door.t06_marco.t07_igris",
-      "key_consumption": null
+      "key_consumption": null,
+      "span": 4
     },
     {
       "id": "door.t06_marco.t08_mirante",
-      "side": "north",
-      "tile": [
-        4,
-        2
-      ],
+      "side": "south",
+      "tile": [30, 17],
       "target_room": "t08_mirante",
-      "target_tile": [
-        12,
-        15
-      ],
+      "target_tile": [3, 8],
       "gate": "world.plate.t06_marco",
       "unlock_persistent_flag": "open.door.t06_marco.t08_mirante",
       "key_consumption": null,
-      "locked_text": "A passagem está fechada. Bem no alto da parede há uma placa de bronze."
+      "span": 4,
+      "map_side": "east",
+      "locked_text": "A passagem está fechada. Na parede ao lado da porta grande há uma placa de bronze."
     }
   ],
   "entities": [
     {
       "id": "t06_marco.arco",
       "kind": "chest",
-      "tile": [
-        18,
-        15
-      ],
+      "tile": [8, 9],
       "trigger_id": "chest_arco_fio",
       "persistent_receipt": "unique.t06_marco.arco"
     },
     {
       "id": "t06_marco.marco_preboss",
       "kind": "checkpoint",
-      "tile": [
-        12,
-        8
-      ],
+      "tile": [20, 11],
       "trigger_id": null,
       "persistent_receipt": null
     },
     {
       "id": "t06_marco.placa",
       "kind": "plate",
-      "tile": [
-        17,
-        0
-      ],
+      "tile": [16, 5],
       "trigger_id": null,
       "persistent_receipt": null,
       "sets_flag": "world.plate.t06_marco"
@@ -112,18 +105,12 @@
     {
       "id": "t06_marco.agulhas",
       "kind": "refill",
-      "tile": [
-        5,
-        13
-      ],
+      "tile": [6, 15],
       "trigger_id": null,
       "persistent_receipt": null,
       "item": "agulha_fio"
     }
   ],
   "special_edges": [],
-  "entry_default": [
-    3,
-    9
-  ]
+  "entry_default": [20, 15]
 }

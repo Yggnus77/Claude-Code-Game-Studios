@@ -1,0 +1,1120 @@
+{
+ "v00_oficina": [
+  {
+   "tipo": "glow",
+   "pos": [
+    119,
+    55
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    252,
+    63
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    421,
+    63
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    290,
+    143
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    510,
+    110
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    262,
+    308
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    377,
+    308
+   ],
+   "raio": 14
+  }
+ ],
+ "v01_praca": [
+  {
+   "tipo": "glow",
+   "pos": [
+    215,
+    115
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    238,
+    115
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    408,
+    115
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    425,
+    115
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    198,
+    247
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    229,
+    247
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    422,
+    248
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    450,
+    248
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    292,
+    21
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    348,
+    21
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    155,
+    69
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    208,
+    65
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    457,
+    48
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    535,
+    48
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    75,
+    277
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    571,
+    328
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "water",
+   "centro": [
+    323,
+    193
+   ],
+   "raio": [
+    55,
+    12
+   ]
+  },
+  {
+   "tipo": "water",
+   "centro": [
+    323,
+    166
+   ],
+   "raio": [
+    18,
+    4
+   ]
+  }
+ ],
+ "r00_estrada": [
+  {
+   "tipo": "spin",
+   "textura": "r00_estrada__pas",
+   "centro": [
+    380.7,
+    29.9
+   ],
+   "vel": 0.9,
+   "achata": 1.0667,
+   "pivo": [
+    52.0,
+    55.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "r00_estrada__roda",
+   "centro": [
+    338.7,
+    80.4
+   ],
+   "vel": -0.7,
+   "achata": 1.0667,
+   "pivo": [
+    16.7,
+    17.8
+   ]
+  },
+  {
+   "tipo": "sway",
+   "textura": "r00_estrada__estandarte",
+   "pos": [
+    35,
+    80
+   ],
+   "amplitude": 1.6,
+   "vel": 2.2
+  },
+  {
+   "tipo": "sway",
+   "textura": "r00_estrada__estandarte2",
+   "pos": [
+    175,
+    85
+   ],
+   "amplitude": 1.6,
+   "vel": 2.2
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    163,
+    123
+   ],
+   "raio": 14
+  }
+ ],
+ "r02_bomba": [
+  {
+   "tipo": "spin",
+   "textura": "r02_bomba__engrenagem",
+   "centro": [
+    403.5,
+    190.5
+   ],
+   "vel": 0.7,
+   "achata": 1.0,
+   "pivo": [
+    22.5,
+    22.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "r02_bomba__roda",
+   "centro": [
+    561.5,
+    250.5
+   ],
+   "vel": -1.2,
+   "achata": 1.0,
+   "pivo": [
+    9.5,
+    9.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "r02_bomba__engrenagem2",
+   "centro": [
+    459.5,
+    203.5
+   ],
+   "vel": -1.4,
+   "achata": 1.0,
+   "pivo": [
+    9.5,
+    9.5
+   ]
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    272,
+    20
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    368,
+    20
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    40,
+    103
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    90,
+    175
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    153,
+    160
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    472,
+    142
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    604,
+    179
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "water",
+   "centro": [
+    543,
+    73
+   ],
+   "raio": [
+    52,
+    13
+   ]
+  }
+ ],
+ "r03_poco": [
+  {
+   "tipo": "glow",
+   "pos": [
+    319,
+    52
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "water",
+   "centro": [
+    130,
+    165
+   ],
+   "raio": [
+    24,
+    7
+   ]
+  }
+ ],
+ "t03_treino": [
+  {
+   "tipo": "glow",
+   "pos": [
+    117,
+    93
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    524,
+    93
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    28,
+    175
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    609,
+    175
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    252,
+    283
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    385,
+    283
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    273,
+    20
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    365,
+    20
+   ],
+   "raio": 14
+  }
+ ],
+ "t04_pesos": [
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia",
+   "centro": [
+    110.5,
+    53.5
+   ],
+   "vel": 0.8,
+   "achata": 1.0,
+   "pivo": [
+    17.5,
+    17.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia2",
+   "centro": [
+    529.5,
+    53.5
+   ],
+   "vel": -0.8,
+   "achata": 1.0,
+   "pivo": [
+    17.5,
+    17.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia3",
+   "centro": [
+    159.5,
+    117.5
+   ],
+   "vel": -1.5,
+   "achata": 1.0,
+   "pivo": [
+    8.5,
+    8.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia4",
+   "centro": [
+    159.5,
+    171.5
+   ],
+   "vel": 1.5,
+   "achata": 1.0,
+   "pivo": [
+    8.5,
+    8.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia5",
+   "centro": [
+    477.5,
+    117.5
+   ],
+   "vel": 1.5,
+   "achata": 1.0,
+   "pivo": [
+    8.5,
+    8.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t04_pesos__polia6",
+   "centro": [
+    477.5,
+    171.5
+   ],
+   "vel": -1.5,
+   "achata": 1.0,
+   "pivo": [
+    8.5,
+    8.5
+   ]
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    273,
+    40
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    365,
+    40
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    47,
+    144
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    592,
+    144
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    29,
+    207
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    610,
+    207
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    280,
+    313
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    360,
+    313
+   ],
+   "raio": 14
+  }
+ ],
+ "t02_oficina": [
+  {
+   "tipo": "glow",
+   "pos": [
+    258,
+    53
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    384,
+    53
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    44,
+    162
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    265,
+    299
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    375,
+    299
+   ],
+   "raio": 14
+  }
+ ],
+ "t05_sinos": [
+  {
+   "tipo": "glow",
+   "pos": [
+    273,
+    41
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    364,
+    41
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    265,
+    330
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    373,
+    330
+   ],
+   "raio": 14
+  }
+ ],
+ "t00_base": [
+  {
+   "tipo": "glow",
+   "pos": [
+    247,
+    51
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    393,
+    51
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    41,
+    139
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    597,
+    135
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    265,
+    306
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    375,
+    306
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    476,
+    306
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    588,
+    306
+   ],
+   "raio": 14
+  }
+ ],
+ "t01_guardas": [
+  {
+   "tipo": "glow",
+   "pos": [
+    265,
+    50
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    377,
+    50
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    47,
+    127
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    592,
+    127
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    199,
+    175
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    440,
+    175
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    249,
+    329
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    389,
+    329
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    440,
+    329
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    580,
+    329
+   ],
+   "raio": 14
+  }
+ ],
+ "t06_marco": [
+  {
+   "tipo": "glow",
+   "pos": [
+    271,
+    47
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    365,
+    47
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    101,
+    79
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    213,
+    124
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    424,
+    124
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    197,
+    225
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    441,
+    225
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    24,
+    200
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    613,
+    192
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    263,
+    325
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    377,
+    325
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    567,
+    325
+   ],
+   "raio": 14
+  }
+ ],
+ "t07_igris": [
+  {
+   "tipo": "spin",
+   "textura": "t07_igris__engrenagem",
+   "centro": [
+    267.5,
+    33.5
+   ],
+   "vel": 0.6,
+   "achata": 1.0,
+   "pivo": [
+    12.5,
+    12.5
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "t07_igris__engrenagem2",
+   "centro": [
+    373.5,
+    33.5
+   ],
+   "vel": -0.6,
+   "achata": 1.0,
+   "pivo": [
+    12.5,
+    12.5
+   ]
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    120,
+    87
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    408,
+    41
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    231,
+    41
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    43,
+    150
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    595,
+    150
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    108,
+    313
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    200,
+    313
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    273,
+    313
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    365,
+    313
+   ],
+   "raio": 14
+  }
+ ],
+ "r01_cruzamento": [
+  {
+   "tipo": "spin",
+   "textura": "r01_cruzamento__pas",
+   "centro": [
+    488.7,
+    36.3
+   ],
+   "vel": 0.9,
+   "achata": 1.0667,
+   "pivo": [
+    50.0,
+    53.3
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "r01_cruzamento__engrenagem",
+   "centro": [
+    432.0,
+    78.2
+   ],
+   "vel": 0.6,
+   "achata": 1.0667,
+   "pivo": [
+    18.7,
+    19.9
+   ]
+  },
+  {
+   "tipo": "spin",
+   "textura": "r01_cruzamento__engrenagem2",
+   "centro": [
+    418.0,
+    96.7
+   ],
+   "vel": -0.8,
+   "achata": 1.0667,
+   "pivo": [
+    14.7,
+    15.6
+   ]
+  },
+  {
+   "tipo": "sway",
+   "textura": "r01_cruzamento__estandarte",
+   "pos": [
+    399,
+    57
+   ],
+   "amplitude": 1.6,
+   "vel": 2.2
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    70,
+    107
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    133,
+    100
+   ],
+   "raio": 14
+  },
+  {
+   "tipo": "glow",
+   "pos": [
+    233,
+    97
+   ],
+   "raio": 14
+  }
+ ]
+}

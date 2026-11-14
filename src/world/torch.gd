@@ -12,6 +12,11 @@ var light_radius := 104.0
 ## The map entity this torch comes from.
 var entity: Dictionary = {}
 var lit := false
+## A lamp painted in the room's picture (map "painted"): the torch draws
+## only the flame and the light, at [member flame_offset].
+var painted := false
+## Where the painted lamp's glass is, from the torch's position.
+var flame_offset := Vector2.ZERO
 var _light: PointLight2D
 var _t := 0.0
 
@@ -20,7 +25,7 @@ func _ready() -> void:
 	_light = PointLight2D.new()
 	_light.texture = Room.light_texture()
 	_light.color = LIGHT_COLOR
-	_light.position = Vector2(0, -18)
+	_light.position = flame_offset if painted else Vector2(0, -18)
 	_light.texture_scale = light_radius * 2.0 / 128.0
 	add_child(_light)
 	set_lit(lit)
@@ -61,6 +66,16 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if painted:
+		if lit:
+			# The cold glass of the picture lights up: a warm core and a halo.
+			var f := flame_offset
+			var flick := 0.6 * sin(_t * 9.0)
+			draw_circle(f, 7.0 + flick, Color(1.0, 0.66, 0.3, 0.28))
+			draw_circle(f, 4.0, Color(1.0, 0.78, 0.42, 0.85))
+			var h := 2.0 + 1.0 * sin(_t * 11.0)
+			draw_colored_polygon(PackedVector2Array([f + Vector2(-2, 3), f + Vector2(0.5 * sin(_t * 7.0), -2 - h), f + Vector2(2, 3)]), Color(1, 0.96, 0.8, 0.95))
+		return
 	if room and is_instance_valid(room):
 		room.draw_object_on(self, "torch_on" if lit else "torch_off")
 	if lit:

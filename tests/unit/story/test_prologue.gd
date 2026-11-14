@@ -66,9 +66,9 @@ func test_objective_away_from_the_workshop_says_to_go_back() -> void:
 	var r := _rules()
 	var s := _state(["seen.p00", "seen.p01", "seen.p02", "seen.p05"])
 	var away := r.objective(s, "v01_praca")
-	assert_true(away.contains("Volte à oficina") and away.contains("amarras"), "away from the workshop: go back (got '%s')" % away)
+	assert_true(away.contains("Volte à oficina") and away.contains("correntes"), "away from the workshop: go back (got '%s')" % away)
 	var inside := r.objective(s, Prologue.WORKSHOP)
-	assert_true(inside.begins_with("Corte as amarras"), "in the workshop: cut the bindings (got '%s')" % inside)
+	assert_true(inside.begins_with("Quebre as correntes"), "in the workshop: cut the bindings (got '%s')" % inside)
 
 
 func test_objective_always_says_what_to_do() -> void:
@@ -77,7 +77,7 @@ func test_objective_always_says_what_to_do() -> void:
 		[["seen.p00"], "relógio"],
 		[["seen.p00", "seen.p01"], "praça"],
 		[["seen.p00", "seen.p01", "seen.p02"], "oficina"],
-		[["seen.p00", "seen.p01", "seen.p02", "seen.p05"], "amarras"],
+		[["seen.p00", "seen.p01", "seen.p02", "seen.p05"], "correntes"],
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07"], "Marco"],
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08"], "estrada"],
 		[["seen.p00", "seen.p01", "seen.p02", "seen.p05", "seen.p07", "seen.p08", "visited.t00_base"], "guardas"],

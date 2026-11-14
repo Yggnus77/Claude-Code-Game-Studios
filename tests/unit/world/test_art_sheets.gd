@@ -37,3 +37,30 @@ func test_room_theme_follows_the_room_id() -> void:
 	assert_eq(room.theme_row("r02_bomba"), 2, "road")
 	assert_eq(room.theme_row("t07_igris"), 3, "tower")
 	room.free()
+
+
+## Sum of colour differences between two frames of the same size.
+func _difference(a: Image, b: Image) -> float:
+	var total := 0.0
+	for y in a.get_height():
+		for x in a.get_width():
+			var p := a.get_pixel(x, y)
+			var q := b.get_pixel(x, y)
+			total += absf(p.r - q.r) + absf(p.g - q.g) + absf(p.b - q.b) + absf(p.a - q.a)
+	return total
+
+
+func test_yggnus_walks_sideways_facing_where_he_goes() -> void:
+	# User report 2026-11-13: walking sideways he looked backwards. Every side
+	# walk frame must face the same way as the side idle frame (right).
+	var picker := SpritePicker.load_meta("res://assets/art/personagens/yggnus.json")
+	var sheet: Image = (load("res://assets/art/personagens/yggnus.png") as Texture2D).get_image()
+	sheet.decompress()
+	var size := picker.frame_size
+	var row := int(picker.rows["side"]) * size.y
+	var idle := sheet.get_region(Rect2i(int(picker.anims["idle"][0]) * size.x, row, size.x, size.y))
+	for col in picker.anims["walk"]:
+		var frame := sheet.get_region(Rect2i(int(col) * size.x, row, size.x, size.y))
+		var mirrored := frame.duplicate() as Image
+		mirrored.flip_x()
+		assert_true(_difference(idle, frame) < _difference(idle, mirrored), "walk column %d faces right" % col)

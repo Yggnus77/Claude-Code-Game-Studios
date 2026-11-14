@@ -4,7 +4,7 @@ extends TestCase
 var main: Node
 
 
-func _setup(room_id: String = "t00_base") -> Player:
+func _setup(room_id: String = "r04_adega") -> Player:
 	main = load("res://src/scenes/main.tscn").instantiate()
 	main.play_intro = false
 	tree.root.add_child(main)

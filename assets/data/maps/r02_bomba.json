@@ -1,101 +1,94 @@
 {
   "id": "r02_bomba",
   "name": "Bomba d’água",
-  "width": 32,
-  "height": 24,
+  "width": 40,
+  "height": 23,
   "tile_size": 16,
-  "art": {"rugs": [[15, 1, 3, 8]]},
-  "breakables": {"pot": [[1, 5], [1, 6], [7, 22], [8, 22], [9, 1], [10, 1], [23, 1], [24, 1], [30, 4], [30, 5]]},
+  "art": {
+    "background": "r02_bomba"
+  },
+  "breakables": {
+    "pot": [
+      [10, 19],
+      [11, 19],
+      [24, 19],
+      [25, 19],
+      [32, 15],
+      [33, 15]
+    ]
+  },
   "grid": [
-    "################################",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#.....####.....................#",
-    "#.....####.....................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#.....................####.....#",
-    "#.....................####.....#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "################################"
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "########################################",
+    "############...###...###################",
+    "##.........#...###...###################",
+    "##..##########.###...###################",
+    "##..##########...#...###################",
+    "##..##########.......###################",
+    "##..##########.......###################",
+    "##..##########.......###################",
+    "##..##########.......###################",
+    "##..########.........#...###############",
+    "##..###..................###############",
+    "###.###...........................######",
+    "###...............................######",
+    "######........................##########",
+    "#######........#......##......##########",
+    "#######.....####......##......##########",
+    "################......##################",
+    "################......##################",
+    "########################################"
   ],
   "doors": [
     {
       "id": "door.r01_cruzamento.r02_bomba",
       "side": "north",
-      "tile": [
-        16,
-        2
-      ],
+      "tile": [18, 5],
       "target_room": "r01_cruzamento",
-      "target_tile": [
-        20,
-        21
-      ],
+      "target_tile": [20, 21],
       "gate": null,
       "unlock_persistent_flag": "open.door.r01_cruzamento.r02_bomba",
-      "key_consumption": null
+      "key_consumption": null,
+      "span": 4
     },
     {
       "id": "door.r02_bomba.r03_poco",
-      "side": "east",
-      "tile": [
-        29,
-        12
-      ],
+      "side": "south",
+      "tile": [17, 21],
       "target_room": "r03_poco",
-      "target_tile": [
-        2,
-        9
-      ],
+      "target_tile": [19, 18],
       "gate": "world.torches.r02_bomba",
       "unlock_persistent_flag": "open.door.r02_bomba.r03_poco",
       "key_consumption": null,
       "sealed": "torches",
-      "locked_text": "Uma porta selada entre duas tochas apagadas."
+      "locked_text": "Uma porta selada entre duas tochas apagadas.",
+      "span": 4
     }
   ],
   "entities": [
     {
       "id": "r02_bomba.pump",
       "kind": "interact",
-      "tile": [
-        16,
-        10
-      ],
+      "tile": [23, 13],
       "trigger_id": "iniciar_missao_bomba",
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "painted": true
     },
     {
       "id": "r02_bomba.mechanic",
       "kind": "npc",
-      "tile": [
-        10,
-        10
-      ],
+      "tile": [15, 12],
       "trigger_id": null,
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "look": "mecanica"
     },
     {
       "id": "r02_bomba.fragment_04",
       "kind": "unique_fragment",
-      "tile": [
-        26,
-        18
-      ],
+      "tile": [29, 19],
       "collectible_id": "fragment_04",
       "requires_item": null,
       "persistent_receipt": "collectible.fragment_04"
@@ -103,39 +96,31 @@
     {
       "id": "r02_bomba.lamparina",
       "kind": "chest",
-      "tile": [
-        5,
-        20
-      ],
+      "tile": [9, 6],
       "trigger_id": "chest_lamparina",
       "persistent_receipt": "unique.r02_bomba.lamparina"
     },
     {
       "id": "r02_bomba.torch_n",
       "kind": "torch",
-      "tile": [
-        30,
-        10
-      ],
+      "tile": [15, 19],
       "trigger_id": null,
       "persistent_receipt": null,
-      "sets_flag": "world.torches.r02_bomba"
+      "sets_flag": "world.torches.r02_bomba",
+      "painted": true,
+      "flame_at": [3, -7]
     },
     {
       "id": "r02_bomba.torch_s",
       "kind": "torch",
-      "tile": [
-        30,
-        14
-      ],
+      "tile": [22, 19],
       "trigger_id": null,
       "persistent_receipt": null,
-      "sets_flag": "world.torches.r02_bomba"
+      "sets_flag": "world.torches.r02_bomba",
+      "painted": true,
+      "flame_at": [-9, -7]
     }
   ],
   "special_edges": [],
-  "entry_default": [
-    3,
-    12
-  ]
+  "entry_default": [19, 16]
 }

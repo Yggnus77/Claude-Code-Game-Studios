@@ -20,7 +20,7 @@ func _setup(room_id: String, extra: Array = []) -> Player:
 	main._on_room_entered()
 	var p: Player = main.player
 	p.read_input = false
-	p.respawn_at(main.room.data.tile_center(Vector2i(5, 14)))
+	p.respawn_at(main.room.data.tile_center(Vector2i(19, 19)))
 	return p
 
 
@@ -128,7 +128,7 @@ func test_arena_rings_pull_yggnus_out_of_a_wave() -> void:
 		if str(e.get("kind", "")) == "anchor":
 			anchors += 1
 	assert_eq(anchors, 4, "four rings in the arena")
-	var ring: Vector2 = main.room.data.tile_center(Vector2i(4, 12))
+	var ring: Vector2 = main.room.data.tile_center(Vector2i(5, 11))
 	p.respawn_at(ring + Vector2(80, 0))
 	p.motor.facing = Vector2.LEFT
 	var life := p.health.current

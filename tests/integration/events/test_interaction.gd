@@ -51,7 +51,7 @@ func test_chest_gives_bronze_once() -> void:
 
 func test_key_chest_gives_key_once() -> void:
 	var p := _setup("t00_base")
-	_face(p, Vector2i(5, 4))
+	_face(p, Vector2i(6, 13))
 	main.interact()
 	main.interact()
 	assert_eq(main.state.item_count("key_ak_base"), 1, "one key")
@@ -108,3 +108,22 @@ func test_door_needs_its_gate() -> void:
 	p.global_position = main.room.data.tile_center(Vector2i(int(t[0]), int(t[1])))
 	await _frames(40)
 	assert_eq(main.room_id, "r00_estrada", "walking onto the open door changes room")
+
+
+func test_turning_straight_back_through_the_door_just_used() -> void:
+	# User report (teste27): after coming through a door, turning around at
+	# once did nothing until Yggnus stepped off the door and came back.
+	_setup("r00_estrada", ["seen.p07"])
+	main.load_room("r00_estrada", Vector2i(21, 22))
+	var p: Player = main.player
+	p.read_input = false
+	p.velocity = Vector2(0, 80)  # still holding the way in (out of this door)
+	main._check_doors()
+	await _frames(2)
+	assert_eq(main.room_id, "r00_estrada", "holding on after arriving does not bounce back")
+	p.velocity = Vector2(0, -80)  # steps into the road
+	main._check_doors()
+	p.velocity = Vector2(0, 80)  # and turns straight back
+	main._check_doors()
+	await _frames(60)
+	assert_eq(main.room_id, "v01_praca", "back in the square without leaving the door first")

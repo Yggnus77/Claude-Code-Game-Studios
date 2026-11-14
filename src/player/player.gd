@@ -52,6 +52,13 @@ var sprite_frame := Vector2(32, 48)
 var read_input := true
 ## Movement input used when [member read_input] is false.
 var input_override := Vector2.ZERO
+## Run button held, used when [member read_input] is false.
+var run_override := false
+## Top speed while the run button is held, as a factor of the walk
+## (combate.json player.run_speed_factor).
+var run_speed_factor := 1.0
+## True while Yggnus is running this frame.
+var running := false
 ## Sword button held, used when [member read_input] is false (charging).
 var attack_held_override := false
 ## False until the sword is in the inventory: a new game starts unarmed
@@ -101,6 +108,7 @@ var last_hit_by := ""
 func configure(config: GameConfig) -> void:
 	var p := config.player()
 	motor = PlayerMotor.new(p)
+	run_speed_factor = float(p.get("run_speed_factor", 1.0))
 	var frame: Array = p.get("sprite_frame", [32, 48])
 	sprite_frame = Vector2(frame[0], frame[1])
 	var foot: Array = p.get("foot_collision", [12, 10])
@@ -323,9 +331,12 @@ func _physics_process(delta: float) -> void:
 		return
 	var input := input_override
 	var attack_held := attack_held_override
+	var run_held := run_override
 	if read_input:
 		input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 		attack_held = Input.is_action_pressed("attack")
+		run_held = Input.is_action_pressed("run")
+	running = false
 	sword.set_held(attack_held and has_sword)
 
 	if _hitstun > 0.0:
@@ -394,7 +405,9 @@ func _physics_process(delta: float) -> void:
 		velocity = motor.step(velocity, input, delta, sword.charge_speed_factor)
 		motor.facing = _swing_facing
 	else:
-		velocity = motor.step(velocity, input, delta)
+		# Running: only free walking speeds up, never a swing, a charge or a tool.
+		running = run_held and input != Vector2.ZERO
+		velocity = motor.step(velocity, input, delta, run_speed_factor if running else 1.0)
 	# The shield is passive: up whenever Yggnus is free (§3.3).
 	guard.set_held(has_shield and not sword.is_busy() and _tool_lock <= 0.0)
 	move_and_slide()
@@ -477,7 +490,8 @@ func _advance_anim(delta: float) -> void:
 		_anim = a
 		_anim_t = 0.0
 	else:
-		_anim_t += delta
+		# The legs keep pace with the run.
+		_anim_t += delta * (run_speed_factor if running and a == "walk" else 1.0)
 	# A little dust at every other step (the walk cycle has 4 frames).
 	if _anim == "walk" and _sheet:
 		var step := int(_anim_t * 4.0)

@@ -27,7 +27,7 @@ const SLIDE_DIRS := ["north", "south", "east", "west"]
 const INTERACT_REACH := 14.0
 const INTERACT_RADIUS := 14.0
 ## Kinds the interact action can use.
-const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill"]
+const INTERACTABLE := ["chest", "mystery_clue", "npc", "interact", "checkpoint", "refill", "examine"]
 ## Arrow hits get their own attack ids, far above the sword's.
 const ARROW_ATTACK_BASE := 1000000
 ## Entity kinds a needle stops at (things standing on the floor).
@@ -80,6 +80,9 @@ var _autoitem_timer := 0.5
 var _autointeract_timer := 0.5
 ## Door the player arrived on; doors fire again only after leaving it.
 var _arrival_door := ""
+## Whether the player, standing on [member _arrival_door], has stopped or
+## walked into the room since arriving (then walking out again goes back).
+var _arrival_settled := false
 var _locked_notice := ""
 var _transitioning := false
 var _fade: ColorRect
@@ -523,6 +526,7 @@ func load_room(id: String, entry: Vector2i = Vector2i(-1, -1), restore_life: boo
 	player.set_camera_limits(data.pixel_size(), room.top_extent())
 	_update_glow()
 	_arrival_door = _door_at(player.global_position)
+	_arrival_settled = false
 	clear_enemies()
 	room.raised = {}
 	var cleared := state.has_flag(str(config.tower.get("room_clear_flags", {}).get(id, "-")))
@@ -565,12 +569,12 @@ func _sync_invasion() -> void:
 
 ## The sword reached Yame: say what to hit instead.
 func _on_yame_deflected() -> void:
-	hud.toast("A espada não fere Yame Black. Corte as amarras que prendem a porta!", 3.0)
+	hud.toast("A espada não fere Yame Black. Quebre as correntes que prendem a porta!", 3.0)
 	playtest.refuse(session_time(), "espada em Yame Black")
 
 
 func _on_binding_cut(_binding_id: String, left: int) -> void:
-	hud.toast("Amarra cortada!" if left > 0 else "A última amarra se rompeu!")
+	hud.toast("Corrente quebrada!" if left > 0 else "A última corrente se partiu!")
 
 
 func _on_invasion_cleared() -> void:
@@ -1092,6 +1096,9 @@ func _build_bells() -> void:
 		b.symbol = str(def.get("symbols", {}).get(b.bell_id, ""))
 		b.lit = bell_puzzle != null and bell_puzzle.solved
 		b.position = room.data.tile_center(Vector2i(int(e["tile"][0]), int(e["tile"][1])))
+		b.painted = bool(e.get("painted", false)) and room.is_painted()
+		if b.painted and e.get("glow_at") is Array:
+			b.glow_offset = room.data.tile_center(Vector2i(int(e["glow_at"][0]), int(e["glow_at"][1]))) - b.position
 		b.rung.connect(_on_igris_bell if in_igris else _on_bell_rung)
 		add_child(b)
 		bells.append(b)
@@ -1275,7 +1282,7 @@ func interactable_in_front() -> Dictionary:
 
 ## Uses the entity in front of the player. Returns what happened, for tests:
 ## "chest", "chest_empty", "scene", "clue", "clue_locked", "checkpoint",
-## "shop", "nothing".
+## "examine", "shop", "nothing".
 func interact() -> String:
 	if dialogue.is_open() or shop_panel.is_open() or player.is_busy():
 		return "nothing"
@@ -1330,6 +1337,11 @@ func interact() -> String:
 			return "clue"
 		"refill":
 			return _use_refill(e)
+		"examine":
+			# Something the picture shows (a shut gate, a locked mill): says
+			# why the way stops here (map entity "text").
+			hud.toast(str(e.get("text", "")), 3.5)
+			return "examine"
 		"checkpoint":
 			# The marco becomes the safe entry: a load starts beside it.
 			_entry_tile = Vector2i(int(e["tile"][0]), int(e["tile"][1]) + 1)
@@ -1682,7 +1694,15 @@ func _check_doors() -> void:
 	if _transitioning:
 		return
 	var here := _door_at(player.global_position)
-	if here != _arrival_door:
+	if here == _arrival_door and not here.is_empty():
+		# Turning straight back into the door just come through also
+		# counts: no need to step off it first (user report, teste27). Still
+		# holding the way in (a door on the same side in both rooms) does not.
+		if not _heading_out_of(here):
+			_arrival_settled = true
+		elif _arrival_settled:
+			_arrival_door = ""
+	elif here != _arrival_door:
 		_arrival_door = ""
 	if here.is_empty() or here == _arrival_door:
 		if here.is_empty():
@@ -1703,10 +1723,22 @@ func _check_doors() -> void:
 		_go_through(door)
 
 
+## Whether the player walks out through door [param door_id] (towards
+## its side of the room), not in from it.
+func _heading_out_of(door_id: String) -> bool:
+	if door_id.is_empty():
+		return false
+	for door: Dictionary in room.data.doors:
+		if str(door["id"]) == door_id:
+			var out: Vector2 = {"north": Vector2.UP, "south": Vector2.DOWN, "east": Vector2.RIGHT, "west": Vector2.LEFT}.get(str(door.get("side", "")), Vector2.ZERO)
+			return player.velocity.dot(out) > 10.0
+	return false
+
+
 ## What a closed door says when the player walks into it.
 func _locked_text(door: Dictionary, door_id: String) -> String:
 	if prologue.blocks_door(state, room_id, door_id):
-		return "As amarras de Yame prendem a porta."
+		return "As correntes de Yame prendem a porta."
 	if door.has("locked_text"):
 		return str(door["locked_text"])
 	if Room.is_cracked(door):

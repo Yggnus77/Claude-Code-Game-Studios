@@ -68,13 +68,13 @@ func _defeat(enemy: Node) -> void:
 
 func test_pump_side_quest_gives_second_flask_once() -> void:
 	var p := _setup("r02_bomba")
-	_face(p, Vector2i(16, 10))
+	_face(p, Vector2i(23, 13))
 	assert_eq(main.interact(), "scene", "the mechanic asks for the parts (r03)")
 	assert_eq(await _skip_scene(), "r03", "r03")
 	assert_eq(main.interact(), "nothing", "without parts the pump waits")
 	main.load_room("r00_estrada")
-	_face(p, Vector2i(5, 5))
-	assert_eq(main.interact(), "chest", "gear part from the chest by the wall")
+	_face(p, Vector2i(30, 21))
+	assert_eq(main.interact(), "chest", "gear part from the chest by the well")
 	main.load_room("r01_cruzamento")
 	var scrap := _enemy_with_entity("r01_cruzamento.pump_b")
 	assert_true(scrap != null, "the designated creature is there")
@@ -84,7 +84,7 @@ func test_pump_side_quest_gives_second_flask_once() -> void:
 	_defeat(_enemy_with_entity("r01_cruzamento.pump_b"))
 	assert_eq(main.state.item_count("peca_bomba_b"), 1, "defeating it again gives nothing more")
 	main.load_room("r02_bomba")
-	_face(p, Vector2i(16, 10))
+	_face(p, Vector2i(23, 13))
 	assert_eq(main.interact(), "scene", "both parts: r04")
 	assert_eq(await _skip_scene(), "r04", "r04")
 	assert_eq(main.state.flasks(), ["frasco_01", "frasco_02"], "the pump gave only the second flask")
@@ -97,7 +97,7 @@ func test_travel_reserves_buy_a_refill_and_the_flask_heals() -> void:
 	_face(p, Vector2i(5, 14))
 	main.interact()
 	main.load_room("r00_estrada")
-	_face(p, Vector2i(33, 7))
+	_face(p, Vector2i(11, 13))
 	main.interact()
 	assert_eq(main.state.bronze, 20, "two reserves of 10")
 	main.load_room("v01_praca")
@@ -157,7 +157,7 @@ func test_common_enemy_drops_bronze() -> void:
 
 func test_m01_clues_wait_for_igris_record() -> void:
 	var p := _setup("r01_cruzamento")
-	_face(p, Vector2i(7, 17))
+	_face(p, Vector2i(16, 15))
 	assert_eq(main.interact(), "clue_locked", "too early")
 	assert_true(not main.state.has_flag("clue.m01.via_cais"), "nothing recorded")
 	main.state.apply([{"op": "set_flag", "flag": "seen.t11", "value": true}])

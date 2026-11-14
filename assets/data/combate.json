@@ -13,6 +13,7 @@
   "tile_size": 16,
   "player": {
     "speed": 100,
+    "run_speed_factor": 1.6,
     "acceleration": 6000,
     "deceleration": 6000,
     "sprite_frame": [

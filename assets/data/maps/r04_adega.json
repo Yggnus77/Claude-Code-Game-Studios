@@ -4,8 +4,22 @@
   "width": 24,
   "height": 18,
   "tile_size": 16,
-  "art": {"rugs": [[9, 7, 7, 5]]},
-  "breakables": {"pot": [[1, 1], [1, 2], [22, 1], [22, 2], [1, 15], [1, 16], [22, 16]]},
+  "art": {
+    "rugs": [
+      [9, 7, 7, 5]
+    ]
+  },
+  "breakables": {
+    "pot": [
+      [1, 1],
+      [1, 2],
+      [22, 1],
+      [22, 2],
+      [1, 15],
+      [1, 16],
+      [22, 16]
+    ]
+  },
   "grid": [
     "########################",
     "#......................#",
@@ -28,19 +42,13 @@
   ],
   "doors": [
     {
-      "id": "door.r01_cruzamento.r04_adega",
+      "id": "door.r03_poco.r04_adega",
       "side": "south",
-      "tile": [
-        12,
-        15
-      ],
-      "target_room": "r01_cruzamento",
-      "target_tile": [
-        30,
-        2
-      ],
+      "tile": [12, 15],
+      "target_room": "r03_poco",
+      "target_tile": [20, 9],
       "gate": "world.cracked.r01_adega",
-      "unlock_persistent_flag": "open.door.r01_cruzamento.r04_adega",
+      "unlock_persistent_flag": "open.door.r03_poco.r04_adega",
       "key_consumption": null,
       "cracked": true
     }
@@ -49,28 +57,19 @@
     {
       "id": "r04_adega.tesouro",
       "kind": "chest",
-      "tile": [
-        12,
-        5
-      ],
+      "tile": [12, 5],
       "trigger_id": "loot_adega",
       "persistent_receipt": "unique.r04_adega.tesouro"
     },
     {
       "id": "r04_adega.agulhas",
       "kind": "refill",
-      "tile": [
-        20,
-        12
-      ],
+      "tile": [20, 12],
       "trigger_id": null,
       "persistent_receipt": null,
       "item": "agulha_fio"
     }
   ],
   "special_edges": [],
-  "entry_default": [
-    12,
-    14
-  ]
+  "entry_default": [12, 14]
 }
