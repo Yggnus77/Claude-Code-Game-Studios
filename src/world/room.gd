@@ -167,6 +167,15 @@ func build(room_data: RoomData) -> void:
 		ground.room = self
 		ground.z_index = -1  # under everything that sorts by height
 		add_child(ground)
+	if background != null:
+		# What moves in the picture (sails, gears, banners, flames, water).
+		var ambient := Ambient.new()
+		ambient.name = "Scenery"
+		ambient.z_index = -1
+		if ambient.setup(data.id):
+			add_child(ambient)
+		else:
+			ambient.free()
 	if _tiles and (background == null or is_dark()):
 		_add_lights()
 	queue_redraw()
@@ -831,8 +840,36 @@ func draw_prop(prop: Node2D, e: Dictionary) -> void:
 	if kind == "checkpoint":
 		var active := state != null and str(state.checkpoint.get("entity_id", "")) == str(e.get("id", ""))
 		_draw_object(Vector2.ZERO, "marco_active" if active else "marco", Vector2.ZERO, prop)
+	elif e.has("look"):
+		# A person drawn like Yggnus (tools/art/npcs_referencia.py), feet on
+		# the tile, with a soft shadow.
+		var tex := npc_texture(str(e["look"]))
+		if tex != null:
+			var shadow := PackedVector2Array()
+			for i in 12:
+				shadow.append(Vector2(cos(i * TAU / 12.0) * 7.0, 5.0 + sin(i * TAU / 12.0) * 2.5))
+			prop.draw_colored_polygon(shadow, Color(0.08, 0.05, 0.1, 0.35))
+			prop.draw_texture(tex, Vector2(-tex.get_width() * 0.5, 6.0 - tex.get_height()).floor())
+		else:
+			_draw_object(Vector2.ZERO, kind, Vector2.ZERO, prop)
 	else:
 		_draw_object(Vector2.ZERO, kind, Vector2.ZERO, prop)
+
+
+# Figures by look, kept referenced so they are not freed after a draw.
+static var _npc_textures: Dictionary = {}
+
+
+## The picture of an NPC by its map "look" (assets/art/personagens/npc_<look>.png).
+## Kept in [member _npc_textures]: a drawn texture must outlive the draw call
+## (a freed one is drawn as a white box).
+static func npc_texture(look: String) -> Texture2D:
+	if not _npc_textures.has(look):
+		var path := "res://assets/art/personagens/npc_%s.png" % look
+		_npc_textures[look] = load(path) if ResourceLoader.exists(path) else null
+	return _npc_textures[look]
+
+
 
 
 class Ground extends Node2D:

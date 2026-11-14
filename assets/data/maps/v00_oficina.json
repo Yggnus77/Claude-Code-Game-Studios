@@ -60,7 +60,7 @@
       "tile": [10, 12],
       "trigger_id": null,
       "persistent_receipt": null,
-      "painted": true
+      "look": "exodia"
     },
     {
       "id": "v00_oficina.yame_bind_1",

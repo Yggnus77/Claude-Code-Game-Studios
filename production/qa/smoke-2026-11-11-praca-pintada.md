@@ -154,3 +154,17 @@ Spec: `design/gdd/salas-pintadas.md`. Build: teste20 (inclui teste19).
 - Suíte completa: 317 de 317.
 - Evidência: `production/qa/evidence/ambiente/12_praca_estrada_direita.png`,
   `13_estrada_portao_grade.png`, `14_cruzamento_portao_grade.png`.
+
+## 2026-11-14: cenário em movimento e NPCs no padrão (teste29)
+
+- Moinhos da estrada e do cruzamento giram (pás recortadas da pintura,
+  fundo preenchido); engrenagens, roda, polias, estandartes, chamas e água
+  se mexem nas salas pintadas.
+- Exódia e a Mecânica do Cais redesenhadas a partir da referência 21.
+- Testes novos: `test_the_mills_turn_and_every_moving_piece_has_its_picture`,
+  `test_every_person_on_a_map_is_drawn_in_the_character_style`.
+- Suíte completa: 319 de 319.
+- Evidência: `production/qa/evidence/ambiente/15_estrada_moinho_a.png` e
+  `_b`, `16_cruzamento_moinho_a.png` e `_b`, `17_bomba_engrenagens_a.png`,
+  `18_praca_agua_chamas.png`, `19_torre_polias.png`,
+  `20_oficina_exodia.png`, `21_bomba_mecanica.png`.

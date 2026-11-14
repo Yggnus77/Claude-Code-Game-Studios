@@ -253,3 +253,58 @@ func test_every_painted_room_is_connected() -> void:
 		for kind: String in data.breakables:
 			for at: Vector2i in data.breakables[kind]:
 				assert_true(_touches(seen, at), "%s %s reached" % [kind, at])
+
+
+func test_the_mills_turn_and_every_moving_piece_has_its_picture() -> void:
+	# User report (teste27): "o jogo diz que o moinho está girando, então por
+	# que permanece parado??" Both painted mills have turning sails.
+	for id: String in ["r00_estrada", "r01_cruzamento"]:
+		var room := _room(id)
+		var ambient := room.get_node_or_null("Scenery") as Ambient
+		assert_true(ambient != null, "%s has moving scenery" % id)
+		if ambient:
+			var sails := ambient.items.filter(func(it: Dictionary) -> bool: return it.get("textura", "") == id + "__pas")
+			assert_eq(sails.size(), 1, "%s: the sails turn" % id)
+			if sails.size() == 1:
+				var before := ambient.turn_of(sails[0])
+				ambient._process(1.0)
+				assert_true(absf(ambient.turn_of(sails[0]) - before) > 0.1, "%s: the sails move over time" % id)
+			assert_true(ambient.is_processing(), "%s: the scenery is animated" % id)
+		room.free()
+	# Every room listed in the data: each piece has what its kind needs and
+	# its picture exists.
+	var need := {"spin": ["textura", "centro", "pivo", "vel"], "sway": ["textura", "pos"], "glow": ["pos"],
+		"water": ["centro", "raio"]}
+	var all: Variant = JSON.parse_string(FileAccess.get_file_as_string(Ambient.DATA_PATH))
+	assert_true(all is Dictionary and not (all as Dictionary).is_empty(), "the moving scenery list loads")
+	for room_id: String in (all as Dictionary).keys():
+		assert_true(RoomData.load_room(room_id) != null, "%s is a room" % room_id)
+		for it: Dictionary in Ambient.pieces_for(room_id):
+			var tipo := str(it.get("tipo", ""))
+			assert_true(need.has(tipo), "%s: known kind %s" % [room_id, tipo])
+			for key: String in need.get(tipo, []):
+				assert_true(it.has(key), "%s %s has %s" % [room_id, tipo, key])
+			var tex := str(it.get("textura", ""))
+			if not tex.is_empty():
+				assert_true(ResourceLoader.exists("%s/%s.png" % [Ambient.ANIM_DIR, tex]), "%s exists" % tex)
+
+
+func test_a_room_with_nothing_to_move_gets_no_scenery_node() -> void:
+	var room := _tile_room()
+	assert_true(room.get_node_or_null("Scenery") == null, "a tile room has no moving scenery")
+	room.free()
+	assert_true(Ambient.pieces_for("no_such_room").is_empty(), "a room not listed has no pieces")
+
+
+func test_every_person_on_a_map_is_drawn_in_the_character_style() -> void:
+	# User report (teste27): NPCs still drawn as plain blocks. Every NPC is
+	# either painted into the picture or has a detailed figure ("look").
+	for f in DirAccess.get_files_at("res://assets/data/maps"):
+		var data := RoomData.load_room(f.get_basename())
+		if data == null:
+			continue
+		for e: Dictionary in data.entities:
+			if str(e.get("kind", "")) != "npc":
+				continue
+			var painted := bool(e.get("painted", false)) and not str(data.art.get("background", "")).is_empty()
+			assert_true(painted or Room.npc_texture(str(e.get("look", ""))) != null, "%s has a detailed figure" % e["id"])

@@ -16,6 +16,7 @@ import numpy as np
 
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
+import animacoes_salas
 import objetos_pintados
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -143,6 +144,7 @@ def copia_porta(im, de, para):
 def fundo(room_id, source):
     """Reduz a referência ao tamanho da sala e limita a paleta."""
     im = Image.open(os.path.join(REFS, source)).convert("RGB")
+    im = animacoes_salas.apaga(im, room_id)  # o que gira é desenhado à parte
     for porta in PORTAS.get(room_id, []):
         copia_porta(im, **porta)
     for vao in GRADES.get(room_id, []):
@@ -238,10 +240,16 @@ def barreira(w=64, h=28):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
+    fundos, tamanhos, fontes = {}, {}, {}
     for room_id, source in SALAS.items():
-        fundo(room_id, source).save(os.path.join(OUT, room_id + ".png"), optimize=True)
+        im = fundo(room_id, source)
+        im.save(os.path.join(OUT, room_id + ".png"), optimize=True)
+        fundos[room_id] = im.convert("RGB")
+        tamanhos[room_id] = tamanho(room_id)
+        fontes[room_id] = Image.open(os.path.join(REFS, source)).convert("RGB")
         print("salas:", room_id)
     objetos()
+    animacoes_salas.gerar(fundos, tamanhos, fontes)
 
 
 if __name__ == "__main__":

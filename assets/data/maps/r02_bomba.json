@@ -82,7 +82,8 @@
       "kind": "npc",
       "tile": [15, 12],
       "trigger_id": null,
-      "persistent_receipt": null
+      "persistent_receipt": null,
+      "look": "mecanica"
     },
     {
       "id": "r02_bomba.fragment_04",

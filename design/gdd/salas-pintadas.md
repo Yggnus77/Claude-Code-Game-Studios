@@ -67,6 +67,23 @@ ela, falo com o mercador na barraca e corto os arbustos."
 12. Um salvamento feito antes de a sala ser redesenhada pode estar numa
    célula que agora é parede: ele continua válido e o jogo põe Yggnus na
    entrada padrão da sala.
+13. O cenário se mexe (pedido de 2026-11-14: "se o jogo diz que o moinho
+   está girando, então por que permanece parado?"). `tools/art/
+   animacoes_salas.py` recorta as pás dos moinhos da pintura, preenche o
+   lugar delas no fundo e grava as peças em `assets/art/salas/anim/` e a
+   lista em `assets/data/animacoes-salas.json`. `Ambient`
+   (`src/world/ambient.gd`) desenha por cima do fundo e por baixo de tudo o
+   que fica de pé: pás, engrenagens, rodas e polias giram (`spin`),
+   estandartes balançam (`sway`), chamas pintadas respiram (`glow`) e a
+   água cintila (`water`). Sala sem peças não ganha o nó (`Scenery`), e
+   só a camada que tem o que mexer é redesenhada a cada quadro.
+14. Toda pessoa no mapa é desenhada no estilo dos personagens principais
+   (pedido de 2026-11-14). Um NPC que não está na pintura tem `"look":
+   "<nome>"` e o jogo desenha `assets/art/personagens/npc_<nome>.png`
+   (gerado por `tools/art/npcs_referencia.py` a partir das referências do
+   usuário, com o contorno escuro de 1 px) em pé na célula, com sombra.
+   Exódia sai da referência 21; a Mecânica do Cais é a mesma figura de
+   trabalho com outras cores, espelhada.
 
 ### 3.1 Praça de Versalhes
 
@@ -192,6 +209,17 @@ Todas as salas da torre têm 40 × 23 células. Ordem da subida:
   células → 640 × 384 px (a referência 16:9 de 960 × 540 é reduzida a
   2/3 na largura e 0,711 na altura).
 - Paleta: 96 cores por sala (`COLORS`), sem pontilhado.
+- Giro: ângulo `a = t · vel` (rad, `t` em segundos). A pintura foi
+  achatada na altura pelo fator `k = (A_sala / A_ref) ÷ (L_sala / L_ref)`;
+  a peça gira no espaço da pintura: escala `(1, 1/k)`, gira `a`, escala
+  `(1, k)`. Pás dos moinhos: `vel = 0,9` (uma volta em ~7 s).
+- Balanço: a faixa de 2 px na altura `y` de um estandarte de altura `h`
+  desloca `dx = round(amp · u² · sin(t · vel − 2,2 u))`, `u = y / (h − 1)`;
+  `amp = 1,6` px, `vel = 2,2`.
+- Chama: `respira = 0,5 + 0,3 sin(6t + 1,9i) + 0,2 sin(13t + i)`; o halo
+  de raio 14 px tem alfa `0,05 + 0,05 · respira`, o miolo de raio 7 px
+  `0,08 + 0,10 · respira` e o ponto de 2 px `0,25 + 0,3 · respira` (soma
+  de luz).
 - Área de uma porta com `span = n` ao norte ou ao sul: o retângulo das
   células `(x, y)` a `(x + n − 1, y)`, mais as células até o arco.
 
@@ -213,6 +241,10 @@ Todas as salas da torre têm 40 × 23 células. Ordem da subida:
   escurecimento; o mapa usa `map_side`.
 - Salvamento numa célula que virou parede: carrega na entrada padrão
   (`test_a_save_standing_where_the_room_now_has_a_wall_still_loads`).
+- Peça de animação sem imagem (arquivo apagado): `Ambient` a pula; o
+  teste `test_the_mills_turn_and_every_moving_piece_has_its_picture` falha.
+- `look` sem imagem: o NPC não é desenhado; o teste
+  `test_every_person_on_a_map_is_drawn_in_the_character_style` falha.
 - Oficina, praça e estrada ficam em lados opostos umas das outras, então
   todas as trocas entre elas deslizam a tela.
 - Um arbusto pode esconder uma parte da sala (o fragmento 2): o teste de
@@ -223,7 +255,11 @@ Todas as salas da torre têm 40 × 23 células. Ordem da subida:
 `Room` (desenho, colisão, `door_zone`), `RoomData` (`art`), `SaveGame`
 (`_entry_ok`), `Main.continue_from`; dados `assets/data/maps/*.json`;
 arte `tools/art/gerar_salas.py` → `assets/art/salas/`. Depende das
-referências do jogador em `design/art/referencias/salas/`.
+referências do jogador em `design/art/referencias/salas/`. O cenário em
+movimento depende de `tools/art/animacoes_salas.py` (chamado por
+`gerar_salas.py`; usa numpy e OpenCV, licenças BSD e Apache 2.0) e de
+`Ambient`, que `Room.build` cria. Os NPCs dependem de
+`tools/art/npcs_referencia.py` e de `design/art/referencias/personagens/`.
 
 ## 7. Parâmetros ajustáveis
 
@@ -237,6 +273,13 @@ referências do jogador em `design/art/referencias/salas/`.
 | mapa | examine.text / barrier | aviso de caminho fechado | — |
 | mapa | torch.flame_at | [3, −7] e [−9, −7] (bomba) | dentro da célula da tocha |
 | gerar_salas.py | APAGAR | caixas das lâmpadas apagadas | — |
+| animacoes_salas.py | PECAS.vel | 0,9 (pás) | 0,3–2 rad/s (mais: parece motor) |
+| animacoes_salas.py | GIROS.vel | engrenagens ±0,6–1,5 | 0,2–3 rad/s |
+| animacoes_salas.py | estandarte amplitude / vel | 1,6 px / 2,2 | 0,5–3 px / 1–4 |
+| animacoes_salas.py | LUZES | pontos das chamas pintadas, raio 14 | 8–24 px |
+| animacoes_salas.py | AGUA | chafariz, tanque, poça | — |
+| mapa | entity.look | exodia, mecanica | nome de `npc_<nome>.png` |
+| npcs_referencia.py | HEIGHT | 40 px | 36–44 (Yggnus tem 42) |
 
 ## 8. Critérios de aceitação
 
@@ -255,3 +298,10 @@ referências do jogador em `design/art/referencias/salas/`.
 9. A Lamparina acende os dois lampiões pintados da bomba e eles brilham;
    a porta do poço abre.
 10. Uma Carga junto à rachadura do poço abre um buraco que leva à adega.
+11. As pás dos moinhos da estrada e do cruzamento giram; as engrenagens do
+   cruzamento, da bomba e das torres giram; os estandartes balançam; as
+   chamas pintadas respiram; a água do chafariz, do tanque e da poça
+   cintila. Duas capturas com 1 s de intervalo mostram as pás em ângulos
+   diferentes.
+12. Exódia (oficina) e a Mecânica do Cais (bomba) aparecem no estilo dos
+   personagens principais, sem o bloco do estilo antigo.
