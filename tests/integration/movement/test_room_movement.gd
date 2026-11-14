@@ -76,3 +76,37 @@ func test_diagonal_distance_equals_straight() -> void:
 	var diag: float = await _measure(p, from, Vector2(1, 1).normalized(), 30)
 	var straight: float = await _measure(p, from, Vector2.RIGHT, 30)
 	assert_near(diag, straight, 0.5, "diagonal covers the same distance as straight")
+
+
+func test_holding_run_goes_faster_than_walking() -> void:
+	var p := _setup()
+	p.respawn_at(main.room.data.tile_center(Vector2i(3, 8)))
+	var start := p.global_position
+	await _walk(p, Vector2.RIGHT, 30)
+	var walked := p.global_position.x - start.x
+	p.respawn_at(main.room.data.tile_center(Vector2i(3, 8)))
+	p.run_override = true
+	start = p.global_position
+	await _walk(p, Vector2.RIGHT, 30)
+	var ran := p.global_position.x - start.x
+	p.run_override = false
+	assert_near(ran / walked, p.run_speed_factor, 0.05, "run covers %.1f px, walk %.1f px" % [ran, walked])
+	assert_true(p.run_speed_factor > 1.0, "running is faster")
+
+
+func test_run_does_not_speed_up_a_charge() -> void:
+	var p := _setup()
+	p.respawn_at(main.room.data.tile_center(Vector2i(3, 8)))
+	p.run_override = true
+	p.attack_held_override = true
+	p.request_attack()
+	await _frames(40)
+	var start := p.global_position
+	await _walk(p, Vector2.RIGHT, 20)
+	assert_true(not p.running, "no running while the blade charges")
+	assert_true(p.global_position.x - start.x < p.motor.speed * 20.0 / 60.0, "slower than a walk")
+
+
+func _frames(n: int) -> void:
+	for i in n:
+		await tree.physics_frame

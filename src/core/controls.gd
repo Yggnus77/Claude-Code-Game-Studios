@@ -12,13 +12,13 @@ const Defaults := preload("res://src/core/input_setup.gd")
 ## the menu itself can always be reached.
 ## Guard and dodge are not here: the shield is passive and the dash waits for
 ## an item (design/gdd/jogabilidade-classica.md §1).
-const REBINDABLE := ["move_up", "move_down", "move_left", "move_right", "attack",
+const REBINDABLE := ["move_up", "move_down", "move_left", "move_right", "run", "attack",
 	"interact", "item", "quick_swap", "map", "history", "skip_scene", "reset_room"]
 
 ## Names shown in the menu.
 const NAMES := {
 	"move_up": "Andar para cima", "move_down": "Andar para baixo", "move_left": "Andar para a esquerda",
-	"move_right": "Andar para a direita", "attack": "Espada", "dodge": "Esquiva",
+	"move_right": "Andar para a direita", "run": "Correr (segure)", "attack": "Espada", "dodge": "Esquiva",
 	"interact": "Examinar / confirmar", "item": "Usar item", "quick_swap": "Trocar item", "map": "Inventário",
 	"history": "Histórico de falas", "skip_scene": "Pular cena", "reset_room": "Reiniciar sala",
 }

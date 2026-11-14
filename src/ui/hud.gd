@@ -168,7 +168,7 @@ func refresh_hint() -> void:
 	if walk == "W/A/S/D":
 		walk = "WASD"
 	var has: Dictionary = hint_state.call()
-	var parts := PackedStringArray(["%s andar" % walk])
+	var parts := PackedStringArray(["%s andar" % walk, "%s correr" % k.call("run")])
 	if has.get("sword", false):
 		parts.append("%s espada (segure: giro)" % k.call("attack"))
 	parts.append("%s examinar" % k.call("interact"))

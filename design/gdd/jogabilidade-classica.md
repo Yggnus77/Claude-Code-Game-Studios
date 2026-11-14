@@ -100,6 +100,14 @@ Ao levar dano: recuo de `knockback` px em `hitstun` s e invencibilidade de
 | Arco de Fio | Torre, antecâmara (t06) | baú, com 10 agulhas |
 | 50 Bronze | Adega (r04) | baú (onde estava o arco) |
 
+### 3.5b Correr
+
+Pedido do usuário (2026-11-13). Segurar o botão de correr (Shift, ou LB no
+controle, configurável no menu) multiplica a velocidade de andar por
+`player.run_speed_factor` (1,6). A corrida só vale para o andar livre. Golpe,
+carga, gancho, frasco e tropeço seguem a própria velocidade. As pernas
+acompanham o ritmo da corrida. A linha de teclas do HUD mostra "correr".
+
 ### 3.6 HUD
 
 > Substituído em 2026-11-11 por `telas-e-mochila.md` §3.4 (painel com vida
@@ -156,6 +164,7 @@ Ao levar dano: recuo de `knockback` px em `hitstun` s e invencibilidade de
 | Chave | Valor | Nota |
 |---|---|---|
 | player.speed | 100 | px/s |
+| player.run_speed_factor | 1.6 | correr; faixa segura 1.3–2.0 (acima disso a tela desliza rápido demais) |
 | player.acceleration / deceleration | 6000 / 6000 | partida e parada quase imediatas |
 | player.knockback | 30 | px |
 | player.hitstun | 0.22 | s |
